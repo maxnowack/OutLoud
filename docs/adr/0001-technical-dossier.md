@@ -1,7 +1,7 @@
-# 0001 – The project does / does not maintain a technical dossier
+# 0001 – The project does not maintain a technical dossier
 
-- Status: open — decided at project start, before the first feature
-- Date: —
+- Status: accepted
+- Date: 2026-10-22
 
 ## Context
 
@@ -21,41 +21,31 @@ one: the sections that are hardest to reconstruct later (the decision
 history, the restore drills, the access reviews) are exactly the ones that
 cannot be back-filled.
 
-`docs/DOSSIER.md` is the concept: an index over the living documents plus
-the few sections that have no other owner, each with a `Last verified`
-line and a rule that evidence lives in the repository.
+The template shipped `DOSSIER.md` as the concept: an index over the
+living documents plus the few sections that have no other owner, each
+with a `Last verified` line and a rule that evidence lives in the
+repository.
 
-The alternative is to not maintain it and accept that a future due
-diligence or certification starts from scratch. That is the right choice
-for a project that will never face one — an internal tool, an experiment, a
-library without an operational footprint.
+Not maintaining it is the right choice for a project that will never face
+a due diligence or a certification. Outloud is an open-source app without
+monetisation (`docs/SPEC.md`), with no server to operate.
+
+Rejected alternative: maintaining the dossier from the first feature —
+one more living document and a verification pass per release, for an
+assessment nobody expects.
 
 ## Decision
 
-*Pick one, delete the other, set the status to `accepted` and the date.*
-
-**Variant A — maintained.** We maintain `docs/DOSSIER.md` from the first
-feature. Every section has an owner and a `Last verified` line; the release
-checklist includes the verification pass; a change that alters something a
-section covers updates the section in the same change set. The dossier is
-listed in the ownership map in `AGENTS.md`.
-
-**Variant B — not maintained.** We do not maintain a technical dossier.
-`docs/DOSSIER.md` is deleted and its row removed from the ownership map in
-`AGENTS.md`. The living documents, the ADRs and the plans remain the only
-technical documentation. Should a due diligence or certification become
-likely, adopting the dossier is a new ADR, and the cost of reconstructing
-the sections that were not kept is accepted as the price of this decision.
+We do not maintain a technical dossier. `DOSSIER.md` is deleted and
+its row removed from the ownership map in `AGENTS.md`. The living
+documents, the ADRs and the plans remain the only technical
+documentation. Should a due diligence or certification become likely,
+adopting the dossier is a new ADR, and the cost of reconstructing the
+sections that were not kept is accepted as the price of this decision.
 
 ## Consequences
 
-*Variant A:* one more living document with the same discipline as the
-others; a verification pass per release; generated inventories for
-dependencies and licences with their tests; restore drills and access
-reviews actually performed and logged. In exchange, a due diligence or
-audit is a walk through an index rather than a project.
-
-*Variant B:* nothing to maintain. The decision history, the architecture
-and the specification are still kept, because the other rules require them;
-what is lost is the evidence trail — the drills, the reviews, the verified
+Nothing to maintain. The decision history, the architecture and the
+specification are still kept, because the other rules require them; what
+is lost is the evidence trail — the drills, the reviews, the verified
 dates — which cannot be reconstructed later.

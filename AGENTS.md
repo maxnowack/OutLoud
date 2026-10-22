@@ -52,7 +52,9 @@ that owns it. In a single-unit repository the area rules are the section
 | --- | --- |
 | `AGENTS.md` (this file) | Repository-wide: layout, documentation ownership, plan and ADR duties, how to work, commit and staging discipline |
 | `docs/ARCHITECTURE_PRINCIPLES.md` | The technology-independent architectural rules every area file specialises |
-| `<area>/AGENTS.md` | *(monorepo only; one row per area — the stack, its data-access gate, its generated artifacts, its verification duty)* |
+| `OutloudKit/AGENTS.md` | The shared Swift package (ADR 0002, ADR 0011): model catalogue, downloads, transcription, cleanup, settings, history; SwiftPM and its tests |
+| `apps/macos/AGENTS.md` | The macOS menu bar app: hotkey, recording, auto-paste; its XcodeGen project and end-to-end test plans |
+| `apps/ios/AGENTS.md` | The iOS app: App Intent, recording, clipboard; its XcodeGen project and end-to-end test plans |
 
 **(MUST)** Read the area file before writing *or advising on* code in that
 area. Loading is lazy, so reasoning about an area without opening a file
@@ -85,6 +87,31 @@ stack in this repository:
 - **(MUST)** Develop backwards-compatibly; a breaking change is a joint
   release coordinated with the user, never shipped alone
   (`docs/ARCHITECTURE_PRINCIPLES.md` §"Contracts between components").
+
+### Swift — `OutloudKit/`, `apps/macos/`, `apps/ios/`
+
+- **(MUST)** Each unit's `precommit` command is `./scripts/precommit`, run
+  from the unit's directory. It resolves dependencies, builds with
+  warnings as errors, lints the formatting and runs the tests; the work is
+  not done until it passes in every unit the change touches. A unit that
+  compiles in Xcode but fails here has not been checked, because Xcode's
+  incremental build hides warnings it has already shown once.
+- **(MUST)** Format with `xcrun swift-format` (shipped with Xcode) and the
+  repository's `.swift-format`; `precommit` lints with `--strict`. One
+  formatter for all three units keeps diffs to what changed. Cost:
+  formatting churn when the configuration changes, done in a commit of
+  its own.
+- **(MUST)** Build in the Swift 6 language mode with complete concurrency
+  checking, and with warnings as errors — `-warnings-as-errors` for
+  SwiftPM, `SWIFT_TREAT_WARNINGS_AS_ERRORS` in each `project.yml`. A data
+  race the compiler reports is a defect, not noise.
+- **(MUST)** Target iOS 27 and macOS 27 (ADR 0012); no availability checks
+  for older releases.
+- **(MUST)** Pin every dependency to an exact version or revision, and
+  commit `Package.resolved`. A floating version changes the build without
+  a change in the repository.
+- **(MUST NOT)** Edit or commit a generated `.xcodeproj`; change the app's
+  `project.yml` and regenerate with `xcodegen generate` (ADR 0011).
 
 # Documentation structure
 
@@ -140,23 +167,13 @@ the reader cannot tell which one is current.
 | `docs/ARCHITECTURE.md` | System components, communication paths, API and channel contracts, data and sync formats, auth model |
 | `docs/DESIGN.md` | The visual appearance: tokens, the component vocabulary, the states and accessibility contract of every component — decided before the first screen |
 | `docs/RELEASE.md` | How a version is named, released and rolled back, per unit; the release checklist |
-| `docs/DOSSIER.md` | The technical due-diligence and certification view: the index of evidence, its owners, and when each section was last verified — *only if `docs/adr/0001-technical-dossier.md` decided for it* |
 | `docs/HORIZONTAL_SCALING.md` | The register of everything that keeps a service from running as more than one instance: what it is, what goes wrong at two nodes, what coordinating it would take |
 | `docs/ARCHITECTURE_PRINCIPLES.md` | The technology-independent architectural rules |
 | `docs/RULE_WRITING.md` | How a rule is phrased, where it lives, and the shape of an area file |
 | `docs/PROCESSES.md`, `docs/VERIFICATION.md`, `docs/COMMITS.md` | The situational working rules: what is started or connected to, how a change is verified, how a commit is made — read at the moment this file names |
 | `AGENTS.md` and the area files above | Working rules, including both maps |
 
-*(Add one row per living document the project needs — an economy, a domain
-model, an operations manual, store material. Delete rows for documents the
-project will never have; a project without a user interface deletes
-`docs/DESIGN.md`, a project that decided against the dossier deletes
-`docs/DOSSIER.md`.)*
-
-**(MUST)** Where the dossier is maintained, it is a living document like
-every other: a change that alters something a section covers updates the
-section in the same change set, and every release includes its verification
-pass (`docs/DOSSIER.md` §"How it works").
+The project keeps no technical dossier (ADR 0001).
 
 **(MUST)** `docs/HORIZONTAL_SCALING.md` is the register of everything that
 keeps a service from running as more than one instance. Whoever writes
@@ -463,8 +480,8 @@ says which lines did not apply and why.
 4. Every generated artifact whose source changed was regenerated, and its
    test passes.
 5. Every living document that owns something the change altered was updated
-   — `docs/ARCHITECTURE.md`, `docs/SPEC.md`, `docs/DESIGN.md`, the dossier
-   section, the release document, this file or an area file.
+   — `docs/ARCHITECTURE.md`, `docs/SPEC.md`, `docs/DESIGN.md`, the release
+   document, this file or an area file.
 6. Every architecture decision the change contains has its ADR; every new
    single-instance assumption is in `docs/HORIZONTAL_SCALING.md`.
 7. The plan's `## Status` section states what is now true; a plan that is
@@ -507,13 +524,3 @@ says which lines did not apply and why.
   reads, staging by path so that another session's work is not swept into
   the commit, a rebase that adds no commits. Each of these fails silently
   and is found later, in the history, by a reviewer.
-
-# Area rules
-
-*(Single-unit repositories only. A monorepo deletes this section and gives
-each unit its own `<area>/AGENTS.md` in the shape `docs/RULE_WRITING.md`
-gives. A single-unit repository fills this section in that same shape —
-toolchain, verifying a change, tests, end-to-end test plans, persistence,
-security, the unit's own hazards, coding rules — so the rules that are only
-this unit's live here, beside the repository-wide ones above, and load with
-every turn.)*

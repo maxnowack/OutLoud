@@ -4,8 +4,12 @@
 
 In progress (2026-10-22). The template tree is copied without `.meta/`;
 the rule documents and the ADR format are the template's, except for the
-one sentence about `.meta/` removed from `AGENTS.md`. The README carries
-the working title. Every other step waits on an open question below.
+one sentence about `.meta/` removed from `AGENTS.md` and the dossier
+clauses removed with the dossier (ADR 0001). Phase 0 of
+`plans/FIRST_VERSION.md` did steps 3, 4, 5, 7 and 9: the maps and the
+Swift conventions in `AGENTS.md`, an area file per unit, ADR 0001 closed,
+and a `precommit` command per unit. The release document and the visual
+style wait on phases 3 and 6 of that plan.
 
 ## Problem
 
@@ -33,15 +37,15 @@ DoD: every row reads "done".
 | Template step | State |
 | --- | --- |
 | 1. Copy the tree without `.meta/` | done |
-| 2. Name the product, replace the README, add `LICENSE` | README done with the working title; product description and `LICENSE` open |
-| 3. Fill the two maps in `AGENTS.md` | open until the first unit exists |
-| 4. Conventions per stack | open: no stack chosen |
-| 5. Area rules | open: no unit exists |
-| 6. Fill ARCHITECTURE, SPEC, RELEASE; the stack ADR before code | open: the product is not described |
-| 7. Close ADR 0001 (dossier) | open |
-| 8. Decide the style; `e2e/README.md` per UI unit | open: whether the product has a user interface is not known |
-| 9. Wire the checks | open: no unit exists |
-| 10. Delete what does not apply | open |
+| 2. Name the product, replace the README, add `LICENSE` | done; MIT, as the user decided on 2026-10-22 |
+| 3. Fill the two maps in `AGENTS.md` | done (ADR 0011) |
+| 4. Conventions per stack | done: Swift, in `AGENTS.md` |
+| 5. Area rules | done: `OutloudKit/AGENTS.md`, `apps/macos/AGENTS.md`, `apps/ios/AGENTS.md` |
+| 6. Fill ARCHITECTURE, SPEC, RELEASE; the stack ADR before code | SPEC and ARCHITECTURE hold the concept, stack ADR 0002 done; RELEASE open |
+| 7. Close ADR 0001 (dossier) | done: no dossier; `DOSSIER.md` deleted |
+| 8. Decide the style; `e2e/README.md` per UI unit | open: both apps have a user interface; the style is not decided |
+| 9. Wire the checks | `precommit` per unit done; no CI is set up |
+| 10. Delete what does not apply | dossier deleted; `docs/HORIZONTAL_SCALING.md` kept while it is open whether Outloud ever runs a service |
 
 ## Risks
 
@@ -49,10 +53,7 @@ None recorded.
 
 ## Open questions
 
-- What the product is: its purpose, its users, its platforms.
-- The final product name, or whether `outloud` is it.
-- The licence.
-- Whether the project maintains the technical dossier (ADR 0001).
-- The stack; whether the repository is one unit or several.
-- Whether the product has a user interface, and its visual style
-  (`docs/DESIGN.md`).
+- The visual style (`docs/DESIGN.md`) — phase 3 of
+  `plans/FIRST_VERSION.md`.
+- The release path of the macOS download (`docs/RELEASE.md`) — phase 6
+  of `plans/FIRST_VERSION.md`.

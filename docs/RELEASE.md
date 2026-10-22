@@ -38,9 +38,7 @@ including the schema. When it was last performed and how long it took.)*
 
 1. Every end-to-end test plan in every unit's `e2e/` executed, outcomes
    recorded.
-2. The dossier verification pass done, `Last verified` lines updated —
-   where the dossier is maintained (`docs/adr/0001-technical-dossier.md`).
-3. The changelog written or generated, and read.
-4. The version bumped per the rules above; a breaking change coordinated
+2. The changelog written or generated, and read.
+3. The version bumped per the rules above; a breaking change coordinated
    with every caller.
-5. The rollback procedure confirmed to apply to this release.
+4. The rollback procedure confirmed to apply to this release.

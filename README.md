@@ -1,21 +1,32 @@
-# outloud
+# Outloud
 
-*`outloud` is the repository's working title.* What the product is has not
-been written down yet; `docs/SPEC.md` will own it.
+Outloud turns spoken thoughts into text that can be pasted — into
+messages, e-mails and notes — on iOS and macOS:
+
+- **iOS** — the Action Button or a shortcut starts a recording; Outloud
+  transcribes it, optionally cleans it up, and puts the result on the
+  clipboard for pasting into the target app.
+- **macOS** — a menu bar app: hold a hotkey to talk, release it, and
+  Outloud pastes the transcribed and optionally cleaned-up text into the
+  active text field, or leaves it on the clipboard.
+
+Transcription and cleanup run on the device. Outloud is open source,
+without monetisation.
 
 ## Status
 
-The repository holds the working rules and the document skeletons of the
-template, nothing else (`plans/TEMPLATE_ADOPTION.md` §"Status"). No product
-decision, no stack and no code exist yet.
+The first version is being built (`plans/FIRST_VERSION.md` §"Status").
+The concept is decided (ADRs 0002–0012, `plans/done/CONCEPT.md`); the
+three units are scaffolded and pass their checks, without features yet.
 
 ## Where to start
 
 1. `AGENTS.md` — the working rules.
-2. `plans/TEMPLATE_ADOPTION.md` — which setup steps of the template are
-   done, and the questions the open ones wait on.
+2. `docs/SPEC.md` — what the product does.
 3. `docs/adr/README.md` — the decisions.
-4. `docs/SPEC.md` — what the product does, once it is written.
+4. `plans/FIRST_VERSION.md` — the plan of the first version.
+5. The area files of the units: `OutloudKit/AGENTS.md`,
+   `apps/macos/AGENTS.md`, `apps/ios/AGENTS.md`.
 
 ## What is here
 
@@ -23,17 +34,23 @@ decision, no stack and no code exist yet.
 | --- | --- |
 | `AGENTS.md` | The repository-wide working rules, the map of rule files and the map of living documents. |
 | `CLAUDE.md` | A pointer to `AGENTS.md`, for harnesses that read that name. |
-| `docs/SPEC.md` | What the product does (skeleton). |
-| `docs/ARCHITECTURE.md` | Components and communication paths (skeleton). |
+| `LICENSE` | MIT. |
+| `OutloudKit/` | The shared Swift package: models, downloads, transcription, cleanup, settings, history. |
+| `apps/macos/` | The macOS menu bar app; its Xcode project is generated from `project.yml`. |
+| `apps/ios/` | The iOS app; its Xcode project is generated from `project.yml`. |
+| `docs/SPEC.md` | What the product does. |
+| `docs/ARCHITECTURE.md` | Components, trust boundaries and data. |
 | `docs/DESIGN.md` | The visual style (skeleton). |
 | `docs/RELEASE.md` | Versioning, release and rollback (skeleton). |
-| `docs/DOSSIER.md` | The technical due-diligence index — kept or deleted by ADR 0001, which is open. |
 | `docs/HORIZONTAL_SCALING.md` | The register of single-instance assumptions. |
 | `docs/ARCHITECTURE_PRINCIPLES.md` | The technology-independent architectural rules. |
 | `docs/RULE_WRITING.md` | How a rule is phrased and where it goes. |
 | `docs/PROCESSES.md`, `docs/VERIFICATION.md`, `docs/COMMITS.md` | Situational working rules, read when `AGENTS.md` says so. |
 | `docs/adr/` | Decision records with format and index. |
 | `plans/` | Open plans and their index; `plans/done/` for finished ones. |
+
+Each unit's full check is `./scripts/precommit`, run from the unit's
+directory; the apps need XcodeGen (`brew install xcodegen`).
 
 The structure and the rule documents come from the `agents-template`
 repository (commit `3bdf7b1`), adopted on 2026-10-22.

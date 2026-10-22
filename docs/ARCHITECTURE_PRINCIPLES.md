@@ -311,7 +311,7 @@ guaranteed the same way, so they are contained rather than trusted.
   deletion, an access denied — go to an audit trail that says who, what,
   when and from where; the audit trail is a store of its own, access-
   controlled, with its own retention, and what it carries is classified in
-  the data section of the dossier or the architecture document, because
+  the data section of the architecture document, because
   "from where" is personal data and is kept there deliberately, not
   leaked into the log by accident.
 
@@ -347,8 +347,7 @@ guaranteed the same way, so they are contained rather than trusted.
   treated as input. What we cannot audit we contain.
 - **(MUST)** Dependencies are pinned, minimal, and scanned in CI on every
   pull request; a reported vulnerability is triaged within the time the
-  dependency policy states — `docs/DOSSIER.md` §5 where the dossier is
-  maintained, the area file's §"Security" otherwise — and the triage is
+  dependency policy states — the area file's §"Security" — and the triage is
   recorded even when the answer is "not reachable from our code".
 - **(SHOULD)** Prefer the dependency with the smaller surface and the
   active maintainer; a dependency chosen for convenience that brings a
@@ -410,8 +409,7 @@ to every component that calls one.
   written in `docs/RELEASE.md`, so that "is this breaking" has an answer
   before the change is made, not after it has shipped.
 - **(MUST)** `docs/RELEASE.md` owns how a version is cut, released and
-  rolled back, per unit, and the release checklist — the verification pass
-  of the dossier where it is maintained, the end-to-end test plans
+  rolled back, per unit, and the release checklist — the end-to-end test plans
   executed, the changelog written. A release is performed by following it,
   and a step that the document does not have is added to it in the release
   that needed it.

@@ -11,11 +11,13 @@ change; the authoritative status description always lives in the plan's own
 | Plan | Topic | State |
 | --- | --- | --- |
 | `TEMPLATE_ADOPTION.md` | Adopting the agents-template's structure and rules | In progress: tree copied, product decisions open |
+| `FIRST_VERSION.md` | Building the first version for macOS and iOS | In progress: phase 0 |
 
 ## Implemented (`plans/done/`)
 
 | Plan | Topic | Done |
 | --- | --- | --- |
+| `CONCEPT.md` | Shaping the product concept until nothing has to be guessed | 2026-10-22; the remaining questions moved to `FIRST_VERSION.md` |
 
 ## The shape of a plan
 
@@ -57,8 +59,7 @@ small enough not to lose the thread.>
 ## Risks
 
 <What could go wrong while this is built or once it ships, and what
-mitigates it. Where the dossier is maintained, each row this plan adds to
-or removes from its risk register (`docs/DOSSIER.md` §10).>
+mitigates it.>
 
 ## Open questions
 
