@@ -1,0 +1,9 @@
+#!/bin/sh
+# The full check of OutloudKit (AGENTS.md §"Conventions shared by every unit of one stack").
+set -eu
+cd "$(dirname "$0")/.."
+
+swift package resolve
+xcrun swift-format lint --strict --recursive Package.swift Sources Tests
+swift build --jobs 4 -Xswiftc -warnings-as-errors
+swift test --jobs 4 -Xswiftc -warnings-as-errors

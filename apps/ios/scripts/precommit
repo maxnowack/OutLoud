@@ -1,0 +1,11 @@
+#!/bin/sh
+# The full check of the iOS app (AGENTS.md §"Conventions shared by every unit of one stack").
+set -eu
+cd "$(dirname "$0")/.."
+
+xcodegen generate --quiet
+xcrun swift-format lint --strict --recursive Sources
+xcodebuild -project Outloud.xcodeproj -scheme Outloud -configuration Debug \
+    -destination 'generic/platform=iOS Simulator' -derivedDataPath .build/DerivedData -jobs 4 \
+    -quiet CODE_SIGNING_ALLOWED=NO \
+    build

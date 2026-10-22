@@ -1,0 +1,35 @@
+# The source of the iOS app's Xcode project; generate it with `xcodegen generate` (ADR 0011).
+name: Outloud
+options:
+  bundleIdPrefix: io.github.maxnowack
+  deploymentTarget:
+    iOS: "27.0"
+packages:
+  OutloudKit:
+    path: ../../OutloudKit
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    SWIFT_TREAT_WARNINGS_AS_ERRORS: YES
+    GCC_TREAT_WARNINGS_AS_ERRORS: YES
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  Outloud:
+    type: application
+    platform: iOS
+    sources:
+      - Sources
+    dependencies:
+      - package: OutloudKit
+    info:
+      path: Generated/Info.plist
+      properties:
+        CFBundleDisplayName: Outloud
+        UILaunchScreen: {}
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.github.maxnowack.outloud
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: NO
