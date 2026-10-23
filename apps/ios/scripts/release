@@ -4,10 +4,9 @@
 #
 # Signs and uploads with automatic signing of team 95ZC649QPM: with an App Store Connect API key
 # when ASC_KEY_ID and ASC_ISSUER_ID are set — which works without an account signed in to Xcode —,
-# otherwise with the account signed in to Xcode. The key's .p8 is
-# ASC_KEY_PATH, or the keychain item named ASC_KEY_KEYCHAIN_ITEM, written to a temporary file
-# only this user can read and removed when the script ends. Raise CURRENT_PROJECT_VERSION in project.yml before each upload: App Store
-# Connect takes every build number of a version only once.
+# otherwise with the account signed in to Xcode; the key is found
+# by ../shared/scripts/asc-key.sh. Raise CURRENT_PROJECT_VERSION in project.yml before each
+# upload: App Store Connect takes every build number of a version only once.
 #
 # Usage: ./scripts/release            archive and upload
 #        ./scripts/release --export   archive and export the .ipa locally, without uploading
@@ -17,27 +16,9 @@ destination=upload
 if [ "${1:-}" = "--export" ]; then destination=export; fi
 version=$(sed -n 's/^ *MARKETING_VERSION: *"\(.*\)"/\1/p' project.yml)
 build=$(sed -n 's/^ *CURRENT_PROJECT_VERSION: *"\(.*\)"/\1/p' project.yml)
+. ../shared/scripts/asc-key.sh
 set --
-if [ -n "${ASC_KEY_ID:-}" ]; then
-    key=${ASC_KEY_PATH:-}
-    if [ -z "$key" ]; then
-        key=$(mktemp -t outloud-asc-key)
-        trap 'rm -f "$key"' EXIT INT TERM
-        chmod 600 "$key"
-        secret=$(security find-generic-password -s "$ASC_KEY_KEYCHAIN_ITEM" -w)
-        # `security` prints a value with line breaks as hex.
-        if printf '%s' "$secret" | grep -Eq '^([0-9a-f]{2})+$'; then
-            printf '%s' "$secret" | xxd -r -p >"$key"
-        else
-            printf '%s\n' "$secret" >"$key"
-        fi
-        unset secret
-        if ! grep -q 'BEGIN PRIVATE KEY' "$key"; then
-            body=$(tr -d ' \n' <"$key")
-            printf -- '-----BEGIN PRIVATE KEY-----\n%s\n-----END PRIVATE KEY-----\n' "$body" >"$key"
-            unset body
-        fi
-    fi
+if [ -n "$key" ]; then
     set -- -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
         -authenticationKeyPath "$key"
 fi
