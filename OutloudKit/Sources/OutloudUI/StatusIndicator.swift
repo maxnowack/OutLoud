@@ -4,11 +4,14 @@ import SwiftUI
 /// The dictation state as icon and words (`docs/DESIGN.md` §"StatusIndicator").
 public struct StatusIndicator: View {
     let state: DictationState
+    let progress: Double?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var pulsing = false
 
-    public init(state: DictationState) {
+    /// - Parameter progress: How far the cleanup is, 0 to 1, shown as a bar while cleaning.
+    public init(state: DictationState, progress: Double? = nil) {
         self.state = state
+        self.progress = progress
     }
 
     public var body: some View {
@@ -18,9 +21,19 @@ public struct StatusIndicator: View {
             Text(Self.label(for: state))
                 .font(Tokens.heading)
                 .foregroundStyle(Tokens.textPrimary)
+            if state == .cleaning, let progress {
+                ProgressView(value: progress)
+                    .frame(width: Tokens.progressBarWidth)
+                    .tint(Tokens.accent)
+                    .animation(Tokens.standard, value: progress)
+            }
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Self.label(for: state))
+        .accessibilityValue(
+            state == .cleaning && progress != nil
+                ? (progress ?? 0).formatted(.percent.precision(.fractionLength(0))) : ""
+        )
         .onChange(of: state) { _, new in announce(Self.label(for: new)) }
     }
 

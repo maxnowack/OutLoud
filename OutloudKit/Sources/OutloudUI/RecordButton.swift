@@ -15,7 +15,7 @@ public struct RecordButton: View {
         Button(action: action) {
             ZStack {
                 Circle()
-                    .fill(isRecording ? Tokens.recording : Tokens.accent)
+                    .fill(isRecording ? Tokens.recording : Tokens.accentFill)
                 Image(systemName: isRecording ? "stop.fill" : "mic.fill")
                     .font(.system(size: Tokens.recordButtonSize * 0.36, weight: .semibold))
                     .foregroundStyle(.white)

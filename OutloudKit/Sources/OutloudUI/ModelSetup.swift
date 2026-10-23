@@ -203,7 +203,7 @@ public struct ModelSetup: View {
                 .foregroundStyle(network.isExpensive ? Tokens.warning : Tokens.textSecondary)
             }
         }
-        .tint(Tokens.accent)
+        .tint(Tokens.accentFill)
     }
 
     /// Downloads the models, after asking when the connection is cellular.

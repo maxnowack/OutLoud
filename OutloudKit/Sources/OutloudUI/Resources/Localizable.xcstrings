@@ -1,976 +1,990 @@
 {
-  "sourceLanguage": "en",
-  "strings": {
-    "%@ of %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ von %@"
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@ · %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · %@"
           }
         }
       }
     },
-    "%@ · %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ · %@"
+    "%@ · %@ · %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ · %@ · %@"
           }
         }
       }
     },
-    "%@ · %@ · %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ · %@ · %@"
+    "%@ of %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ von %@"
           }
         }
       }
     },
-    "%@, %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@, %@"
+    "%@, %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@, %@"
           }
         }
       }
     },
-    "%@: %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@: %@"
+    "%@: %@" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@: %@"
           }
         }
       }
     },
-    "%lld languages, German and English among them": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%lld Sprachen, darunter Deutsch und Englisch"
+    "%lld languages, German and English among them" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld Sprachen, darunter Deutsch und Englisch"
           }
         }
       }
     },
-    "1 day": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "1 Tag"
+    "1 day" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1 Tag"
           }
         }
       }
     },
-    "10 days": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "10 Tage"
+    "3 days" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 Tage"
           }
         }
       }
     },
-    "3 days": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "3 Tage"
+    "3 months" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "3 Monate"
           }
         }
       }
     },
-    "3 months": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "3 Monate"
+    "10 days" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "10 Tage"
           }
         }
       }
     },
-    "30 days": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "30 Tage"
+    "30 days" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "30 Tage"
           }
         }
       }
     },
-    "Already on this device": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schon auf diesem Gerät"
+    "Already on this device" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schon auf diesem Gerät"
           }
         }
       }
     },
-    "Choose your models": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Modelle auswählen"
+    "Apple Intelligence is still getting ready; cleanup starts once it is." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apple Intelligence wird noch vorbereitet; die Bereinigung beginnt, sobald es bereit ist."
           }
         }
       }
     },
-    "Clean up text": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Text bereinigen"
+    "Choose your models" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modelle auswählen"
           }
         }
       }
     },
-    "Cleaned up": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bereinigt"
+    "Clean up text" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Text bereinigen"
           }
         }
       }
     },
-    "Cleaning up…": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wird bereinigt …"
+    "Cleaned up" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bereinigt"
           }
         }
       }
     },
-    "Cleanup": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bereinigung"
+    "Cleaning up…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird bereinigt …"
           }
         }
       }
     },
-    "Cleanup failed — this is the transcript.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bereinigung fehlgeschlagen – das ist das Transkript."
+    "Cleanup" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bereinigung"
           }
         }
       }
     },
-    "Cleanup model": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bereinigungsmodell"
+    "Cleanup failed — this is the transcript." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bereinigung fehlgeschlagen – das ist das Transkript."
           }
         }
       }
     },
-    "Continue": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weiter"
+    "Cleanup model" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bereinigungsmodell"
           }
         }
       }
     },
-    "Copied": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kopiert"
+    "Continue" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weiter"
           }
         }
       }
     },
-    "Copy": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kopieren"
+    "Copied" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopiert"
           }
         }
       }
     },
-    "Copy %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ kopieren"
+    "Copy" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopieren"
           }
         }
       }
     },
-    "Delete": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Löschen"
+    "Copy %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ kopieren"
           }
         }
       }
     },
-    "Delete %@?": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ löschen?"
+    "Delete" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Löschen"
           }
         }
       }
     },
-    "Done": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fertig"
+    "Delete %@?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ löschen?"
           }
         }
       }
     },
-    "Download": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Laden"
+    "Done" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fertig"
           }
         }
       }
     },
-    "Download %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ laden"
+    "Download" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laden"
           }
         }
       }
     },
-    "Download models": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Modelle laden"
+    "Download %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ laden"
           }
         }
       }
     },
-    "Download over cellular data?": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Über mobile Daten laden?"
+    "Download models" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modelle laden"
           }
         }
       }
     },
-    "Download the models once. After that, everything stays on this device.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lade einmal die Modelle. Danach bleibt alles auf diesem Gerät."
+    "Download over cellular data?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Über mobile Daten laden?"
           }
         }
       }
     },
-    "Fast": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schnell"
+    "Download the models once. After that, everything stays on this device." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lade einmal die Modelle. Danach bleibt alles auf diesem Gerät."
           }
         }
       }
     },
-    "Keep results for": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ergebnisse behalten"
+    "downloaded" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "geladen"
           }
         }
       }
     },
-    "Kept results": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Behaltene Ergebnisse"
+    "downloading" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "wird geladen"
           }
         }
       }
     },
-    "Model downloads": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Modell-Downloads"
+    "Fast" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schnell"
           }
         }
       }
     },
-    "Multilingual": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mehrsprachig"
+    "Keep results for" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ergebnisse behalten"
           }
         }
       }
     },
-    "No results kept": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Keine Ergebnisse behalten"
+    "Kept results" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Behaltene Ergebnisse"
           }
         }
       }
     },
-    "Nothing": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nichts"
+    "Model download" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modell-Download"
           }
         }
       }
     },
-    "Nothing was recognised. Speak a little longer or closer to the microphone.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Es wurde nichts erkannt. Sprich etwas länger oder näher am Mikrofon."
+    "Model downloads" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modell-Downloads"
           }
         }
       }
     },
-    "Off": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aus"
+    "Multilingual" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mehrsprachig"
           }
         }
       }
     },
-    "On": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ein"
+    "No results kept" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Ergebnisse behalten"
           }
         }
       }
     },
-    "On this device": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Auf diesem Gerät"
+    "not downloaded" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "nicht geladen"
           }
         }
       }
     },
-    "Open Settings": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Einstellungen öffnen"
+    "Nothing" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nichts"
           }
         }
       }
     },
-    "Outloud keeps no results and no recordings.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Outloud behält keine Ergebnisse und keine Aufnahmen."
+    "Nothing was recognised. Speak a little longer or closer to the microphone." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es wurde nichts erkannt. Sprich etwas länger oder näher am Mikrofon."
           }
         }
       }
     },
-    "Outloud keeps no results. You can change this in the settings.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Outloud behält keine Ergebnisse. Das kannst du in den Einstellungen ändern."
+    "Off" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aus"
           }
         }
       }
     },
-    "Outloud may not use the microphone. Allow it in System Settings.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Outloud darf das Mikrofon nicht verwenden. Erlaube es in den Einstellungen."
+    "On" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ein"
           }
         }
       }
     },
-    "Outloud transcribes and cleans up on this device. It needs its models once; after that, nothing you say leaves the device.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Outloud transkribiert und bereinigt auf diesem Gerät. Die Modelle werden einmal geladen; danach verlässt nichts, was du sagst, das Gerät."
+    "On this device" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auf diesem Gerät"
           }
         }
       }
     },
-    "Outloud will have to download the model again before you use it again.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Outloud muss das Modell erneut laden, bevor du es wieder verwendest."
+    "Open Settings" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen öffnen"
           }
         }
       }
     },
-    "Paste the text in any app: touch and hold, then Paste.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Füge den Text in einer beliebigen App ein: lange tippen, dann Einsetzen."
+    "Outloud keeps no results and no recordings." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outloud behält keine Ergebnisse und keine Aufnahmen."
           }
         }
       }
     },
-    "Pause": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pause"
+    "Outloud keeps no results. You can change this in the settings." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outloud behält keine Ergebnisse. Das kannst du in den Einstellungen ändern."
           }
         }
       }
     },
-    "Play": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Abspielen"
+    "Outloud may not use the microphone. Allow it in System Settings." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outloud darf das Mikrofon nicht verwenden. Erlaube es in den Einstellungen."
           }
         }
       }
     },
-    "Preferably on Wi-Fi.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Am besten im WLAN."
+    "Outloud transcribes and cleans up on this device. It needs its models once; after that, nothing you say leaves the device." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outloud transkribiert und bereinigt auf diesem Gerät. Die Modelle werden einmal geladen; danach verlässt nichts, was du sagst, das Gerät."
           }
         }
       }
     },
-    "Ready": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bereit"
+    "Outloud will have to download the model again before you use it again." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outloud muss das Modell erneut laden, bevor du es wieder verwendest."
           }
         }
       }
     },
-    "Recording": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aufnahme"
+    "Paste the text in any app: touch and hold, then Paste." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Füge den Text in einer beliebigen App ein: lange tippen, dann Einsetzen."
           }
         }
       }
     },
-    "Recording…": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aufnahme …"
+    "Pause" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause"
           }
         }
       }
     },
-    "Removes filler words, fixes punctuation and sets paragraphs. Optional.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Entfernt Füllwörter, korrigiert die Zeichensetzung und setzt Absätze. Optional."
+    "Play" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abspielen"
           }
         }
       }
     },
-    "Removes filler words, sets punctuation and paragraphs": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Füllwörter weg, Satzzeichen, Absätze"
+    "Preferably on Wi-Fi." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Am besten im WLAN."
           }
         }
       }
     },
-    "Results and their recordings are kept on this device for %@, then deleted.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ergebnisse und ihre Aufnahmen bleiben %@ auf diesem Gerät und werden dann gelöscht."
+    "Ready" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bereit"
           }
         }
       }
     },
-    "Results are kept for %@.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ergebnisse werden %@ behalten."
+    "Recording" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aufnahme"
           }
         }
       }
     },
-    "Retry": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Erneut versuchen"
+    "Recording…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aufnahme …"
           }
         }
       }
     },
-    "Show text": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Text anzeigen"
+    "Removes filler words, fixes punctuation and sets paragraphs. Optional." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entfernt Füllwörter, korrigiert die Zeichensetzung und setzt Absätze. Optional."
           }
         }
       }
     },
-    "Something went wrong": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Etwas ist schiefgegangen"
+    "Removes filler words, sets punctuation and paragraphs" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Füllwörter weg, Satzzeichen, Absätze"
           }
         }
       }
     },
-    "Speech recognition": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Spracherkennung"
+    "Results and their recordings are kept on this device for %@, then deleted." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ergebnisse und ihre Aufnahmen bleiben %@ auf diesem Gerät und werden dann gelöscht."
           }
         }
       }
     },
-    "Start dictation": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Diktat starten"
+    "Results are kept for %@." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ergebnisse werden %@ behalten."
           }
         }
       }
     },
-    "Stop": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stopp"
+    "Retry" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erneut versuchen"
           }
         }
       }
     },
-    "Stop dictation": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Diktat beenden"
+    "Show text" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Text anzeigen"
           }
         }
       }
     },
-    "The larger model also applies spoken corrections such as “scratch that”, but takes about four times as long.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Das größere Modell setzt auch gesprochene Korrekturen wie „streich das“ um, braucht aber etwa viermal so lange."
+    "Something went wrong" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Etwas ist schiefgegangen"
           }
         }
       }
     },
-    "The model is large. Downloading it over cellular data may use up your data plan.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Das Modell ist groß. Der Download über mobile Daten kann dein Datenvolumen aufbrauchen."
+    "Speech recognition" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spracherkennung"
           }
         }
       }
     },
-    "The model lies in the shared Hugging Face cache. Other apps and tools that use it will have to download it again, and so will Outloud before you use it again.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Das Modell liegt im gemeinsamen Hugging-Face-Cache. Andere Apps und Tools, die es nutzen, müssen es dann erneut laden – und Outloud auch, bevor du es wieder verwendest."
+    "Start dictation" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diktat starten"
           }
         }
       }
     },
-    "The models are large. Downloading them over cellular data may use up your data plan.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die Modelle sind groß. Der Download über mobile Daten kann dein Datenvolumen aufbrauchen."
+    "Stop" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stopp"
           }
         }
       }
     },
-    "The models are not downloaded yet.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die Modelle sind noch nicht geladen."
+    "Stop dictation" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diktat beenden"
           }
         }
       }
     },
-    "The only data transfer is downloading the models from Hugging Face, once, when you choose them.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die einzige Datenübertragung ist der einmalige Download der Modelle von Hugging Face, wenn du sie auswählst."
+    "Switch on Apple Intelligence in the system settings to clean up text." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schalte Apple Intelligence in den Systemeinstellungen ein, um Text zu bereinigen."
           }
         }
       }
     },
-    "The recording failed: %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die Aufnahme ist fehlgeschlagen: %@"
+    "The larger model also applies spoken corrections such as “scratch that”, but takes about four times as long." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das größere Modell setzt auch gesprochene Korrekturen wie „streich das“ um, braucht aber etwa viermal so lange."
           }
         }
       }
     },
-    "The transcription failed: %@": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die Transkription ist fehlgeschlagen: %@"
+    "The model is large. Downloading it over cellular data may use up your data plan." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Modell ist groß. Der Download über mobile Daten kann dein Datenvolumen aufbrauchen."
           }
         }
       }
     },
-    "There is no internet connection.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Es besteht keine Internetverbindung."
+    "The model lies in the shared Hugging Face cache. Other apps and tools that use it will have to download it again, and so will Outloud before you use it again." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Modell liegt im gemeinsamen Hugging-Face-Cache. Andere Apps und Tools, die es nutzen, müssen es dann erneut laden – und Outloud auch, bevor du es wieder verwendest."
           }
         }
       }
     },
-    "Thorough": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gründlich"
+    "The models are large. Downloading them over cellular data may use up your data plan." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Modelle sind groß. Der Download über mobile Daten kann dein Datenvolumen aufbrauchen."
           }
         }
       }
     },
-    "Transcribing…": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wird transkribiert …"
+    "The models are not downloaded yet." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Modelle sind noch nicht geladen."
           }
         }
       }
     },
-    "Transcript": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Transkript"
+    "The only data transfer is downloading the models from Hugging Face, once, when you choose them." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die einzige Datenübertragung ist der einmalige Download der Modelle von Hugging Face, wenn du sie auswählst."
           }
         }
       }
     },
-    "Transcription": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Transkription"
+    "The only data transfer is downloading the speech recognition model from Hugging Face, once." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die einzige Datenübertragung ist das einmalige Herunterladen des Spracherkennungsmodells von Hugging Face."
           }
         }
       }
     },
-    "Transcription and cleanup run on this device. Neither your voice nor your text is sent anywhere.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Transkription und Bereinigung laufen auf diesem Gerät. Weder deine Stimme noch dein Text werden irgendwohin gesendet."
+    "The recording failed: %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Aufnahme ist fehlgeschlagen: %@"
           }
         }
       }
     },
-    "Turns speech into text. Required.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wandelt Sprache in Text um. Erforderlich."
+    "The transcription failed: %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Transkription ist fehlgeschlagen: %@"
           }
         }
       }
     },
-    "Unlimited": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unbegrenzt"
+    "There is no internet connection." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es besteht keine Internetverbindung."
           }
         }
       }
     },
-    "Use cleanup": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bereinigung verwenden"
+    "This device does not support Apple Intelligence; you get the transcript." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Gerät unterstützt Apple Intelligence nicht; du bekommst das Transkript."
           }
         }
       }
     },
-    "Welcome to Outloud": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Willkommen bei Outloud"
+    "Thorough" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gründlich"
           }
         }
       }
     },
-    "What happens with my data?": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Was passiert mit meinen Daten?"
+    "Transcribing…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird transkribiert …"
           }
         }
       }
     },
-    "With audio": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Mit Aufnahme"
+    "Transcript" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transkript"
           }
         }
       }
     },
-    "You are on cellular data.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Du bist über mobile Daten verbunden."
+    "Transcription" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transkription"
           }
         }
       }
     },
-    "downloaded": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "geladen"
+    "Transcription and cleanup run on this device. Neither your voice nor your text is sent anywhere." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transkription und Bereinigung laufen auf diesem Gerät. Weder deine Stimme noch dein Text werden irgendwohin gesendet."
           }
         }
       }
     },
-    "downloading": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "wird geladen"
+    "Transcription runs on this device, and the cleanup uses Apple Intelligence's model on this device. Neither your voice nor your text is sent anywhere." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Spracherkennung läuft auf diesem Gerät, und die Bereinigung nutzt das Modell von Apple Intelligence auf diesem Gerät. Weder deine Stimme noch dein Text werden irgendwohin gesendet."
           }
         }
       }
     },
-    "not downloaded": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "nicht geladen"
+    "Turns speech into text. Required." : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wandelt Sprache in Text um. Erforderlich."
           }
         }
       }
     },
-    "Apple Intelligence is still getting ready; cleanup starts once it is.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Apple Intelligence wird noch vorbereitet; die Bereinigung beginnt, sobald es bereit ist."
+    "Unlimited" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unbegrenzt"
           }
         }
       }
     },
-    "Model download": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Modell-Download"
+    "Use cleanup" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bereinigung verwenden"
           }
         }
       }
     },
-    "Switch on Apple Intelligence in the system settings to clean up text.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Schalte Apple Intelligence in den Systemeinstellungen ein, um Text zu bereinigen."
+    "Uses Apple Intelligence on this device. No download." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nutzt Apple Intelligence auf diesem Gerät. Kein Download."
           }
         }
       }
     },
-    "The only data transfer is downloading the speech recognition model from Hugging Face, once.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die einzige Datenübertragung ist das einmalige Herunterladen des Spracherkennungsmodells von Hugging Face."
+    "Welcome to Outloud" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Willkommen bei Outloud"
           }
         }
       }
     },
-    "This device does not support Apple Intelligence; you get the transcript.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dieses Gerät unterstützt Apple Intelligence nicht; du bekommst das Transkript."
+    "What happens with my data?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Was passiert mit meinen Daten?"
           }
         }
       }
     },
-    "Transcription runs on this device, and the cleanup uses Apple Intelligence's model on this device. Neither your voice nor your text is sent anywhere.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Die Spracherkennung läuft auf diesem Gerät, und die Bereinigung nutzt das Modell von Apple Intelligence auf diesem Gerät. Weder deine Stimme noch dein Text werden irgendwohin gesendet."
+    "With audio" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit Aufnahme"
           }
         }
       }
     },
-    "Uses Apple Intelligence on this device. No download.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nutzt Apple Intelligence auf diesem Gerät. Kein Download."
+    "You are on cellular data." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du bist über mobile Daten verbunden."
           }
         }
       }
     }
   },
-  "version": "1.0"
+  "version" : "1.0"
 }

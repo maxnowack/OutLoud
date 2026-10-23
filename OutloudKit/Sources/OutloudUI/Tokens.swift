@@ -12,6 +12,9 @@ public enum Tokens {
     // MARK: Colour
 
     public static let accent = Color(light: 0x1F7A70, dark: 0x4CC2B2)
+    /// Filled surfaces with white content — the record button, prominent buttons: the app icon's
+    /// colour in both appearances, where white keeps its contrast.
+    public static let accentFill = Color(light: 0x1F7A70, dark: 0x1F7A70)
     public static let recording = Color.red
     public static let success = Color.green
     public static let warning = Color.orange
@@ -52,11 +55,14 @@ public enum Tokens {
     public static let playButtonSize: CGFloat = 56
     public static let waveformHeight: CGFloat = 36
     public static let confirmationIconSize: CGFloat = 64
+    /// The cleanup's progress bar beside the status.
+    public static let progressBarWidth: CGFloat = 64
 
     // MARK: Elevation
 
-    public static let overlayShadowRadius: CGFloat = 12
-    public static let overlayShadowOpacity: Double = 0.2
+    /// The macOS recording overlay is a Liquid Glass capsule, which brings its own depth; its
+    /// text wraps at this width.
+    public static let overlayTextWidth: CGFloat = 320
 
     // MARK: Motion
 

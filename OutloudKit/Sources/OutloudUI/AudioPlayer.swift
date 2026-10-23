@@ -28,7 +28,7 @@ public struct AudioPlayer: View {
                     .font(.system(size: Tokens.playButtonSize * 0.4, weight: .semibold))
                     .foregroundStyle(.white)
                     .frame(width: Tokens.playButtonSize, height: Tokens.playButtonSize)
-                    .background(Tokens.accent, in: Circle())
+                    .background(Tokens.accentFill, in: Circle())
             }
             .buttonStyle(.plain)
             .accessibilityLabel(isPlaying ? localized("Pause") : localized("Play"))
