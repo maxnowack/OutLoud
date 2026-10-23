@@ -20,8 +20,10 @@ Three targets (ADR 0013):
 - **`OutloudKit`** — the core. `ModelCatalog` pins the models;
   `ModelStore` is the one owner of the model files (download, check,
   delete; ADR 0010, ADR 0014); `ModelLibrary` presents their states;
-  `Engines` loads the models once — `ParakeetTranscriber` (FluidAudio) and
-  `QwenCleaner` (LLM.swift); `DictationPipeline` turns samples or text
+  `Engines` loads the transcription model once — `ParakeetTranscriber`
+  (FluidAudio); `AppleCleaner` cleans up with Apple's on-device model
+  (Foundation Models), and `CleanupAvailability` says whether it can;
+  `DictationPipeline` turns samples or text
   into a `DictationOutcome`; `DictationController` runs one dictation from
   the recording to the history; `AudioRecorder` captures the microphone as
   16 kHz mono samples; `HistoryStore` is the one owner of the history's
@@ -37,10 +39,17 @@ hotkeys, overlays, App Intents, pasting.
 ### iOS platform module (`apps/ios/`)
 
 Owns the screens, the App Intents and the clipboard (ADR 0003): the
-"Dictate with Outloud" intent opens the app and starts a recording (the
-Action Button runs it); "Clean Up Text with Outloud" cleans up text it is
-given — what "Dictate Text" produced — in the background and copies it.
-One `AppModel` serves the interface and the intents.
+"Dictate with Outloud" intent opens the app and starts a recording; the
+widget extension `OutloudWidgets` offers it as a control to the Action
+Button, the Control Center and the Lock Screen (ADR 0017), and the intent
+is compiled into both targets from `apps/ios/Shared/`. Two intents run in
+the background, where iOS lets the app neither open the microphone nor
+write the clipboard (ADR 0018), and return their text for the shortcut to
+copy: "Transcribe Audio with Outloud" transcribes and cleans up an audio
+file — what "Record Audio" produced in a shortcut —, and "Clean Up Text
+with Outloud" cleans up text it is given. Apple's model may be used in the
+background, within a budget (ADR 0019). One `AppModel` serves the
+interface and the intents.
 
 ### macOS platform module (`apps/macos/`)
 
@@ -48,35 +57,48 @@ Owns the push-to-talk hotkey (Carbon hot keys, which report the press and
 the release without the Accessibility permission), the menu bar panel,
 the recording overlay — a non-activating panel, so the target app keeps
 the focus — and auto-paste (ADR 0004). It is distributed as a download
-from GitHub and runs outside the App Sandbox (ADR 0009).
+from GitHub, signed with Developer ID and notarised, runs outside the App
+Sandbox, and updates through Sparkle (ADR 0009, ADR 0016).
 
 ### Models
 
-Transcription and cleanup run on the device, on iOS and macOS, with
-downloaded open models (ADR 0005); the first version holds Parakeet v3
-and Qwen 3.5 0.8B (ADR 0006). Parakeet v3 runs with FluidAudio 0.17.7
-(`AsrModels.loadLocal`, the CoreML conversion
-`FluidInference/parakeet-tdt-0.6b-v3-coreml`), Qwen with LLM.swift (the
-`obra` fork, which runs the qwen35 architecture), as ghost-pepper does.
+Transcription and cleanup run on the device, on iOS and macOS.
+Transcription uses a downloaded open model (ADR 0005, ADR 0006): Parakeet
+v3 with FluidAudio 0.17.7 (`AsrModels.loadLocal`, the CoreML conversion
+`FluidInference/parakeet-tdt-0.6b-v3-coreml`). The cleanup uses Apple's
+on-device model through Foundation Models (ADR 0019): it runs in a system
+process, needs Apple Intelligence switched on, and no download.
 
 On macOS, downloaded models are stored in the Hugging Face hub cache, in
 the hub's own layout, where other tools reuse them (ADR 0010); on iOS, in
-the app's own container, in the same layout (ADR 0009).
+the app's own container, in the same layout (ADR 0009). A model's files download at once.
+On iOS they run in a background `URLSession`, which iOS goes on with while
+the app is suspended or ended, and which treats files started from the
+background as postponable — hence all at once, in front. Each task carries
+its destination relative to the home folder, since an iOS container can
+move, so that a file that finished meanwhile is checked and linked like any
+other. `ModelLibrary` keeps the downloads the user started and that have
+not ended in `UserDefaults`, and both apps go on with them at launch. A
+request is allowed onto an expensive network only when the user allowed
+cellular data.
 
 Before the cleanup model sees a transcript, `HesitationFilter` removes
 hesitation sounds ("äh", "uh"; "um" and "er" only where a comma sets them
-off, since they are German words). The model gets the instructions of
-`CleanupPrompt`, the worked examples as earlier conversation turns, and
-the transcript framed as `<USER-INPUT>`. Its answer is discarded — the
-transcript becomes the result — when it times out (20 s), is empty or is
-much longer than the transcript; transcripts over 4,000 characters are
-not cleaned up. The loaded cleanup model runs one short generation at
-load time, so that llama.cpp compiles its Metal shaders before the first
-dictation.
+off, since they are German words). Each cleanup opens a fresh session whose
+transcript holds the instructions of `CleanupPrompt` and the worked
+examples as earlier turns; the transcript follows, framed as
+`<USER-INPUT>`, answered with greedy sampling. The answer is discarded —
+the transcript becomes the result — when it times out (20 s), is empty,
+is much longer than the transcript, or the model refuses (`CleanerError`:
+in the background Apple limits how often an app may use it); transcripts
+over 4,000 characters are not cleaned up. The prompt's test inputs and
+results are in `plans/APPLE_CLEANUP.md`.
 
 ## Communication paths
 
-The only network traffic is the model download: HTTPS `GET` of
+Besides Sparkle's update check on macOS (the appcast and update zips from
+the GitHub releases, ADR 0016), the only network traffic is the model
+download: HTTPS `GET` of
 `https://huggingface.co/<repository>/resolve/<revision>/<path>`,
 following Hugging Face's redirect to its CDN; nothing is uploaded.
 

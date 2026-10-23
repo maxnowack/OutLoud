@@ -1,6 +1,6 @@
 # 0006 – The first version transcribes with Parakeet v3 and cleans up with a Qwen model of about 0.8B parameters
 
-- Status: accepted
+- Status: accepted for the transcription model; the cleanup model superseded by [0019](0019-cleanup-runs-on-apples-on-device-model.md)
 - Date: 2026-10-22
 
 ## Context

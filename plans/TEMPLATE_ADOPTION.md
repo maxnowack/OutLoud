@@ -41,9 +41,9 @@ DoD: every row reads "done".
 | 3. Fill the two maps in `AGENTS.md` | done (ADR 0011) |
 | 4. Conventions per stack | done: Swift, in `AGENTS.md` |
 | 5. Area rules | done: `OutloudKit/AGENTS.md`, `apps/macos/AGENTS.md`, `apps/ios/AGENTS.md` |
-| 6. Fill ARCHITECTURE, SPEC, RELEASE; the stack ADR before code | SPEC and ARCHITECTURE hold the concept, stack ADR 0002 done; RELEASE open |
+| 6. Fill ARCHITECTURE, SPEC, RELEASE; the stack ADR before code | done; the iOS release channel in `docs/RELEASE.md` is still open |
 | 7. Close ADR 0001 (dossier) | done: no dossier; `DOSSIER.md` deleted |
-| 8. Decide the style; `e2e/README.md` per UI unit | `docs/DESIGN.md` and both `e2e/README.md` written; the style waits on the user's approval |
+| 8. Decide the style; `e2e/README.md` per UI unit | done; style approved 2026-10-23 |
 | 9. Wire the checks | `precommit` per unit done; no CI is set up |
 | 10. Delete what does not apply | dossier deleted; `docs/HORIZONTAL_SCALING.md` kept while it is open whether Outloud ever runs a service |
 

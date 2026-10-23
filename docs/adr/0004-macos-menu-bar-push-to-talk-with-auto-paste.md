@@ -1,6 +1,6 @@
 # 0004 – On macOS, Outloud is a menu bar app with a held push-to-talk hotkey that pastes into the active field when permitted and otherwise leaves the result on the clipboard
 
-- Status: accepted
+- Status: accepted; its default shortcut extended by [0020](0020-macos-push-to-talk-is-option-command-held-alone.md)
 - Date: 2026-10-22
 
 ## Context

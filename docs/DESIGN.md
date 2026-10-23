@@ -68,7 +68,9 @@ System font, Dynamic Type everywhere; no fixed point sizes.
 ### Shape
 
 `radiusSmall` 6, `radiusMedium` 10, `radiusLarge` 16 points. The record
-button is a circle of `recordButtonSize` 88 points.
+button is a circle of `recordButtonSize` 104 points, the play button one
+of `playButtonSize` 56; a waveform is `waveformHeight` 36 points high; the
+copied confirmation's check mark is `confirmationIconSize` 64 points.
 
 ### Elevation
 
@@ -100,10 +102,11 @@ to `recording`. Hidden from accessibility (the StatusIndicator says
 
 ### RecordButton
 
-iOS only: starts and ends a recording. Idle: `accent` circle with a
-microphone; recording: `recording` circle with a stop square; disabled
-(models missing) at 40 % opacity. `recordButtonSize`, at least the 44 pt
-hit target. Accessibility: button, label "Start dictation" / "Stop
+iOS only: starts and ends a recording; it sits at the bottom of the screen,
+within the thumb's reach. Idle: `accent` circle with a microphone;
+recording: `recording` circle with a stop square; disabled (models missing,
+processing) at 40 % opacity. `recordButtonSize`, at least the 44 pt hit
+target. Accessibility: button, label "Start dictation" / "Stop
 dictation".
 
 ### ResultCard
@@ -113,6 +116,14 @@ The result on `surface` with `radiusMedium`: the text, selectable, in
 cleanup fell back; a Copy button that turns into "Copied" with `success`
 for two seconds. Empty state: not shown. Accessibility: the text is read
 as is; the copy button has its own label.
+
+### DeliveryConfirmation
+
+iOS: the result as "Copied" with a `success` check mark of
+`confirmationIconSize`, one sentence on pasting, the cleanup-failed notice
+where it applies, and a "Show text" button that reveals the ResultCard.
+The text is not shown until asked for. Accessibility: "Copied" is
+announced.
 
 ### FailureNotice
 
@@ -131,19 +142,32 @@ label; the progress bar has a value.
 
 ### ModelSetup
 
-The first launch: what the models are for and that they run on the
-device, a selectable row per model — transcription required, cleanup
-optional — the total download size, and Download; then the progress of
-each model and Continue once the needed ones are installed. On cellular
-data the download asks first, naming the size. Reads `title`, `body`,
-`spacing.xl`.
+The first launch, short enough to need no scrolling on an iPhone: a title
+and one sentence; a card for speech recognition (required, name and size)
+with its download state — a failed download with its own Retry button —,
+and a card for cleanup with a Checkbox and the CleanupAvailabilityNote; the
+Checkbox is off and disabled where cleanup is unavailable; "What happens
+with my data?" opens the PrivacyNotice in a sheet; a full-width "Download …"
+button with "Preferably on Wi-Fi." under it, "Stop" while downloading,
+"Continue" once the model is installed. On cellular data the download asks first, naming
+the size.
+
+### CleanupAvailabilityNote
+
+Whether the cleanup can run, in `caption` with an icon (ADR 0019):
+available — "Uses Apple Intelligence on this device. No download.", in
+`textSecondary` with the Apple Intelligence symbol; otherwise, in `warning`
+with an exclamation mark, why not and what to do — the device does not
+support Apple Intelligence, Apple Intelligence is switched off, or it is
+still getting ready. Shown in ModelSetup and under the cleanup toggle of
+both settings screens. Accessibility: read as its text.
 
 ### Checkbox
 
 A toggle drawn as a square check box on both platforms (`CheckboxStyle`),
-so that an optional model in ModelSetup looks like the required one's
-mark: `accent` filled check when on, an empty `textSecondary` square when
-off. Accessibility: read as its label with the value "On"/"Off".
+so that the optional cleanup in ModelSetup looks like the required model's
+mark, with its label beside it: `accent` filled check when on, an empty
+`textSecondary` square when off. Accessibility: read as its label with the value "On"/"Off".
 
 ### HistoryList
 
@@ -154,8 +178,17 @@ an entry.
 
 ### HistoryEntryDetail
 
-One kept result: Play/Stop for the audio, the cleaned version and the
-transcript, each selectable with a Copy button.
+One kept result: the AudioPlayer when it has audio, the cleaned version
+and the transcript, each selectable with a Copy button.
+
+### AudioPlayer
+
+A kept recording on `surface` with `radiusLarge`: a play/pause button of
+`playButtonSize` in `accent`, the recording's waveform — its loudness in 48
+bars, the played part in `accent`, the rest in `textSecondary` at 35 % —
+which seeks where it is tapped, and the position and length in
+`caption`. Accessibility: the button is "Play"/"Pause"; the waveform is
+hidden.
 
 ### RetentionPicker
 
@@ -164,9 +197,10 @@ A picker over the periods of `docs/SPEC.md` §"History": Nothing, 1 day,
 
 ### PrivacyNotice
 
-How Outloud processes: transcription and cleanup on the device, nothing
-sent; the only transfer is downloading models from Hugging Face; how long
-results are kept. Reads `body`, `detail`.
+How Outloud processes: transcription on the device and the cleanup with
+Apple Intelligence's model on the device, nothing sent; the only transfer
+is downloading the transcription model from Hugging Face; how long results
+are kept. Reads `body`, `detail`.
 
 ### Acknowledgements
 
@@ -200,14 +234,24 @@ design canvas outside the repository on 2026-10-23.
   buttons for History, Settings and Quit.
 - **macOS recording overlay** — StatusIndicator, LevelMeter.
 - **macOS setup window** — ModelSetup, PrivacyNotice.
-- **macOS settings window** — General (cleanup, hotkey, auto-paste),
-  Models (ModelRow), History (RetentionPicker), Privacy (PrivacyNotice,
+- **macOS settings window** — General (cleanup with its
+  CleanupAvailabilityNote; the shortcut, with a `warning` note and "Allow…"
+  while ⌥ ⌘ waits for Accessibility access; auto-paste), Models (ModelRow of the
+  transcription model), History (RetentionPicker), Privacy (PrivacyNotice,
   Acknowledgements).
 - **macOS history window** — HistoryList, HistoryEntryDetail.
-- **iOS setup** — ModelSetup, PrivacyNotice.
-- **iOS dictate tab** — RecordButton, StatusIndicator, LevelMeter,
-  ResultCard, FailureNotice, and a text field for system dictation with a
-  Clean up button.
+- **iOS setup** — ModelSetup.
+- **iOS dictate tab** — a dismissible card pointing to the ways of
+  starting Outloud, StatusIndicator and LevelMeter in the middle,
+  DeliveryConfirmation or FailureNotice after a dictation, RecordButton
+  and "Type text instead" (a sheet with a text field for system
+  dictation) at the bottom.
+- **iOS ways to start Outloud** — a list of the ways (In any app — the
+  shortcut that records and leaves the user in their app, ADR 0018 —,
+  Action Button, Control Center, Lock Screen, Back Tap, Siri, Home
+  Screen), each with its steps, advantages and drawbacks, and a link to
+  the Shortcuts app.
 - **iOS history tab** — HistoryList, HistoryEntryDetail.
-- **iOS settings tab** — cleanup toggle, ModelRow, RetentionPicker,
-  PrivacyNotice, Acknowledgements.
+- **iOS settings tab** — cleanup toggle with its CleanupAvailabilityNote,
+  ModelRow of the transcription model, RetentionPicker, the
+  ways to start Outloud, PrivacyNotice, Acknowledgements.

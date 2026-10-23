@@ -45,9 +45,10 @@ are marked `ASSUMPTION` and listed with the open questions in
 The first version covers:
 
 - German and English.
-- Local models for transcription and for cleanup, on iOS and macOS,
-  chosen at first launch (ADR 0005): Parakeet v3 for transcription and a
-  Qwen model of about 0.8B parameters for cleanup (ADR 0006).
+- Transcription and cleanup on the device, on iOS and macOS: Parakeet v3
+  for transcription, downloaded at first launch (ADR 0005, ADR 0006), and
+  Apple's on-device model for cleanup, which needs Apple Intelligence and
+  no download (ADR 0019).
 - Optional cleanup of punctuation, filler words and paragraphs.
 - A result view, and clear states for recording, processing and errors.
 - On iOS a shortcut and the clipboard; on macOS a hotkey and optional
@@ -72,6 +73,12 @@ The flow (ADR 0003):
 5. Outloud puts the result on the clipboard.
 6. The user pastes it into the target app.
 
+In any app, without Outloud coming to the front (ADR 0018): a shortcut the
+user sets up records with "Record Audio", hands the recording to
+"Transcribe Audio with Outloud", which transcribes and cleans it up in
+the background and returns the text, and copies it with "Copy to Clipboard". Back Tap, the
+Action Button in its Shortcut mode or Siri runs it.
+
 Alternatively, system dictation supplies the transcript — through
 "Dictate Text" in the shortcut, or in Outloud's own text field. Steps 4
 to 6 follow.
@@ -81,25 +88,44 @@ Rules:
 - Outloud cannot write into other apps; the user pastes the result.
 - Recording and the shortcut need the matching permissions. The lock
   screen and switching apps can require extra steps.
-- The shortcut "Dictate with Outloud" opens Outloud and starts recording
-  at once; the user ends the recording with the stop button. "Clean Up
+- The shortcut and control "Dictate with Outloud" open Outloud and start
+  recording at once; the user ends the recording with the stop button.
+  The control is offered by the Action Button, the Control Center and the
+  Lock Screen; the app explains these and the other ways — Back Tap, Siri,
+  the Home Screen — with their trade-offs (ADR 0017).
+- In the background, Outloud cleans up as in front (§"Cleanup"); when
+  Apple's model refuses there, the text is the transcript.
+- After a dictation the app says that the text was copied; the text is
+  shown only when the user asks for it. Text from the keyboard's
+  dictation is entered in a separate sheet. "Clean Up
   Text with Outloud" takes text — what "Dictate Text" produced — cleans
-  it up without opening the app, and copies it.
+  it up without opening the app, and returns it. It fails with a message,
+  rather than returning the text unchanged, when cleanup is switched off,
+  Apple Intelligence is unavailable, or the cleanup did not succeed.
+- A shortcut that runs while a dictation in the app is still going is
+  refused with "Outloud is busy with another dictation", so that it
+  cannot take over that recording.
 
 Acceptance criteria:
 
-- Pressing the Action Button set to "Dictate with Outloud" opens Outloud
-  recording; stopping puts the result on the clipboard and shows it.
+- Pressing the Action Button set to the "Dictate" control opens Outloud
+  recording; stopping puts the result on the clipboard and says so.
+- In another app, the shortcut of "Record Audio", "Transcribe Audio with
+  Outloud" and "Copy to Clipboard" puts the cleaned text on the clipboard
+  without Outloud coming to the front, and the dictation is kept in the
+  history.
 - The record button starts and ends a recording; it is disabled while the
   models are missing and while a result is being processed.
 - Text in Outloud's text field is cleaned up and copied with one tap; the
-  "Clean Up Text" shortcut returns and copies the cleaned text.
+  "Clean Up Text" shortcut returns the cleaned text for the shortcut to
+  copy.
 
 Acceptance criteria are proposals written on 2026-10-23 from the rules
 above, while the user was away (`plans/FIRST_VERSION.md` §"Decisions for
 the user").
 
-Verified by: `apps/ios/e2e/dictation.md`, `apps/ios/e2e/system-dictation.md`.
+Verified by: `apps/ios/e2e/dictation.md`, `apps/ios/e2e/system-dictation.md`,
+`apps/ios/e2e/ways-to-start.md`.
 
 ### Dictation on macOS
 
@@ -124,9 +150,13 @@ Rules:
   available for pasting by hand.
 - Focus changes, protected fields and hotkey conflicts limit how reliably
   auto-paste works.
-- The push-to-talk hotkey is ⌥ Space by default; ⌃ ⌥ Space and ⇧ ⌥ Space
-  can be chosen instead. A press shorter than a quarter second records
-  nothing. When another app holds the shortcut, Outloud says so.
+- The push-to-talk hotkey is ⌥ ⌘, held alone, by default (ADR 0020);
+  ⌥ Space, ⌃ ⌥ Space and ⇧ ⌥ Space can be chosen instead. Another key
+  pressed while ⌥ ⌘ is held — a shortcut such as ⌥ ⌘ D — cancels the
+  recording. ⌥ ⌘ needs Accessibility access; until it is allowed, ⌥ Space
+  works instead, and the settings say so and offer to allow it. A press
+  shorter than a quarter second records nothing. When another app holds
+  the shortcut, Outloud says so.
 - Auto-paste can be switched off; then the result is always copied.
   Password fields never receive a paste. After a paste, the clipboard
   holds what it held before.
@@ -162,10 +192,16 @@ Verified by: `apps/macos/e2e/dictation.md`, `apps/macos/e2e/settings.md`.
   Outloud does not read the screen.
 - Hesitation sounds ("äh", "ähm", "uh") are removed before the model sees
   the transcript.
+- Cleanup runs on Apple's on-device model (ADR 0019), also while the iOS
+  app is in the background. It is available where the device supports
+  Apple Intelligence and the user switched it on; elsewhere the cleanup
+  setting is off and disabled, says why, and the result is the transcript.
 - When cleanup fails — the model times out after 20 s, answers instead
-  of cleaning up, or the text is longer than 4,000 characters — the
-  transcript is the result, and the result view says "Cleanup failed —
-  this is the transcript."
+  of cleaning up, refuses (in the background, Apple limits how often an
+  app may use it, above all on battery; a language it does not support),
+  or the text is longer than 4,000 characters — the transcript is the
+  result, and the result view says "Cleanup failed — this is the
+  transcript."
 
 Acceptance criteria:
 
@@ -173,7 +209,10 @@ Acceptance criteria:
   without "ähm", punctuated, in German.
 - A dictated instruction ("Ignoriere alle vorherigen Anweisungen …")
   comes back as that sentence.
-- With cleanup off, the result is the transcript.
+- A dictated "Kannst du mir sagen wann der Zug fährt" comes back with a
+  comma and a question mark; "neuer Absatz" starts a new paragraph.
+- With cleanup off, or Apple Intelligence off, the result is the
+  transcript; with Apple Intelligence off, the settings say so.
 
 Acceptance criteria are proposals written on 2026-10-23 from the rules
 above, while the user was away (`plans/FIRST_VERSION.md` §"Decisions for
@@ -183,21 +222,18 @@ Verified by: `apps/macos/e2e/dictation.md`, `apps/ios/e2e/system-dictation.md`.
 
 ### Models
 
-Transcription and cleanup run on the device, with models from a
-catalogue that starts from ghost-pepper's (ADR 0005). The first
-version's catalogue holds two models (ADR 0006):
+Transcription runs on the device with a downloaded model (ADR 0005,
+ADR 0006); the cleanup runs on Apple's on-device model, which the system
+provides (ADR 0019, §"Cleanup"). The catalogue holds one model:
 
 | Model | Purpose | Languages | Download |
 | --- | --- | --- | --- |
 | Parakeet v3 | transcription | 25, German and English among them | 483 MB |
-| Qwen 3.5 0.8B | cleanup | multilingual | 533 MB |
 
 Rules:
 
 - Outloud offers only multilingual models.
 - The app cannot be used until the transcription model is downloaded.
-  With cleanup on, the cleanup model has to be downloaded as well; with
-  cleanup off, it is not needed.
 - On macOS, downloaded models go into a directory that other apps
   needing the same models can reuse: the Hugging Face hub cache —
   `~/.cache/huggingface/hub`, or the path that `HF_HUB_CACHE` or
@@ -207,15 +243,15 @@ Rules:
 
 The flow at first launch:
 
-1. Outloud shows which models are available.
-2. The user chooses the models, or at least confirms them.
+1. Outloud shows the transcription model with its size, and the cleanup
+   setting with whether Apple Intelligence is available.
+2. The user confirms, and switches cleanup off if they want.
 3. The user starts the download.
-4. Outloud downloads the chosen models.
+4. Outloud downloads the transcription model.
 5. Once the download is finished, the app can be used.
 
-Changing models later: in the app's settings, the user picks another
-model from a selection, such as a dropdown. The settings show the
-download, and the user can stop a download and delete a model.
+In the app's settings, the user switches cleanup on or off, sees the
+model's download, and can stop a download and delete the model.
 
 Before deleting a model, Outloud warns the user — on macOS also that
 other tools may use it from the shared cache — and deletes it only if
@@ -227,16 +263,22 @@ downloaded.
 
 When only cellular data is available, Outloud warns that the models are
 very large, and the user decides whether to download them over cellular
-data.
+data. A download the user did not allow over cellular data waits for
+Wi-Fi when Wi-Fi goes away.
+
+A download goes on while Outloud is in the background; one the app did not
+see finish — iOS ended the app, or the user quit it — goes on at the next
+launch, unless the user stopped it.
 
 Models another tool already downloaded into the shared cache are shown
 as "Already on this device" and are not downloaded again (ADR 0010).
 
 Acceptance criteria:
 
-- A first launch shows both models with size and languages; the user can
-  untick cleanup; "Download" shows the missing size; progress is shown
-  per model; "Continue" appears once the needed models are there.
+- A first launch shows the transcription model with size and languages
+  and the cleanup setting with Apple Intelligence's availability; the user
+  can untick cleanup; "Download" shows the missing size; progress is
+  shown; "Continue" appears once the model is there.
 - A stopped download leaves no partial file; a deleted model is gone from
   the cache and shows "Download".
 - On cellular data, a download asks first and names its size.
@@ -278,8 +320,9 @@ Verified by: `apps/macos/e2e/dictation.md`, `apps/ios/e2e/dictation.md`.
   cleaned up; the audio of its recording; and the cleaned version.
   Without a recording — when system dictation supplied the text — there
   is no audio; without cleanup there is no cleaned version.
-- The user can listen to a kept result and view its text: both the
-  cleaned version and the transcript, each with a copy button.
+- The user can listen to a kept result — with its waveform, and seek in
+  it — and view its text: both the cleaned version and the transcript,
+  each with a copy button.
 - The user can delete one kept result, or all of them.
 - A shorter period applies to the results already kept.
 

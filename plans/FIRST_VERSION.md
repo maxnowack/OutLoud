@@ -2,16 +2,27 @@
 
 ## Status
 
-In progress (2026-10-23). Phases 0 to 5 are built; phase 6 waits on the
-user (§"Decisions for the user"). Built on 2026-10-22/23 while the user
+In progress (2026-10-23). Phases 0 to 5 are built; phase 6 is prepared
+and waits on credentials only the user can create (§"Decisions for the
+user", 1).
+
+Addendum 2026-10-23, after the user's answers: team "Max Nowack"
+(95ZC649QPM) signs both apps; Debug builds of the macOS app are signed
+with Apple Development; Sparkle 2.10.0 and `apps/macos/scripts/release`
+prepare the notarised GitHub download (ADR 0016, `docs/RELEASE.md`);
+Qwen 3.5 4B is offered as a second cleanup model (ADR 0015); the iOS
+simulator is skipped in favour of the user's iPhone. The first signed device build with the increased memory limit passed and
+the app was installed and launched on the user's iPhone 15 Pro. The
+plans in `apps/ios/e2e/` are the user's to run on it. Built on 2026-10-22/23 while the user
 was asleep, as they asked: "build the macOS and iOS apps to the end;
 decide yourself or collect the decisions". Committed on 2026-10-23 at the
 user's request, one commit per unit plus one for the documents.
 
 - **Phase 0** — ADRs 0001, 0011, 0012, the maps and Swift conventions in
-  `AGENTS.md`, the area files, the scaffold. The bundle identifier is
-  `io.github.maxnowack.outloud` on both platforms, after the GitHub
-  account the macOS app is downloaded from.
+  `AGENTS.md`, the area files, the scaffold. The bundle identifier was
+  `io.github.maxnowack.outloud`; on 2026-10-23 the user changed it to
+  `dev.nowack.outloud` on both platforms (the widget extension:
+  `dev.nowack.outloud.widgets`).
 - **Phase 1** — see below; the model foundations hold.
 - **Phase 2** — `OutloudKit`: catalogue with pinned hashes, `ModelStore`
   (hub layout, locks, progress, stop, space check, hash checks, delete
@@ -22,8 +33,9 @@ user's request, one commit per unit plus one for the documents.
   the CLI (ADR 0013). 40 tests pass, also with the Mac locked (the history
   first used complete file protection, which fails while locked). A real download of Parakeet v3
   (483 MB) from Hugging Face took 50 s and passed the hash checks.
-- **Phase 3** — `docs/DESIGN.md` and the `OutloudUI` components; not yet
-  approved by the user.
+- **Phase 3** — `docs/DESIGN.md` and the `OutloudUI` components; approved
+  by the user on 2026-10-23 after a preview canvas
+  (https://claude.ai/artifact/NMtJBPyvCvZiPqjUsfqKqT).
 - **Phase 4** — the macOS app: menu bar panel, ⌥ Space push-to-talk
   (Carbon hot key), non-activating overlay, auto-paste with clipboard
   save/restore and the fallback, setup window, settings, history window,
@@ -194,24 +206,31 @@ written.
 Made on 2026-10-22/23 without the user, as they asked; each can be
 reversed. The first three block parts of the plan.
 
-1. **Signing and distribution of the macOS app** (phase 6, blocking): a
-   Developer ID certificate and notarisation, so that Gatekeeper opens
-   the GitHub download without a warning, and how updates arrive
-   (ghost-pepper uses Sparkle). Needs the user's Apple Developer account.
-2. **iOS 27 Simulator runtime** (blocking the iOS plans here): about 8 GB
-   via `xcodebuild -downloadPlatform iOS`; not downloaded without the
-   user's consent. Alternatively, a real iPhone with a development team
-   in `apps/ios/project.yml`.
-3. **Approve `docs/DESIGN.md`** (phase 3 DoD): teal accent `#1F7A70`,
-   system typography, native controls.
-4. **Cleanup model size.** Qwen 3.5 0.8B stays (ADR 0006); 4B handled
-   both samples correctly, including self-corrections, at about 4 s per
-   cleanup and 2.7 GB (§"Status"). Offer 4B as an optional second
-   cleanup model?
+1. **Release credentials** (phase 6, blocking): a Developer ID
+   Application certificate, a notarytool profile and Sparkle's key pair
+   (`docs/RELEASE.md` §"Release procedure"). Decided: team 95ZC649QPM,
+   Sparkle (ADR 0016).
+2. **iPhone** — done 2026-10-23: the app runs on the user's iPhone 15
+   Pro; the e2e plans on it are the user's. Decided: no iOS 27 simulator.
+3. **`docs/DESIGN.md`** — approved 2026-10-23.
+4. **Cleanup model size** — decided 2026-10-23: 0.8B stays the default,
+   4B is offered too (ADR 0015). *Addendum 2026-10-23:* superseded — the
+   cleanup runs on Apple's on-device model and Qwen is removed (ADR 0019,
+   `plans/APPLE_CLEANUP.md`).
 5. **Default hotkey ⌥ Space**, with ⌃ ⌥ Space and ⇧ ⌥ Space to choose.
    A modifier alone (e.g. holding Fn or right ⌥, as ghost-pepper does with
    Control) would need an event tap and the Accessibility permission,
    which the app has to work without.
+   *Addendum 2026-10-23:* the user wants ⌥ ⌘ pressed together, alone,
+   as the hotkey — as ghost-pepper does it. Built as the default, with
+   ⌥ Space while Accessibility access is missing (ADR 0020,
+   `plans/OPTION_COMMAND_HOTKEY.md`); the text below is the earlier note. It needs a
+   modifier-only trigger (a `flagsChanged` monitor or an event tap)
+   instead of the Carbon hotkey, and with it the Accessibility
+   permission for recording itself; auto-paste asks for that permission
+   already, so the cost is that dictation without auto-paste no longer
+   works without it. Open: whether ⌥ Space stays as the fallback while
+   the permission is missing.
 6. **Acceptance criteria** in `docs/SPEC.md` were written from the rules,
    as proposals.
 7. **History details**: viewing shows both texts (A-10); single results
@@ -234,6 +253,8 @@ reversed. The first three block parts of the plan.
     default): not built.
 14. **ghost-pepper ideas** not built: screen (OCR) context, a correction
     store, learning from edits after a paste, an editable prompt.
+15. **iOS distribution channel**: TestFlight or the App Store — not
+    discussed yet (`docs/RELEASE.md` §"iOS").
 
 ## Open questions
 

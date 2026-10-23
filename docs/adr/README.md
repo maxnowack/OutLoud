@@ -51,8 +51,8 @@ able to tell what was decided without opening the file.
 - [0002 – Outloud is a native Swift and SwiftUI app for iOS and macOS, with one shared Swift package and one module per platform](0002-native-swift-and-swiftui-with-one-shared-package.md)
 - [0003 – On iOS, a shortcut starts the input and the result reaches the target app through the clipboard; the first version ships no custom keyboard](0003-ios-hands-over-through-the-clipboard-without-a-keyboard.md)
 - [0004 – On macOS, Outloud is a menu bar app with a held push-to-talk hotkey that pastes into the active field when permitted and otherwise leaves the result on the clipboard](0004-macos-menu-bar-push-to-talk-with-auto-paste.md)
-- [0005 – Outloud transcribes and cleans up on the device, on iOS and macOS, with open models the user chooses and downloads at first launch](0005-on-device-models-chosen-at-first-launch.md) *(catalogue narrowed by 0006, shared storage settled by 0009)*
-- [0006 – The first version transcribes with Parakeet v3 and cleans up with a Qwen model of about 0.8B parameters](0006-parakeet-v3-and-a-small-qwen-model.md)
+- [0005 – Outloud transcribes and cleans up on the device, on iOS and macOS, with open models the user chooses and downloads at first launch](0005-on-device-models-chosen-at-first-launch.md) *(catalogue narrowed by 0006, shared storage settled by 0009, cleanup model dropped by 0019)*
+- [0006 – The first version transcribes with Parakeet v3 and cleans up with a Qwen model of about 0.8B parameters](0006-parakeet-v3-and-a-small-qwen-model.md) *(cleanup model superseded by 0019)*
 - [0007 – Outloud for macOS is built for the App Sandbox to go into the Mac App Store; its models stay in its own container where no shared location is open to it](0007-mac-app-store-and-models-in-the-sandbox.md) *(superseded by 0009)*
 - [0008 – Auto-paste outranks the Mac App Store: if App Review rejects it, Outloud for macOS is downloaded from GitHub instead](0008-auto-paste-outranks-the-mac-app-store.md) *(superseded by 0009)*
 - [0009 – Outloud for macOS is downloaded from GitHub and runs outside the App Sandbox; the Mac App Store is not pursued](0009-macos-github-download-outside-the-sandbox.md)
@@ -61,3 +61,9 @@ able to tell what was decided without opening the file.
 - [0012 – iOS 27 and macOS 27 are the oldest versions Outloud supports](0012-ios-27-and-macos-27-are-the-oldest-supported.md)
 - [0013 – OutloudKit also holds the audio capture, the shared interface components and a command-line tool](0013-outloudkit-holds-capture-interface-and-cli.md)
 - [0014 – Every model file is checked against the hash the catalogue pins, after the download and before it is loaded when it changed](0014-model-files-are-checked-against-pinned-hashes.md)
+- [0015 – The catalogue also offers Qwen 3.5 4B as a second, optional cleanup model](0015-qwen-4b-as-an-optional-cleanup-model.md) *(superseded by 0019)*
+- [0016 – The macOS app is signed with Developer ID of team 95ZC649QPM, notarised, and updated by Sparkle from GitHub releases](0016-macos-release-developer-id-notarised-sparkle.md)
+- [0017 – The iOS app ships a widget extension with a "Dictate" control, so that the Action Button, the Control Center and the Lock Screen start a dictation without the Shortcuts app](0017-ios-control-for-the-action-button.md)
+- [0018 – On iOS, a dictation that leaves the user in their app is a shortcut that records with "Record Audio", has Outloud transcribe the file in the background, and copies the text itself](0018-ios-dictation-in-any-app-through-a-shortcut-that-records.md) *(background cleanup superseded by 0019)*
+- [0019 – Outloud cleans up with Apple's on-device model (Foundation Models) on iOS and macOS; Qwen and llama.cpp are removed](0019-cleanup-runs-on-apples-on-device-model.md)
+- [0020 – On macOS, the default push-to-talk shortcut is ⌥ ⌘ held alone, watched with event monitors that need Accessibility access; ⌥ Space stands in until it is granted](0020-macos-push-to-talk-is-option-command-held-alone.md)

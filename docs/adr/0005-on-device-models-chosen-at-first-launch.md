@@ -1,6 +1,6 @@
 # 0005 – Outloud transcribes and cleans up on the device, on iOS and macOS, with open models the user chooses and downloads at first launch
 
-- Status: accepted; the first version's catalogue is narrowed by [0006](0006-parakeet-v3-and-a-small-qwen-model.md); the shared storage of models is settled by [0009](0009-macos-github-download-outside-the-sandbox.md)
+- Status: accepted; the first version's catalogue is narrowed by [0006](0006-parakeet-v3-and-a-small-qwen-model.md); the shared storage of models is settled by [0009](0009-macos-github-download-outside-the-sandbox.md); the cleanup model is no longer downloaded since [0019](0019-cleanup-runs-on-apples-on-device-model.md)
 - Date: 2026-10-22
 
 ## Context

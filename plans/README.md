@@ -12,6 +12,9 @@ change; the authoritative status description always lives in the plan's own
 | --- | --- | --- |
 | `TEMPLATE_ADOPTION.md` | Adopting the agents-template's structure and rules | In progress: tree copied, product decisions open |
 | `FIRST_VERSION.md` | Building the first version for macOS and iOS | In progress: phases 0–5 built, phase 6 and the user's checks open |
+| `BACKGROUND_DICTATION.md` | Dictating on iOS without bringing Outloud to the front; model downloads in the background | Phases 1–3 built (ADR 0018); the shortcut link open; background cleanup moved to `APPLE_CLEANUP.md` |
+| `APPLE_CLEANUP.md` | Cleaning up with Apple's on-device model instead of Qwen, on iOS and macOS | Built; checked in the Mac app; the run on the iPhone open |
+| `OPTION_COMMAND_HOTKEY.md` | Starting a dictation on macOS by holding ⌥ ⌘ alone | Built; the run with the user's keyboard open |
 
 ## Implemented (`plans/done/`)
 
