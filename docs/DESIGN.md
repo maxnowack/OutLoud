@@ -35,7 +35,8 @@ screen or a component is a defect.
 
 | Token | Light | Dark | Use |
 | --- | --- | --- | --- |
-| `accent` | `#1F7A70` | `#4CC2B2` | Primary buttons, selection, the idle icon |
+| `accent` | `#1F7A70` | `#4CC2B2` | Text, links, selection, the idle icon |
+| `accentFill` | `#1F7A70` | `#1F7A70` | Filled surfaces with white content: the record button, the play button, prominent buttons, numbered steps — the app icon's colour in both appearances |
 | `recording` | system red | system red | Recording icon, record button while recording |
 | `success` | system green | system green | Installed models, a copied result |
 | `warning` | system orange | system orange | Cleanup fell back to the transcript, cellular data |
@@ -46,7 +47,10 @@ screen or a component is a defect.
 
 Contrast pairs, computed with the WCAG formula: `#1F7A70` on white 5.1:1
 and white on `#1F7A70` 5.1:1 (light); `#4CC2B2` on black 9.7:1 and on
-`#1E1E1E` 7.7:1 (dark). All meet WCAG AA for text. System colours carry
+`#1E1E1E` 7.7:1 (dark). All meet WCAG AA for text. `accentFill` keeps white
+content at 5.1:1 in both appearances and stands at 4.1:1 against black,
+above the 3:1 that a control needs; `#4CC2B2` under white would give only
+about 2:1. System colours carry
 the platform's own contrast guarantees.
 
 ### Typography
@@ -70,12 +74,14 @@ System font, Dynamic Type everywhere; no fixed point sizes.
 `radiusSmall` 6, `radiusMedium` 10, `radiusLarge` 16 points. The record
 button is a circle of `recordButtonSize` 104 points, the play button one
 of `playButtonSize` 56; a waveform is `waveformHeight` 36 points high; the
-copied confirmation's check mark is `confirmationIconSize` 64 points.
+copied confirmation's check mark is `confirmationIconSize` 64 points. The cleanup's
+progress bar is `progressBarWidth` 64 points wide; the overlay's text wraps
+at `overlayTextWidth` 320 points.
 
 ### Elevation
 
-None in the windows. The macOS recording overlay floats on a regular
-material with `overlayShadow` (radius 12, 20 % black).
+None in the windows. The macOS recording overlay is a Liquid Glass capsule,
+which brings its own depth and shadow.
 
 ### Motion
 
@@ -89,7 +95,9 @@ state changes cross-fade.
 
 The dictation state as icon and label: idle (waveform, `accent`),
 recording (record circle, `recording`, pulsing), transcribing and
-cleaning (progress spinner, "Transcribing…", "Cleaning up…"), finished
+cleaning (progress spinner, "Transcribing…", "Cleaning up…" — while
+cleaning, with a progress bar of `progressBarWidth` in `accent` where the
+progress is known), finished
 (checkmark, `success`), failed (exclamation, `failure`). Reads `heading`,
 `motion`. Accessibility: one combined element, its label is the state's
 words; a state change is announced.
@@ -116,6 +124,19 @@ The result on `surface` with `radiusMedium`: the text, selectable, in
 cleanup fell back; a Copy button that turns into "Copied" with `success`
 for two seconds. Empty state: not shown. Accessibility: the text is read
 as is; the copy button has its own label.
+
+### DictationLiveActivity
+
+iOS: a dictation started from another app (ADR 0022), in the Dynamic Island
+and on the Lock Screen, one phase at a time: recording (red record circle,
+"Recording" and its running time, a Stop button), transcribing (waveform
+and spinner, "Transcribing…"), cleaning up (sparkles, "Cleaning up…" with a
+progress bar; a progress ring in the compact island), then copied (green
+check mark, "Copied", "Paste it anywhere."), saved (ended from its Stop
+button: "Saved in Outloud", not copied), nothing recognised or failed
+(warning sign and what to do), and gone after four seconds. Progress moves
+in steps of 5 %, since iOS limits how often an activity may change.
+Accessibility: the Stop button is "Stop dictation".
 
 ### DeliveryConfirmation
 
@@ -232,7 +253,10 @@ design canvas outside the repository on 2026-10-23.
 
 - **macOS menu bar panel** — StatusIndicator, ResultCard, FailureNotice,
   buttons for History, Settings and Quit.
-- **macOS recording overlay** — StatusIndicator, LevelMeter.
+- **macOS recording overlay** — a Liquid Glass capsule (`glassEffect`) as
+  wide as its content: StatusIndicator (with the cleanup's progress),
+  LevelMeter, or the delivery message, which wraps at `overlayTextWidth`;
+  centred at the bottom of the screen.
 - **macOS setup window** — ModelSetup, PrivacyNotice.
 - **macOS settings window** — General (cleanup with its
   CleanupAvailabilityNote; the shortcut, with a `warning` note and "Allow…"
@@ -241,16 +265,16 @@ design canvas outside the repository on 2026-10-23.
   Acknowledgements).
 - **macOS history window** — HistoryList, HistoryEntryDetail.
 - **iOS setup** — ModelSetup.
-- **iOS dictate tab** — a dismissible card pointing to the ways of
-  starting Outloud, StatusIndicator and LevelMeter in the middle,
-  DeliveryConfirmation or FailureNotice after a dictation, RecordButton
+- **iOS dictate tab** — a dismissible card pointing to dictating from any
+  app, with even margins around its icon, text and ×; StatusIndicator and
+  LevelMeter in the middle, DeliveryConfirmation or FailureNotice after a dictation, RecordButton
   and "Type text instead" (a sheet with a text field for system
   dictation) at the bottom.
-- **iOS ways to start Outloud** — a list of the ways (In any app — the
-  shortcut that records and leaves the user in their app, ADR 0018 —,
-  Action Button, Control Center, Lock Screen, Back Tap, Siri, Home
-  Screen), each with its steps, advantages and drawbacks, and a link to
-  the Shortcuts app.
+- **iOS dictate from any app** — a sheet in three parts: "1. Set up the
+  shortcut, once" with numbered steps and a link to the Shortcuts app; "2.
+  Choose how to run it" listing AssistiveTouch, Action Button, Back Tap,
+  Control Center and Siri, each opening its steps, advantages and
+  drawbacks; and "Or open Outloud and record" for the Dictate control.
 - **iOS history tab** — HistoryList, HistoryEntryDetail.
 - **iOS settings tab** — cleanup toggle with its CleanupAvailabilityNote,
   ModelRow of the transcription model, RetentionPicker, the

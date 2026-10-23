@@ -1,6 +1,6 @@
 # 0018 – On iOS, a dictation that leaves the user in their app is a shortcut that records with "Record Audio", has Outloud transcribe the file in the background, and copies the text itself
 
-- Status: accepted; its rule that Outloud does not clean up in the background is superseded by [0019](0019-cleanup-runs-on-apples-on-device-model.md)
+- Status: superseded by [0022](0022-ios-background-dictation-with-a-mixable-session-and-a-live-activity.md); its cleanup rule had been superseded by [0019](0019-cleanup-runs-on-apples-on-device-model.md)
 - Date: 2026-10-23
 
 ## Context

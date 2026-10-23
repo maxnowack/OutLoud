@@ -1,6 +1,6 @@
 # 0020 – On macOS, the default push-to-talk shortcut is ⌥ ⌘ held alone, watched with event monitors that need Accessibility access; ⌥ Space stands in until it is granted
 
-- Status: accepted
+- Status: accepted; its cancel rule refined by [0021](0021-option-command-cancels-on-modifiers-and-early-keys-only.md)
 - Date: 2026-10-23
 
 ## Context

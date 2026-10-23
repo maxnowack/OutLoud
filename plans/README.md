@@ -15,6 +15,7 @@ change; the authoritative status description always lives in the plan's own
 | `BACKGROUND_DICTATION.md` | Dictating on iOS without bringing Outloud to the front; model downloads in the background | Phases 1–3 built (ADR 0018); the shortcut link open; background cleanup moved to `APPLE_CLEANUP.md` |
 | `APPLE_CLEANUP.md` | Cleaning up with Apple's on-device model instead of Qwen, on iOS and macOS | Built; checked in the Mac app; the run on the iPhone open |
 | `OPTION_COMMAND_HOTKEY.md` | Starting a dictation on macOS by holding ⌥ ⌘ alone | Built; the run with the user's keyboard open |
+| `POLISH_AFTER_DEVICE_TESTS.md` | The ⌥ ⌘ rules, cleanup progress, the pill, the icon colour, a subtler shortcut | Built; the shortcut link open |
 
 ## Implemented (`plans/done/`)
 

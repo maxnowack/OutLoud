@@ -8,6 +8,16 @@ as a shortcut that records instead of a recording in the background
 cleanup of a dictation from another app moved to `plans/APPLE_CLEANUP.md`.
 The plan was confirmed by the user on 2026-10-23.
 
+*Addendum 2026-10-23, later:* a second spike found that the refusal of the
+microphone came from the exclusive session: with a session that mixes with
+other audio, an `AudioRecordingIntent` that is also a `LiveActivityIntent`
+started the recording from the background on the user's iPhone, a second
+run ended it, and the shortcut copied the returned text once its "Copy to
+Clipboard" took the intent's result (probe log 17:33–18:30 UTC). Built as
+"Start or Stop Dictation with Outloud" with a Live Activity that shows each
+phase (ADR 0022, superseding ADR 0018); the "Record Audio" path and
+"Transcribe Audio with Outloud" were removed.
+
 *Addendum 2026-10-23:* an independent review found, and this plan's
 changes now fix: a shortcut run during an in-app dictation took over its
 recording and left the microphone unusable (the controller now refuses

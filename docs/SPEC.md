@@ -73,11 +73,18 @@ The flow (ADR 0003):
 5. Outloud puts the result on the clipboard.
 6. The user pastes it into the target app.
 
-In any app, without Outloud coming to the front (ADR 0018): a shortcut the
-user sets up records with "Record Audio", hands the recording to
-"Transcribe Audio with Outloud", which transcribes and cleans it up in
-the background and returns the text, and copies it with "Copy to Clipboard". Back Tap, the
-Action Button in its Shortcut mode or Siri runs it.
+In any app, without Outloud coming to the front and with the screen in
+view (ADR 0022): the user's shortcut is "Start or Stop Dictation with
+Outloud" followed by "Copy to Clipboard", run from Back Tap, the Action
+Button in its Shortcut mode or Siri. The first run starts the recording,
+shown by a Live Activity in the Dynamic Island and on the Lock Screen; the
+next run ends it, Outloud transcribes and cleans up in the background and
+returns the text, and the shortcut copies it. The Live Activity shows each
+phase — recording with its time, transcribing, cleaning up with its
+progress, then "Copied" or what failed — and disappears a few seconds
+after. Its Stop button ends the recording too, but keeps the text in the
+history without copying it, unless Outloud is in front. A run while the
+last dictation is still processed starts nothing.
 
 Alternatively, system dictation supplies the transcript — through
 "Dictate Text" in the shortcut, or in Outloud's own text field. Steps 4
@@ -91,8 +98,11 @@ Rules:
 - The shortcut and control "Dictate with Outloud" open Outloud and start
   recording at once; the user ends the recording with the stop button.
   The control is offered by the Action Button, the Control Center and the
-  Lock Screen; the app explains these and the other ways — Back Tap, Siri,
-  the Home Screen — with their trade-offs (ADR 0017).
+  Lock Screen (ADR 0017).
+- The app's guide "Dictate from any app" starts with the shortcut, set up
+  once, and then lists the ways of running it — AssistiveTouch, the Action
+  Button, Back Tap, the Control Center, Siri — each with its steps and
+  trade-offs; last, the control that opens Outloud instead.
 - In the background, Outloud cleans up as in front (§"Cleanup"); when
   Apple's model refuses there, the text is the transcript.
 - After a dictation the app says that the text was copied; the text is
@@ -110,10 +120,11 @@ Acceptance criteria:
 
 - Pressing the Action Button set to the "Dictate" control opens Outloud
   recording; stopping puts the result on the clipboard and says so.
-- In another app, the shortcut of "Record Audio", "Transcribe Audio with
-  Outloud" and "Copy to Clipboard" puts the cleaned text on the clipboard
-  without Outloud coming to the front, and the dictation is kept in the
-  history.
+- In another app, the shortcut of "Start or Stop Dictation with Outloud"
+  and "Copy to Clipboard", run twice, records while the app stays in view
+  and puts the cleaned text on the clipboard; Outloud does not come to the
+  front; the Live Activity shows the recording, the processing and
+  "Copied"; the dictation is kept in the history.
 - The record button starts and ends a recording; it is disabled while the
   models are missing and while a result is being processed.
 - Text in Outloud's text field is cleaned up and copied with one tap; the
@@ -151,12 +162,13 @@ Rules:
 - Focus changes, protected fields and hotkey conflicts limit how reliably
   auto-paste works.
 - The push-to-talk hotkey is ⌥ ⌘, held alone, by default (ADR 0020);
-  ⌥ Space, ⌃ ⌥ Space and ⇧ ⌥ Space can be chosen instead. Another key
-  pressed while ⌥ ⌘ is held — a shortcut such as ⌥ ⌘ D — cancels the
-  recording. ⌥ ⌘ needs Accessibility access; until it is allowed, ⌥ Space
-  works instead, and the settings say so and offer to allow it. A press
-  shorter than a quarter second records nothing. When another app holds
-  the shortcut, Outloud says so.
+  ⌥ Space, ⌃ ⌥ Space and ⇧ ⌥ Space can be chosen instead. ⇧ or ⌃ joining
+  ⌥ ⌘ cancels the recording at any time; another key cancels it within
+  the first second — a shortcut such as ⌥ ⌘ D —, later it is typed as
+  usual and the recording goes on (ADR 0021). ⌥ ⌘ needs Accessibility
+  access; until it is allowed, ⌥ Space works instead, and the settings say
+  so and offer to allow it. A press shorter than a quarter second records
+  nothing. When another app holds the shortcut, Outloud says so.
 - Auto-paste can be switched off; then the result is always copied.
   Password fields never receive a paste. After a paste, the clipboard
   holds what it held before.
@@ -196,6 +208,10 @@ Verified by: `apps/macos/e2e/dictation.md`, `apps/macos/e2e/settings.md`.
   app is in the background. It is available where the device supports
   Apple Intelligence and the user switched it on; elsewhere the cleanup
   setting is off and disabled, says why, and the result is the transcript.
+- While the cleanup runs after a dictation in the app — the macOS hotkey,
+  the iOS record button —, a bar shows roughly how far it is, estimated
+  from the length of the answer so far; it stays short of full until the
+  answer is complete. Dictations through a shortcut show none.
 - When cleanup fails — the model times out after 20 s, answers instead
   of cleaning up, refuses (in the background, Apple limits how often an
   app may use it, above all on battery; a language it does not support),

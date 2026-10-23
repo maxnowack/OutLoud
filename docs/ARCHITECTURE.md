@@ -43,13 +43,17 @@ Owns the screens, the App Intents and the clipboard (ADR 0003): the
 widget extension `OutloudWidgets` offers it as a control to the Action
 Button, the Control Center and the Lock Screen (ADR 0017), and the intent
 is compiled into both targets from `apps/ios/Shared/`. Two intents run in
-the background, where iOS lets the app neither open the microphone nor
-write the clipboard (ADR 0018), and return their text for the shortcut to
-copy: "Transcribe Audio with Outloud" transcribes and cleans up an audio
-file — what "Record Audio" produced in a shortcut —, and "Clean Up Text
-with Outloud" cleans up text it is given. Apple's model may be used in the
-background, within a budget (ADR 0019). One `AppModel` serves the
-interface and the intents.
+the background, where iOS does not let the app write the clipboard
+(ADR 0018), and return their text for the shortcut to copy: "Start or Stop
+Dictation with Outloud" (`ToggleDictationIntent`, an `AudioRecordingIntent`
+and `LiveActivityIntent`) starts a recording with an audio session that
+mixes with other audio — iOS refuses an exclusive one in the background —
+and a Live Activity (`DictationLiveActivity` in the widget extension), and
+its next run ends it and returns the cleaned text (ADR 0022);
+`BackgroundDictation` runs it and keeps the activity in step with the
+dictation. "Clean Up Text with Outloud" cleans up text it is given. Apple's
+model may be used in the background, within a budget (ADR 0019). One
+`AppModel` serves the interface and the intents.
 
 ### macOS platform module (`apps/macos/`)
 
