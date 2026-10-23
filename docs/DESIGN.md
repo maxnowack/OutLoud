@@ -244,11 +244,14 @@ StatusIndicator.
 | --- | --- | --- | --- |
 | Background | the system's icon shape | `accent` light, `#1F7A70` | `#0E1C1A` |
 | `ring` | circle at (40, 50), radius 16, stroke 9 | white | `accent` dark, `#4CC2B2` |
-| `echo-near` | arc of radius 29 around the ring's centre, ±40°, stroke 5, round caps, 75 % opacity | white | `accent` dark |
-| `echo-far` | arc of radius 39, ±40°, stroke 5, round caps, 40 % opacity | white | `accent` dark |
+| `echo-near` | arc of radius 29 around the ring's centre, ±40°, 5 wide with round caps, 75 % opacity | white | `accent` dark |
+| `echo-far` | arc of radius 39, ±40°, 5 wide with round caps, 40 % opacity | white | `accent` dark |
 
 The layers are SVGs in the document's `Assets/`; change them there or in
-Icon Composer, never as exported PNGs. The rejected directions —
+Icon Composer, never as exported PNGs. An open shape is drawn as a closed,
+filled outline, never as a stroked open path: App Store Connect fills an
+open path as if it were closed, so a stroked arc showed a filled segment
+there (2026-10-23), while Xcode and Icon Composer drew it correctly. The rejected directions —
 waveform-to-text, a speech bubble, a microphone — were compared in a
 design canvas outside the repository on 2026-10-23.
 
