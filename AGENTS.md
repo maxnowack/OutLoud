@@ -52,7 +52,7 @@ that owns it. In a single-unit repository the area rules are the section
 | --- | --- |
 | `AGENTS.md` (this file) | Repository-wide: layout, documentation ownership, plan and ADR duties, how to work, commit and staging discipline |
 | `docs/ARCHITECTURE_PRINCIPLES.md` | The technology-independent architectural rules every area file specialises |
-| `OutloudKit/AGENTS.md` | The shared Swift package (ADR 0002, ADR 0011): model catalogue, downloads, transcription, cleanup, settings, history; SwiftPM and its tests |
+| `OutloudKit/AGENTS.md` | The shared Swift package (ADR 0002, ADR 0011, ADR 0013): model catalogue, downloads, transcription, cleanup, settings, history, audio capture, the design system's components, the `outloud` CLI; SwiftPM and its tests |
 | `apps/macos/AGENTS.md` | The macOS menu bar app: hotkey, recording, auto-paste; its XcodeGen project and end-to-end test plans |
 | `apps/ios/AGENTS.md` | The iOS app: App Intent, recording, clipboard; its XcodeGen project and end-to-end test plans |
 

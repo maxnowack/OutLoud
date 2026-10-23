@@ -11,7 +11,7 @@ change; the authoritative status description always lives in the plan's own
 | Plan | Topic | State |
 | --- | --- | --- |
 | `TEMPLATE_ADOPTION.md` | Adopting the agents-template's structure and rules | In progress: tree copied, product decisions open |
-| `FIRST_VERSION.md` | Building the first version for macOS and iOS | In progress: phase 0 |
+| `FIRST_VERSION.md` | Building the first version for macOS and iOS | In progress: phases 0–5 built, phase 6 and the user's checks open |
 
 ## Implemented (`plans/done/`)
 

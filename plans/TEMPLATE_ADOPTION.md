@@ -43,7 +43,7 @@ DoD: every row reads "done".
 | 5. Area rules | done: `OutloudKit/AGENTS.md`, `apps/macos/AGENTS.md`, `apps/ios/AGENTS.md` |
 | 6. Fill ARCHITECTURE, SPEC, RELEASE; the stack ADR before code | SPEC and ARCHITECTURE hold the concept, stack ADR 0002 done; RELEASE open |
 | 7. Close ADR 0001 (dossier) | done: no dossier; `DOSSIER.md` deleted |
-| 8. Decide the style; `e2e/README.md` per UI unit | open: both apps have a user interface; the style is not decided |
+| 8. Decide the style; `e2e/README.md` per UI unit | `docs/DESIGN.md` and both `e2e/README.md` written; the style waits on the user's approval |
 | 9. Wire the checks | `precommit` per unit done; no CI is set up |
 | 10. Delete what does not apply | dossier deleted; `docs/HORIZONTAL_SCALING.md` kept while it is open whether Outloud ever runs a service |
 

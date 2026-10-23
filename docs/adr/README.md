@@ -59,3 +59,5 @@ able to tell what was decided without opening the file.
 - [0010 – On macOS, Outloud stores its models in the Hugging Face hub cache, in the hub's own layout](0010-models-in-the-hugging-face-hub-cache-on-macos.md)
 - [0011 – The repository holds three units — the OutloudKit package, the macOS app and the iOS app — and XcodeGen generates the apps' Xcode projects](0011-monorepo-of-three-units-with-xcodegen.md)
 - [0012 – iOS 27 and macOS 27 are the oldest versions Outloud supports](0012-ios-27-and-macos-27-are-the-oldest-supported.md)
+- [0013 – OutloudKit also holds the audio capture, the shared interface components and a command-line tool](0013-outloudkit-holds-capture-interface-and-cli.md)
+- [0014 – Every model file is checked against the hash the catalogue pins, after the download and before it is loaded when it changed](0014-model-files-are-checked-against-pinned-hashes.md)
