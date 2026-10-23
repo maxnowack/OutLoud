@@ -17,8 +17,10 @@ this area — read them before making changes here.
 - **(MUST)** Build into `.build/DerivedData` (`-derivedDataPath`), as
   `./scripts/precommit` does. The shared DerivedData folder is used by
   the user's Xcode and by other sessions.
-- `precommit` builds for the generic iOS Simulator without signing; a
-  build for a device needs a development team, which is not set yet.
+- `precommit` builds for the generic iOS Simulator without signing. A
+  device build signs automatically with team 95ZC649QPM and needs
+  `-allowProvisioningUpdates` and the team's account signed in to Xcode
+  (`docs/RELEASE.md` §"iOS").
 
 ## Verifying a change
 
@@ -26,13 +28,18 @@ this area — read them before making changes here.
   installing on the user's device (`docs/VERIFICATION.md`).
 - **(MUST)** State that a simulator run proves behaviour, not memory or
   speed: whether the models fit an iPhone is only shown on a device
-  (ADR 0006). In the simulator, llama.cpp generates so slowly that cleanup
-  always times out; launch with `-cleanupEnabled NO` to check the screens.
+  (ADR 0006). The cleanup needs Apple Intelligence, which a simulator may
+  lack; launch with `-cleanupEnabled NO` to check the screens.
 - Debug builds take `-OutloudSampleAudio <wav> -OutloudAutoDictate YES` to
   dictate a file once at launch (the file must be inside the app's
-  container, e.g. its `tmp/`), and `-OutloudTab history|settings` to open
-  a tab first. Settings can be set for one launch as arguments, e.g.
-  `-hasCompletedSetup YES`. `xcrun simctl io booted screenshot` captures
+  container; a relative path is read from its `tmp/`), and
+  `-OutloudTab history|settings` to open a tab first. Settings can be set
+  for one launch as arguments, e.g. `-hasCompletedSetup YES`. On the
+  iPhone, `xcrun devicectl device copy to --domain-type appDataContainer
+  --domain-identifier dev.nowack.outloud --source <wav> --destination
+  tmp/<wav>` puts a file there, and `xcrun devicectl device process launch
+  --console dev.nowack.outloud -- <arguments>` runs the app, with the device
+  unlocked, and shows what it prints. `xcrun simctl io booted screenshot` captures
   the screen; the simulator shares its clipboard with the Mac, so read
   results from the history's `index.json`, not from the clipboard.
 
@@ -66,3 +73,8 @@ this area — read them before making changes here.
 ## Coding rules
 
 - SwiftUI; the models live in the app's own container (ADR 0009).
+- **(MUST NOT)** Use the microphone or the clipboard on a path an App Intent reaches while
+  the app is in the background. iOS refuses both there, the clipboard without an error
+  (ADR 0018). Return the text and let the shortcut copy it. Apple's on-device model may be
+  used there; a refusal (`CleanerError.refused`, e.g. `rateLimited`) falls back to the
+  transcript (ADR 0019).

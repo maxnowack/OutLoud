@@ -30,6 +30,16 @@
           }
         }
       }
+    },
+    "Transcribe audio with ${applicationName}": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio mit ${applicationName} transkribieren"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -7,32 +7,31 @@
 
 ## Preconditions
 
-Setup completed; microphone allowed (simulator: `xcrun simctl privacy booted grant microphone io.github.maxnowack.outloud`).
+Setup completed; microphone allowed (simulator: `xcrun simctl privacy booted grant microphone dev.nowack.outloud`).
 
 ## Steps
 
-1. On the Dictate tab, tap the record button ("Start dictation"). It turns red with a stop
-   square; the status reads "Recording…" with a level meter.
+1. On the Dictate tab, tap the record button at the bottom ("Start dictation"). It turns red
+   with a stop square; the status in the middle reads "Recording…" with a level meter.
 2. Say "Also ähm ich komme heute so gegen acht vorbei" and tap the button ("Stop dictation").
    The status reads "Transcribing…", then "Cleaning up…", then "Done".
-3. "Copied to the clipboard" and the result card appear. Switch to Notes and paste: the cleaned
-   text appears.
-4. Settings › Action Button › Shortcut › Outloud › "Dictate" (device). Press the Action Button
-   in another app: Outloud opens and records at once; stop it as in step 2.
-5. Shortcuts app › "Dictate with Outloud": same as step 4.
+3. A large check mark, "Copied" and a sentence on pasting appear; the text is not shown. Tap
+   "Show text": the result card with the cleaned text and "Copy" appears. Switch to Notes and
+   paste: the cleaned text appears.
+4. The Action Button and the other ways of starting: `ways-to-start.md`.
+5. Shortcuts app › "Dictate with Outloud": Outloud opens and records at once.
 6. Deny the microphone in Settings › Outloud and tap the record button: "Outloud may not use the
    microphone…" with "Open Settings", which opens Outloud's settings.
 7. Microphone-free check:
-   `xcrun simctl launch booted io.github.maxnowack.outloud -OutloudSampleAudio <container>/tmp/de.wav -OutloudAutoDictate YES -hasCompletedSetup YES`.
+   `xcrun simctl launch booted dev.nowack.outloud -OutloudSampleAudio <container>/tmp/de.wav -OutloudAutoDictate YES -hasCompletedSetup YES`.
    The result card shows the German sample's text; the history (`history.md`) has a new entry
    with audio.
 
 ## Assertions
 
 - The record button is disabled while transcribing or cleaning up.
-- In the simulator, cleanup times out (llama.cpp generates far too slowly there); the result is
-  then the transcript with "Cleanup failed — this is the transcript." Run the cleanup branch on a
-  device.
+- The simulator may lack Apple Intelligence; then the result is the transcript. Run the
+  cleanup branch on a device with Apple Intelligence on.
 - Do not assert the exact cleanup wording.
 
 ## Screen reader pass

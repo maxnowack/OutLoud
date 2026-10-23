@@ -1,0 +1,10 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Dictate" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Diktieren" } } } },
+    "Dictate with Outloud" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Mit Outloud diktieren" } } } },
+    "Opens Outloud and starts recording." : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Öffnet Outloud und startet die Aufnahme." } } } },
+    "Opens Outloud and starts recording. Tap Stop when you are done; the text is copied to the clipboard." : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Öffnet Outloud und startet die Aufnahme. Tippe auf Stopp, wenn du fertig bist; der Text wird in die Zwischenablage kopiert." } } } }
+  },
+  "version" : "1.0"
+}

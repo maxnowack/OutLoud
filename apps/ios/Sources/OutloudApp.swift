@@ -5,8 +5,13 @@ import SwiftUI
 /// The iOS app (ADR 0003).
 @main
 struct OutloudApp: App {
+    @UIApplicationDelegateAdaptor private var delegate: AppDelegate
     @State private var app = AppModel.shared
     @Environment(\.scenePhase) private var scenePhase
+
+    init() {
+        StartDictationIntent.start = { await AppModel.shared.startRecording() }
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -20,6 +25,23 @@ struct OutloudApp: App {
                         await app.history.refresh()
                     }
                 }
+        }
+    }
+}
+
+/// Receives what SwiftUI does not offer: the events of the background download session.
+final class AppDelegate: NSObject, UIApplicationDelegate {
+    private var finishBackgroundEvents: (() -> Void)?
+
+    func application(
+        _ application: UIApplication, handleEventsForBackgroundURLSession identifier: String,
+        completionHandler: @escaping () -> Void
+    ) {
+        // iOS may have started the app only for this; creating the model reconnects the session.
+        finishBackgroundEvents = completionHandler
+        AppModel.shared.fetcher.handleBackgroundEvents { [weak self] in
+            self?.finishBackgroundEvents?()
+            self?.finishBackgroundEvents = nil
         }
     }
 }
@@ -48,6 +70,10 @@ struct RootView: View {
             } else {
                 SetupScreen(app: app)
             }
+        }
+        // A recording started from the Action Button shows the dictate tab, wherever the app was.
+        .onChange(of: app.isRecording) { _, recording in
+            if recording { screen = .dictate }
         }
     }
 }

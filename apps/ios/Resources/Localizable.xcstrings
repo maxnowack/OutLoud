@@ -1,12 +1,92 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "%lld": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld"
+          }
+        }
+      }
+    },
+    "A button at the bottom of the Lock Screen": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Knopf unten auf dem Sperrbildschirm"
+          }
+        }
+      }
+    },
     "Acknowledgements": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Danksagungen"
+          }
+        }
+      }
+    },
+    "Action Button": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Action-Taste"
+          }
+        }
+      }
+    },
+    "An icon next to your apps": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Symbol neben deinen Apps"
+          }
+        }
+      }
+    },
+    "Back Tap": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auf Rückseite tippen"
+          }
+        }
+      }
+    },
+    "Can start by accident, e.g. when putting the iPhone down.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kann versehentlich auslösen, z. B. beim Ablegen des iPhones."
+          }
+        }
+      }
+    },
+    "Cancel": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abbrechen"
+          }
+        }
+      }
+    },
+    "Choose Double Tap and pick the shortcut Dictate with Outloud.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle „Doppeltippen“ und den Kurzbefehl „Mit Outloud diktieren“."
           }
         }
       }
@@ -67,6 +147,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Leeren"
+          }
+        }
+      }
+    },
+    "Control Center": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontrollzentrum"
           }
         }
       }
@@ -151,12 +241,82 @@
         }
       }
     },
+    "Dictate with the Action Button": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mit der Action-Taste diktieren"
+          }
+        }
+      }
+    },
+    "Done": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fertig"
+          }
+        }
+      }
+    },
     "Each result keeps the transcript, the recording and the cleaned version. A shorter period also applies to results already kept.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Zu jedem Ergebnis gehören das Transkript, die Aufnahme und die bereinigte Fassung. Ein kürzerer Zeitraum gilt auch für bereits behaltene Ergebnisse."
+          }
+        }
+      }
+    },
+    "Each way opens Outloud and starts recording at once.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeder Weg öffnet Outloud und startet sofort die Aufnahme."
+          }
+        }
+      }
+    },
+    "Easy to find and to explain to others.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leicht zu finden und anderen zu erklären."
+          }
+        }
+      }
+    },
+    "Good": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vorteile"
+          }
+        }
+      }
+    },
+    "Hands-free.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ohne Hände."
+          }
+        }
+      }
+    },
+    "Hide": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ausblenden"
           }
         }
       }
@@ -171,12 +331,112 @@
         }
       }
     },
+    "Home Screen": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Home-Bildschirm"
+          }
+        }
+      }
+    },
     "In Settings › Action Button, choose Shortcut › Outloud › Dictate. Pressing the button then opens Outloud and starts recording.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Wähle in Einstellungen › Action-Taste › Kurzbefehl › Outloud › Diktieren. Ein Druck auf die Taste öffnet dann Outloud und startet die Aufnahme."
+          }
+        }
+      }
+    },
+    "In the Shortcuts app, add Outloud's shortcut Dictate.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Füge in der Kurzbefehle-App den Outloud-Kurzbefehl „Diktieren“ hinzu."
+          }
+        }
+      }
+    },
+    "In use": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verwendet"
+          }
+        }
+      }
+    },
+    "Keep in mind": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nachteile"
+          }
+        }
+      }
+    },
+    "Lock Screen": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sperrbildschirm"
+          }
+        }
+      }
+    },
+    "No button needed; works on every iPhone.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kein Knopf nötig; funktioniert auf jedem iPhone."
+          }
+        }
+      }
+    },
+    "One press from anywhere, even with the iPhone locked.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Druck von überall, auch bei gesperrtem iPhone."
+          }
+        }
+      }
+    },
+    "One press, also on the Lock Screen": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Druck, auch auf dem Sperrbildschirm"
+          }
+        }
+      }
+    },
+    "Only from the Home Screen, with the iPhone unlocked.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur vom Home-Bildschirm, bei entsperrtem iPhone."
+          }
+        }
+      }
+    },
+    "Only on iPhones with an Action Button.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nur auf iPhones mit Action-Taste."
           }
         }
       }
@@ -191,12 +451,52 @@
         }
       }
     },
+    "Open Settings › Accessibility › Touch › Back Tap.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffne Einstellungen › Bedienungshilfen › Tippen › Auf Rückseite tippen."
+          }
+        }
+      }
+    },
+    "Open Settings › Action Button.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffne Einstellungen › Action-Taste."
+          }
+        }
+      }
+    },
+    "Open the Shortcuts app and find Outloud › Dictate.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffne die Kurzbefehle-App und suche Outloud › Diktieren."
+          }
+        }
+      }
+    },
     "Opens Outloud and starts recording. Tap Stop when you are done; the text is copied to the clipboard.": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Öffnet Outloud und startet die Aufnahme. Tippe auf Stopp, wenn du fertig bist; der Text wird in die Zwischenablage kopiert."
+          }
+        }
+      }
+    },
+    "Or from the Control Center, the Lock Screen, Siri …": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oder über Kontrollzentrum, Sperrbildschirm, Siri …"
           }
         }
       }
@@ -231,6 +531,26 @@
         }
       }
     },
+    "Ready before you unlock the iPhone.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bereit, bevor du das iPhone entsperrst."
+          }
+        }
+      }
+    },
+    "Remove the flashlight or the camera control at the bottom.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entferne unten die Taschenlampe oder die Kamera."
+          }
+        }
+      }
+    },
     "Removes filler words, fixes punctuation and sets paragraphs, then copies the text to the clipboard.": {
       "localizations": {
         "de": {
@@ -251,12 +571,142 @@
         }
       }
     },
+    "Replaces what the button does now, e.g. silent mode.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ersetzt die bisherige Funktion der Taste, z. B. den Stumm-Modus."
+          }
+        }
+      }
+    },
+    "Say “Dictate with Outloud”": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sag „Mit Outloud diktieren“"
+          }
+        }
+      }
+    },
+    "Say “Hey Siri, dictate with Outloud”.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sag „Hey Siri, mit Outloud diktieren“."
+          }
+        }
+      }
+    },
+    "Search for Outloud and choose Dictate.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Suche nach Outloud und wähle „Diktieren“."
+          }
+        }
+      }
+    },
+    "Set up": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einrichten"
+          }
+        }
+      }
+    },
     "Settings": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Einstellungen"
+          }
+        }
+      }
+    },
+    "Siri": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siri"
+          }
+        }
+      }
+    },
+    "Start Outloud": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outloud starten"
+          }
+        }
+      }
+    },
+    "Swipe down from the top right corner.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wische von oben rechts nach unten."
+          }
+        }
+      }
+    },
+    "Swipe down, tap": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach unten wischen, tippen"
+          }
+        }
+      }
+    },
+    "Swipe to Controls and tap Choose a Control.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wische zu „Steuerelemente“ und tippe auf „Steuerelement auswählen“."
+          }
+        }
+      }
+    },
+    "Takes the place of the flashlight or the camera.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nimmt den Platz von Taschenlampe oder Kamera ein."
+          }
+        }
+      }
+    },
+    "Tap the back of the iPhone twice": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zweimal auf die Rückseite tippen"
+          }
+        }
+      }
+    },
+    "Tap the plus and choose Outloud › Dictate.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippe auf das Plus und wähle Outloud › Diktieren."
           }
         }
       }
@@ -277,6 +727,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tippe zum Beenden. Der Text wird in die Zwischenablage kopiert."
+          }
+        }
+      }
+    },
+    "Tap, speak, tap again.\nThe text lands on the clipboard.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippen, sprechen, noch einmal tippen.\nDer Text landet in der Zwischenablage."
           }
         }
       }
@@ -321,6 +781,36 @@
         }
       }
     },
+    "Touch and hold an empty space, then tap Add a Control.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lege den Finger auf eine freie Stelle und tippe auf „Steuerelement hinzufügen“."
+          }
+        }
+      }
+    },
+    "Touch and hold it, then choose Add to Home Screen.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lege den Finger darauf und wähle „Zum Home-Bildschirm“."
+          }
+        }
+      }
+    },
+    "Touch and hold the Lock Screen, then tap Customize › Lock Screen.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lege den Finger auf den Sperrbildschirm und tippe auf Anpassen › Sperrbildschirm."
+          }
+        }
+      }
+    },
     "Transcription model": {
       "localizations": {
         "de": {
@@ -337,6 +827,286 @@
           "stringUnit": {
             "state": "translated",
             "value": "Transkripte, Aufnahmen und bereinigte Fassungen werden von diesem iPhone gelöscht."
+          }
+        }
+      }
+    },
+    "Two steps: swipe down, then tap.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zwei Schritte: nach unten wischen, dann tippen."
+          }
+        }
+      }
+    },
+    "Type or dictate": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippen oder diktieren"
+          }
+        }
+      }
+    },
+    "Type text instead": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stattdessen Text eingeben"
+          }
+        }
+      }
+    },
+    "Ways to start Outloud": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wege, Outloud zu starten"
+          }
+        }
+      }
+    },
+    "Works on every iPhone, in every app.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Funktioniert auf jedem iPhone, in jeder App."
+          }
+        }
+      }
+    },
+    "You speak out loud before dictating; Siri must be on.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du sprichst vor dem Diktat laut; Siri muss eingeschaltet sein."
+          }
+        }
+      }
+    },
+    "A shortcut that records and lets Outloud transcribe leaves you in your app. The other ways open Outloud and start recording at once.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ein Kurzbefehl, der aufnimmt und Outloud transkribieren lässt, lässt dich in deiner App. Die anderen Wege öffnen Outloud und starten sofort die Aufnahme."
+          }
+        }
+      }
+    },
+    "Add Transcribe Audio with Outloud, then Copy to Clipboard.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Füge „Audio mit Outloud transkribieren“ hinzu, danach „In Zwischenablage kopieren“."
+          }
+        }
+      }
+    },
+    "Audio": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio"
+          }
+        }
+      }
+    },
+    "Choose Double Tap and pick that shortcut.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle „Doppeltippen“ und diesen Kurzbefehl."
+          }
+        }
+      }
+    },
+    "In any app": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In jeder App"
+          }
+        }
+      }
+    },
+    "In the Shortcuts app, create a shortcut and add Record Audio. Set it to start immediately and to finish on tap.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erstelle in der Kurzbefehle-App einen Kurzbefehl mit „Audio aufnehmen“. Stelle ein, dass die Aufnahme sofort beginnt und beim Tippen endet."
+          }
+        }
+      }
+    },
+    "No button needed; works on every iPhone and leaves you in your app.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Taste nötig; geht auf jedem iPhone und lässt dich in deiner App."
+          }
+        }
+      }
+    },
+    "Nothing was recognised in the recording.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In der Aufnahme wurde nichts erkannt."
+          }
+        }
+      }
+    },
+    "Record, transcribe, copy — Outloud stays closed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aufnehmen, transkribieren, kopieren – Outloud bleibt zu"
+          }
+        }
+      }
+    },
+    "Run it with Back Tap, the Action Button (Shortcut) or Siri.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Starte ihn mit „Auf Rückseite tippen“, der Action-Taste (Kurzbefehl) oder Siri."
+          }
+        }
+      }
+    },
+    "Set up once in the Shortcuts app.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einmal in der Kurzbefehle-App einrichten."
+          }
+        }
+      }
+    },
+    "Set up the shortcut from In any app.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Richte den Kurzbefehl aus „In jeder App“ ein."
+          }
+        }
+      }
+    },
+    "The microphone is open only while you record.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das Mikrofon ist nur offen, während du aufnimmst."
+          }
+        }
+      }
+    },
+    "Transcribe Audio": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio transkribieren"
+          }
+        }
+      }
+    },
+    "Transcribe Audio with Outloud": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Audio mit Outloud transkribieren"
+          }
+        }
+      }
+    },
+    "You stay in the app you are writing in.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Du bleibst in der App, in der du schreibst."
+          }
+        }
+      }
+    },
+    "Cleaning up text needs Apple Intelligence, switched on.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zum Bereinigen von Text muss Apple Intelligence eingeschaltet sein."
+          }
+        }
+      }
+    },
+    "Removes filler words, fixes punctuation and sets paragraphs, and returns the text, e.g. for Copy to Clipboard.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entfernt Füllwörter, korrigiert die Zeichensetzung, setzt Absätze und gibt den Text zurück, z. B. für „In Zwischenablage kopieren“."
+          }
+        }
+      }
+    },
+    "Turns a recording into text on this iPhone and returns it, e.g. for Copy to Clipboard.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Macht aus einer Aufnahme auf diesem iPhone Text und gibt ihn zurück, z. B. für „In Zwischenablage kopieren“."
+          }
+        }
+      }
+    },
+    "Cleanup is switched off in Outloud's settings.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Bereinigung ist in den Einstellungen von Outloud ausgeschaltet."
+          }
+        }
+      }
+    },
+    "Outloud could not clean up this text. Please try again.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outloud konnte diesen Text nicht bereinigen. Bitte versuche es noch einmal."
+          }
+        }
+      }
+    },
+    "Outloud is busy with another dictation. Please try again.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outloud ist gerade mit einem anderen Diktat beschäftigt. Bitte versuche es noch einmal."
           }
         }
       }

@@ -7,25 +7,14 @@ struct SetupScreen: View {
     let app: AppModel
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: Tokens.Spacing.xl) {
+        GeometryReader { geometry in
+            ScrollView {
                 ModelSetup(library: app.library, settings: app.settings, network: app.network) {
                     Task { await app.dictation.preloadModels() }
                 }
-                Divider()
-                PrivacyNotice(period: app.settings.retentionPeriod)
-                Divider()
-                VStack(alignment: .leading, spacing: Tokens.Spacing.s) {
-                    Text("The Action Button").font(Tokens.heading)
-                    Text(
-                        "In Settings › Action Button, choose Shortcut › Outloud › Dictate. Pressing the button then opens Outloud and starts recording."
-                    )
-                    .font(Tokens.detail)
-                    .foregroundStyle(Tokens.textSecondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                }
+                .padding(Tokens.Spacing.l)
+                .frame(minHeight: geometry.size.height)
             }
-            .padding(Tokens.Spacing.l)
         }
         .task { await app.library.refresh() }
     }
@@ -60,23 +49,33 @@ struct HistoryScreen: View {
 struct SettingsScreen: View {
     let app: AppModel
     @State private var confirmingDelete = false
+    @State private var showingGuide = false
+
+    @State private var cleanup = CleanupAvailability.current
 
     var body: some View {
         NavigationStack {
             Form {
                 Section {
-                    Toggle("Clean up the transcript", isOn: Bindable(app.settings).cleanupEnabled)
-                } footer: {
-                    Text(
-                        "Removes filler words, fixes punctuation and sets paragraphs, without changing what you said."
+                    Toggle(
+                        "Clean up the transcript",
+                        isOn: Binding(
+                            get: { app.settings.cleanupEnabled && cleanup == .available },
+                            set: { app.settings.cleanupEnabled = $0 })
                     )
+                    .disabled(cleanup != .available)
+                } footer: {
+                    VStack(alignment: .leading, spacing: Tokens.Spacing.s) {
+                        Text(
+                            "Removes filler words, fixes punctuation and sets paragraphs, without changing what you said."
+                        )
+                        CleanupAvailabilityNote(availability: cleanup)
+                    }
                 }
 
-                ForEach(ModelPurpose.allCases, id: \.self) { purpose in
-                    Section(purpose == .transcription ? "Transcription model" : "Cleanup model") {
-                        ForEach(ModelCatalog.models(for: purpose)) { model in
-                            ModelRow(model: model, library: app.library, network: app.network)
-                        }
+                Section("Transcription model") {
+                    ForEach(ModelCatalog.all) { model in
+                        ModelRow(model: model, library: app.library, network: app.network)
                     }
                 }
 
@@ -93,6 +92,7 @@ struct SettingsScreen: View {
                 }
 
                 Section {
+                    Button("Ways to start Outloud") { showingGuide = true }
                     NavigationLink("Privacy") {
                         ScrollView {
                             PrivacyNotice(period: app.settings.retentionPeriod).padding(
@@ -107,6 +107,7 @@ struct SettingsScreen: View {
                 }
             }
             .navigationTitle("Settings")
+            .trackingCleanupAvailability($cleanup)
             .onChange(of: app.settings.retentionPeriod) { Task { await app.history.refresh() } }
             .confirmationDialog(
                 "Delete all results?", isPresented: $confirmingDelete, titleVisibility: .visible
@@ -116,6 +117,7 @@ struct SettingsScreen: View {
                 Text("Transcripts, recordings and cleaned versions are deleted from this iPhone.")
             }
             .task { await app.library.refresh() }
+            .sheet(isPresented: $showingGuide) { ShortcutGuide() }
         }
     }
 }
