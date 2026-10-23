@@ -49,10 +49,11 @@ targets:
         LSUIElement: true
         LSApplicationCategoryType: public.app-category.productivity
         NSMicrophoneUsageDescription: Outloud records your voice while you hold the shortcut, to turn it into text on this Mac.
-        # Sparkle reads the appcast from the latest GitHub release (ADR 0016). The public
-        # EdDSA key is added as SUPublicEDKey once generated (docs/RELEASE.md); until then the
-        # app does not start the updater.
+        # Sparkle reads the appcast from the latest GitHub release (ADR 0016) and accepts only
+        # updates signed with the private key of this public one, kept in the login keychain
+        # under the account "outloud" (docs/RELEASE.md).
         SUFeedURL: https://github.com/maxnowack/OutLoud/releases/latest/download/appcast.xml
+        SUPublicEDKey: U+WgmJSQ0p3ipnk3tCZD5MNpmuJPjHw1FfzvFhWpp9Y=
         SUEnableAutomaticChecks: true
     entitlements:
       path: Generated/Outloud.entitlements
@@ -69,9 +70,9 @@ targets:
         GENERATE_INFOPLIST_FILE: NO
       configs:
         # A stable signature keeps the microphone and Accessibility permissions across builds.
+        # The GitHub download is archived with it too; ./scripts/release signs the export with
+        # Developer ID — a certificate in the keychain or a cloud-managed one (docs/RELEASE.md).
         Debug:
           CODE_SIGN_IDENTITY: Apple Development
-        # The GitHub download: Developer ID, notarised (docs/RELEASE.md).
         Release:
-          CODE_SIGN_IDENTITY: Developer ID Application
-          OTHER_CODE_SIGN_FLAGS: --timestamp
+          CODE_SIGN_IDENTITY: Apple Development

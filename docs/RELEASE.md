@@ -32,18 +32,21 @@ stand in for a second reviewer.
 Once per Mac:
 
 1. In Xcode › Settings › Accounts › team "Max Nowack" › Manage
-   Certificates, add a **Developer ID Application** certificate.
-2. Store notarisation credentials:
+   Certificates, add a **Developer ID Application** certificate (the
+   Account Holder only). The export cannot use the cloud-managed one
+   with an API key: even an Admin key gets "Cloud signing permission
+   error" (2026-10-23).
+2. Notarisation: with the App Store Connect API key of §"iOS"
+   (`ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_KEYCHAIN_ITEM`), the release
+   script notarises with it. Without one, store a profile:
    `xcrun notarytool store-credentials outloud-notary --apple-id <Apple ID> --team-id 95ZC649QPM`
    (asks for an app-specific password from appleid.apple.com).
-3. Create Sparkle's key pair, after one build of the app (so that the
-   package is resolved):
-   `apps/macos/.build/DerivedData/SourcePackages/artifacts/sparkle/Sparkle/bin/generate_keys`.
-   It keeps the private key in the login keychain and prints the public
-   key; put that into `apps/macos/project.yml` as `SUPublicEDKey` under
-   `info.properties`. Back up the private key
-   (`generate_keys -x <file>`) somewhere safe: without it, no installed
-   app accepts another update.
+3. Sparkle's key pair: Outloud's own, in the login keychain under the
+   account `outloud`, created on 2026-10-23 with
+   `apps/macos/.build/DerivedData/SourcePackages/artifacts/sparkle/Sparkle/bin/generate_keys --account outloud`;
+   its public key is `SUPublicEDKey` in `apps/macos/project.yml`. Back up
+   the private key (`generate_keys --account outloud -x <file>`)
+   somewhere safe: without it, no installed app accepts another update.
 
 Each release:
 

@@ -2,13 +2,22 @@
 # Builds the GitHub download of the macOS app: archive, Developer ID signature, notarisation,
 # stapling, the Sparkle-signed zip and the appcast (docs/RELEASE.md, ADR 0016).
 #
-# Needs, once per Mac: a "Developer ID Application" certificate of team 95ZC649QPM in the
-# keychain, a notarytool profile named "outloud-notary", and Sparkle's EdDSA key in the
-# keychain (docs/RELEASE.md §"Release procedure"). Uploading is left to the person releasing.
+# Signs with automatic signing of team 95ZC649QPM and notarises: with an App Store Connect API key
+# when ASC_KEY_ID and ASC_ISSUER_ID are set — an Admin key may use the cloud-managed Developer ID
+# certificate, so none is needed in the keychain; the key is found by
+# ../shared/scripts/asc-key.sh —, otherwise with the account signed in to Xcode and the
+# notarytool profile "outloud-notary". The appcast is signed with Sparkle's EdDSA key in the
+# keychain, account "outloud". Uploading is left to the person releasing.
 set -eu
 cd "$(dirname "$0")/.."
 
 version=$(sed -n 's/^ *MARKETING_VERSION: *"\(.*\)"/\1/p' project.yml)
+. ../shared/scripts/asc-key.sh
+set --
+if [ -n "$key" ]; then
+    set -- -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+        -authenticationKeyPath "$key"
+fi
 out=.build/release
 rm -rf "$out"
 mkdir -p "$out/updates"
@@ -26,17 +35,24 @@ cat > "$out/ExportOptions.plist" <<EOF
 <dict>
   <key>method</key><string>developer-id</string>
   <key>teamID</key><string>95ZC649QPM</string>
-  <key>signingStyle</key><string>manual</string>
+  <key>signingStyle</key><string>automatic</string>
+  <key>signingCertificate</key><string>Developer ID Application</string>
 </dict>
 </plist>
 EOF
 xcodebuild -exportArchive -archivePath "$out/Outloud.xcarchive" \
-    -exportOptionsPlist "$out/ExportOptions.plist" -exportPath "$out/export" -quiet
+    -exportOptionsPlist "$out/ExportOptions.plist" -exportPath "$out/export" \
+    -allowProvisioningUpdates "$@" -quiet
 
 app="$out/export/Outloud.app"
 zip="$out/updates/Outloud-$version.zip"
 ditto -c -k --keepParent "$app" "$zip"
-xcrun notarytool submit "$zip" --keychain-profile outloud-notary --wait
+if [ -n "$key" ]; then
+    xcrun notarytool submit "$zip" --key "$key" --key-id "$ASC_KEY_ID" --issuer "$ASC_ISSUER_ID" \
+        --wait
+else
+    xcrun notarytool submit "$zip" --keychain-profile outloud-notary --wait
+fi
 xcrun stapler staple "$app"
 rm "$zip"
 ditto -c -k --keepParent "$app" "$zip"
@@ -44,7 +60,7 @@ ditto -c -k --keepParent "$app" "$zip"
 # Sparkle's tools come with its package; generate_appcast signs the zip with the EdDSA key
 # from the keychain and writes the appcast next to it.
 tools=$(find .build/DerivedData/SourcePackages/artifacts -type d -path '*Sparkle/bin' | head -1)
-"$tools/generate_appcast" \
+"$tools/generate_appcast" --account outloud \
     --download-url-prefix "https://github.com/maxnowack/OutLoud/releases/download/v$version/" \
     "$out/updates"
 
