@@ -7,3 +7,7 @@ swift package resolve
 xcrun swift-format lint --strict --recursive Package.swift Sources Tests
 swift build --jobs 4 -Xswiftc -warnings-as-errors
 swift test --jobs 4 -Xswiftc -warnings-as-errors
+# The libraries also build for iOS; the CLI is macOS only. LLM.swift ships a macro, which
+# -skipMacroValidation trusts without Xcode's interactive prompt.
+xcodebuild -scheme OutloudUI -destination 'generic/platform=iOS Simulator' \
+    -derivedDataPath .build/DerivedData-ios -jobs 4 -quiet -skipMacroValidation build

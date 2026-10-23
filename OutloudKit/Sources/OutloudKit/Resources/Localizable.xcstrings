@@ -1,0 +1,46 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "A downloaded file was damaged. Please try again.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eine geladene Datei war beschädigt. Bitte versuche es erneut."
+          }
+        }
+      }
+    },
+    "Not enough space: %@ needed, %@ free.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht genug Speicherplatz: %@ benötigt, %@ frei."
+          }
+        }
+      }
+    },
+    "The download failed (HTTP %lld).": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Download ist fehlgeschlagen (HTTP %lld)."
+          }
+        }
+      }
+    },
+    "There is no internet connection.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Es besteht keine Internetverbindung."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
