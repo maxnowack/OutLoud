@@ -30,6 +30,17 @@ describe this area — read them before making changes here.
 - **(MUST)** Quit every instance you launched when you are done, also
   after a failure. Two instances both register the hotkey, and a
   leftover one keeps the microphone permission in use.
+- Debug builds take `-OutloudSampleAudio <wav> -OutloudAutoDictate YES`
+  to dictate a file once at launch instead of the microphone, and
+  `-OutloudQuitAfterAutoDictate YES` to quit afterwards; the result lands
+  on the clipboard (`pbpaste`) and in the history. This runs the whole
+  pipeline without the microphone and Accessibility permissions, which an
+  agent cannot grant. It writes the user's clipboard and history, so save
+  and restore the clipboard and delete the test entries afterwards.
+- The first launch of a newly built app takes up to a minute before the
+  first dictation: CoreML and llama.cpp prepare the models for it. Later
+  launches load both models in about a second (`plans/FIRST_VERSION.md`
+  §"Status").
 
 ## Tests
 
@@ -44,12 +55,23 @@ describe this area — read them before making changes here.
   ships with the first plan (`docs/ARCHITECTURE_PRINCIPLES.md`
   §"End-to-end test plans").
 
+## Localisation
+
+- **(MUST)** Every user-visible string of the app gets its German
+  translation in `Resources/Localizable.xcstrings` (and
+  `InfoPlist.xcstrings` for `Info.plist` texts) in the same change set;
+  see `OutloudKit/AGENTS.md` §"Localisation" for finding the keys.
+
 ## Security
 
 - **(MUST)** Record only while the hotkey is held, and post keystrokes
-  only to paste a result after the hotkey was released (ADR 0004). The
-  app holds the microphone and Accessibility access outside a sandbox;
-  any other use of them acts in the user's name without their action.
+  only to paste a result after the hotkey was released, into an element
+  that takes text and is not a password field (ADR 0004). The app holds
+  the microphone and Accessibility access outside a sandbox; any other
+  use of them acts in the user's name without their action.
+- **(MUST)** On terminating, release the loaded models
+  (`Engines.unloadAll()`) before `QwenCleaner.shutDownBackend()`;
+  llama.cpp aborts the process at exit while a model holds Metal buffers.
 
 ## Coding rules
 

@@ -1,0 +1,24 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "NSMicrophoneUsageDescription": {
+      "comment": "Privacy - Microphone Usage Description",
+      "extractionState": "manual",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outloud nimmt deine Stimme auf, solange du das Kürzel hältst, um sie auf diesem Mac in Text umzuwandeln."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outloud records your voice while you hold the shortcut, to turn it into text on this Mac."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

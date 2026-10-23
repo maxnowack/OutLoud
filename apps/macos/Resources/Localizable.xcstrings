@@ -1,0 +1,406 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "%@ is used by another app. Choose another shortcut in Settings.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ wird von einer anderen App verwendet. Wähle in den Einstellungen ein anderes Kürzel."
+          }
+        }
+      }
+    },
+    "Accessibility access": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zugriff für Bedienungshilfen"
+          }
+        }
+      }
+    },
+    "Acknowledgements": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Danksagungen"
+          }
+        }
+      }
+    },
+    "Allow Accessibility…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bedienungshilfen erlauben …"
+          }
+        }
+      }
+    },
+    "Allowed": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erlaubt"
+          }
+        }
+      }
+    },
+    "Allow…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erlauben …"
+          }
+        }
+      }
+    },
+    "Clean up the transcript": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transkript bereinigen"
+          }
+        }
+      }
+    },
+    "Cleanup": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bereinigung"
+          }
+        }
+      }
+    },
+    "Copied — press ⌘V where you want the text.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopiert – drücke ⌘V dort, wo der Text hin soll."
+          }
+        }
+      }
+    },
+    "Copied — press ⌘V.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopiert – drücke ⌘V."
+          }
+        }
+      }
+    },
+    "Copied — press ⌘V. Allow Accessibility to paste automatically.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopiert – drücke ⌘V. Erlaube Bedienungshilfen, um automatisch einzufügen."
+          }
+        }
+      }
+    },
+    "Delete All": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle löschen"
+          }
+        }
+      }
+    },
+    "Delete All Results…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Ergebnisse löschen …"
+          }
+        }
+      }
+    },
+    "Delete all results?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Ergebnisse löschen?"
+          }
+        }
+      }
+    },
+    "Dictating": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diktieren"
+          }
+        }
+      }
+    },
+    "Each result keeps the transcript, the recording and the cleaned version. A shorter period also applies to results already kept.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zu jedem Ergebnis gehören das Transkript, die Aufnahme und die bereinigte Fassung. Ein kürzerer Zeitraum gilt auch für bereits behaltene Ergebnisse."
+          }
+        }
+      }
+    },
+    "General": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allgemein"
+          }
+        }
+      }
+    },
+    "History": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verlauf"
+          }
+        }
+      }
+    },
+    "History…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verlauf …"
+          }
+        }
+      }
+    },
+    "Hold %@ anywhere, speak, and release. Outloud asks for the microphone once. To paste into the active text field automatically, it also needs Accessibility access; without it, the result is copied to the clipboard.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halte überall %@ gedrückt, sprich und lass los. Outloud fragt einmal nach dem Mikrofon. Um automatisch ins aktive Textfeld einzufügen, braucht es außerdem Zugriff für Bedienungshilfen; ohne ihn landet das Ergebnis in der Zwischenablage."
+          }
+        }
+      }
+    },
+    "Hold %@ to dictate, release it to paste.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halte %@ zum Diktieren, lass los zum Einfügen."
+          }
+        }
+      }
+    },
+    "Hold the shortcut while you speak; Outloud transcribes when you release it.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Halte das Kürzel, während du sprichst; Outloud transkribiert, wenn du loslässt."
+          }
+        }
+      }
+    },
+    "Model": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modell"
+          }
+        }
+      }
+    },
+    "Models": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modelle"
+          }
+        }
+      }
+    },
+    "Outloud needs its models before you can dictate.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outloud braucht seine Modelle, bevor du diktieren kannst."
+          }
+        }
+      }
+    },
+    "Paste into the active text field": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ins aktive Textfeld einfügen"
+          }
+        }
+      }
+    },
+    "Pasted": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eingefügt"
+          }
+        }
+      }
+    },
+    "Privacy": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datenschutz"
+          }
+        }
+      }
+    },
+    "Push-to-talk shortcut": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Push-to-talk-Kürzel"
+          }
+        }
+      }
+    },
+    "Quit": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beenden"
+          }
+        }
+      }
+    },
+    "Removes filler words, fixes punctuation and sets paragraphs, without changing what you said.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entfernt Füllwörter, korrigiert die Zeichensetzung und setzt Absätze, ohne zu ändern, was du gesagt hast."
+          }
+        }
+      }
+    },
+    "Select a result": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle ein Ergebnis"
+          }
+        }
+      }
+    },
+    "Set Up Outloud": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outloud einrichten"
+          }
+        }
+      }
+    },
+    "Set Up Outloud…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outloud einrichten …"
+          }
+        }
+      }
+    },
+    "Settings…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einstellungen …"
+          }
+        }
+      }
+    },
+    "This shortcut is used by another app. Choose another one.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Kürzel wird von einer anderen App verwendet. Wähle ein anderes."
+          }
+        }
+      }
+    },
+    "To paste automatically, Outloud needs Accessibility access.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zum automatischen Einfügen braucht Outloud Zugriff für Bedienungshilfen."
+          }
+        }
+      }
+    },
+    "Transcription": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transkription"
+          }
+        }
+      }
+    },
+    "Transcripts, recordings and cleaned versions are deleted from this Mac.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transkripte, Aufnahmen und bereinigte Fassungen werden von diesem Mac gelöscht."
+          }
+        }
+      }
+    },
+    "Without it, or when no text field is focused, the result stays on the clipboard for pasting with ⌘V.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ohne ihn, oder wenn kein Textfeld ausgewählt ist, bleibt das Ergebnis zum Einfügen mit ⌘V in der Zwischenablage."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
