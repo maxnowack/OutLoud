@@ -13,17 +13,27 @@ public protocol Cleaning: Sendable {
 
 /// What one dictation produced.
 public struct DictationOutcome: Equatable, Sendable {
+    /// What the cleanup did with the transcript.
+    public enum Cleanup: Equatable, Sendable {
+        /// Cleanup was off or unavailable; the transcript is the result.
+        case off
+        case cleaned(String)
+        /// Cleanup ran but produced no usable text; the transcript is the result.
+        case failed
+    }
+
     /// The transcript as it came from transcription or system dictation.
     public let transcript: String
-    /// The cleaned version, when cleanup was on and succeeded.
-    public let cleaned: String?
-    /// Whether cleanup was on but did not produce a usable text, so the transcript is the result.
-    public let cleanupFailed: Bool
+    public let cleanup: Cleanup
 
-    public init(transcript: String, cleaned: String?, cleanupFailed: Bool = false) {
+    public init(transcript: String, cleanup: Cleanup = .off) {
         self.transcript = transcript
-        self.cleaned = cleaned
-        self.cleanupFailed = cleanupFailed
+        self.cleanup = cleanup
+    }
+
+    /// The cleaned version, when the cleanup succeeded.
+    public var cleaned: String? {
+        if case .cleaned(let text) = cleanup { text } else { nil }
     }
 
     /// The text Outloud hands over.
@@ -65,7 +75,7 @@ public struct DictationPipeline: Sendable {
     }
 
     private func cleanUp(_ transcript: String) async -> DictationOutcome {
-        guard let cleaner else { return DictationOutcome(transcript: transcript, cleaned: nil) }
+        guard let cleaner else { return DictationOutcome(transcript: transcript) }
         let start = ContinuousClock.now
         do {
             let prepared = HesitationFilter.apply(to: transcript)
@@ -75,19 +85,19 @@ public struct DictationPipeline: Sendable {
                 Self.log.notice(
                     "cleanup unusable after \(ContinuousClock.now - start, privacy: .public): \(cleaned.count) characters for \(transcript.count)"
                 )
-                return DictationOutcome(transcript: transcript, cleaned: nil, cleanupFailed: true)
+                return DictationOutcome(transcript: transcript, cleanup: .failed)
             }
             Self.log.info("cleanup done in \(ContinuousClock.now - start, privacy: .public)")
-            return DictationOutcome(transcript: transcript, cleaned: cleaned)
+            return DictationOutcome(transcript: transcript, cleanup: .cleaned(cleaned))
         } catch {
             Self.log.error(
                 "cleanup failed after \(ContinuousClock.now - start, privacy: .public): \(String(describing: error), privacy: .public)"
             )
-            return DictationOutcome(transcript: transcript, cleaned: nil, cleanupFailed: true)
+            return DictationOutcome(transcript: transcript, cleanup: .failed)
         }
     }
 
-    private static let log = Logger(subsystem: "io.github.maxnowack.outloud", category: "cleanup")
+    private static let log = Logger(subsystem: "dev.nowack.outloud", category: "cleanup")
 
     /// Cleanup only removes and punctuates. A result that is empty or much longer than the
     /// transcript means the model answered instead of cleaning up, and is not used.

@@ -1,5 +1,5 @@
 {
-  "originHash" : "dacb7ad8f1180674cc488156ae23bc7011bf2fb233bc4960798c155de6a143c5",
+  "originHash" : "0322729aeeb9d39719f2d3ec78f122ce5ebbcba55c7e273e5374cb3fb3bdb707",
   "pins" : [
     {
       "identity" : "fluidaudio",
@@ -11,20 +11,12 @@
       }
     },
     {
-      "identity" : "llm.swift",
+      "identity" : "sparkle",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/obra/LLM.swift.git",
+      "location" : "https://github.com/sparkle-project/Sparkle",
       "state" : {
-        "revision" : "c2144e1a0e29c280ec6080b7da85e876d51f8509"
-      }
-    },
-    {
-      "identity" : "swift-syntax",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-syntax.git",
-      "state" : {
-        "revision" : "4799286537280063c85a32f09884cfbca301b1a1",
-        "version" : "602.0.0"
+        "revision" : "eef1a539a373c1f1a320624b1130fc5de7b2e100",
+        "version" : "2.10.0"
       }
     }
   ],

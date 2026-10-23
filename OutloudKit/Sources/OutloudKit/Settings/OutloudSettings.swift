@@ -17,11 +17,10 @@ public final class OutloudSettings {
             ?? .default
         transcriptionModelID =
             defaults.string(forKey: Key.transcriptionModel) ?? ModelCatalog.parakeetV3.id
-        cleanupModelID = defaults.string(forKey: Key.cleanupModel) ?? ModelCatalog.qwen08B.id
         hasCompletedSetup = defaults.bool(forKey: Key.hasCompletedSetup)
     }
 
-    /// Whether the transcript is cleaned up; needs the cleanup model (`docs/SPEC.md` §"Models").
+    /// Whether the transcript is cleaned up; needs Apple's on-device model (ADR 0019).
     public var cleanupEnabled: Bool {
         didSet { defaults.set(cleanupEnabled, forKey: Key.cleanupEnabled) }
     }
@@ -35,10 +34,6 @@ public final class OutloudSettings {
         didSet { defaults.set(transcriptionModelID, forKey: Key.transcriptionModel) }
     }
 
-    public var cleanupModelID: String {
-        didSet { defaults.set(cleanupModelID, forKey: Key.cleanupModel) }
-    }
-
     /// Whether the user has confirmed the models at first launch.
     public var hasCompletedSetup: Bool {
         didSet { defaults.set(hasCompletedSetup, forKey: Key.hasCompletedSetup) }
@@ -48,15 +43,10 @@ public final class OutloudSettings {
         ModelCatalog.model(id: transcriptionModelID) ?? ModelCatalog.parakeetV3
     }
 
-    public var cleanupModel: ModelDescriptor {
-        ModelCatalog.model(id: cleanupModelID) ?? ModelCatalog.qwen08B
-    }
-
     private enum Key {
         static let cleanupEnabled = "cleanupEnabled"
         static let retentionPeriod = "retentionPeriod"
         static let transcriptionModel = "transcriptionModel"
-        static let cleanupModel = "cleanupModel"
         static let hasCompletedSetup = "hasCompletedSetup"
     }
 }

@@ -1,6 +1,5 @@
 import Foundation
 import Observation
-import os
 
 /// Why a dictation produced no result.
 public enum DictationFailure: Equatable, Sendable {
@@ -45,31 +44,38 @@ public final class DictationController {
     @ObservationIgnored private let history: HistoryStore
     @ObservationIgnored private let recorder = AudioRecorder()
     @ObservationIgnored private let now: () -> Date
+    @ObservationIgnored private let cleaner: @MainActor () -> (any Cleaning)?
     /// Called after a result was added to the history.
     @ObservationIgnored public var onHistoryChange: (() -> Void)?
 
     public init(
         settings: OutloudSettings, library: ModelLibrary, engines: Engines, history: HistoryStore,
-        now: @escaping () -> Date = Date.init
+        now: @escaping () -> Date = Date.init,
+        cleaner: @escaping @MainActor () -> (any Cleaning)? = DictationController.appleCleaner
     ) {
         self.settings = settings
         self.library = library
         self.engines = engines
         self.history = history
         self.now = now
+        self.cleaner = cleaner
     }
 
-    /// Whether the models the current settings need are installed.
+    /// Apple's on-device model where the system offers it; asked per dictation, since the user
+    /// can switch Apple Intelligence on or off at any time (ADR 0019).
+    public static func appleCleaner() -> (any Cleaning)? {
+        CleanupAvailability.current == .available ? AppleCleaner() : nil
+    }
+
+    /// Whether the transcription model is installed; the cleanup needs no download (ADR 0019).
     public var hasRequiredModels: Bool {
         library.state(of: settings.transcriptionModel).isInstalled
-            && (!settings.cleanupEnabled || library.state(of: settings.cleanupModel).isInstalled)
     }
 
-    /// Loads the models ahead of the first dictation.
+    /// Loads the transcription model ahead of the first dictation.
     public func preloadModels() async {
         guard hasRequiredModels else { return }
         await engines.preload(settings.transcriptionModel)
-        if settings.cleanupEnabled { await engines.preload(settings.cleanupModel) }
     }
 
     /// Starts a recording. Returns `false` and sets a failed state when it cannot start.
@@ -104,7 +110,7 @@ public final class DictationController {
         guard state == .recording else { return nil }
         let samples = recorder.stop()
         level = 0
-        return await process(samples: samples)
+        return await transcribe(samples)
     }
 
     /// Ends the recording and drops it.
@@ -115,9 +121,16 @@ public final class DictationController {
         state = .idle
     }
 
-    /// Transcribes and cleans up recorded samples, and keeps the result in the history.
+    /// Transcribes and cleans up samples recorded elsewhere — by a shortcut, say — and keeps the
+    /// result in the history. Returns `nil` without touching the state while a dictation is
+    /// running: it would take over the recording, whose microphone then stays open.
     @discardableResult
     public func process(samples: [Float]) async -> DictationOutcome? {
+        guard !state.isBusy else { return nil }
+        return await transcribe(samples)
+    }
+
+    private func transcribe(_ samples: [Float]) async -> DictationOutcome? {
         guard hasRequiredModels else {
             state = .failed(.modelsMissing)
             return nil
@@ -138,9 +151,11 @@ public final class DictationController {
         return await finish(transcript: transcript, audio: samples)
     }
 
-    /// Cleans up text that system dictation supplied, and keeps the result in the history.
+    /// Cleans up text that system dictation supplied, and keeps the result in the history. Returns
+    /// `nil` while a dictation is running, like `process(samples:)`.
     @discardableResult
     public func process(text: String) async -> DictationOutcome? {
+        guard !state.isBusy else { return nil }
         let transcript = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !transcript.isEmpty else {
             state = .failed(.nothingRecognised)
@@ -156,26 +171,13 @@ public final class DictationController {
     }
 
     private func finish(transcript: String, audio: [Float]?) async -> DictationOutcome {
-        var outcome = DictationOutcome(transcript: transcript, cleaned: nil)
-        if settings.cleanupEnabled, library.state(of: settings.cleanupModel).isInstalled {
+        var outcome = DictationOutcome(transcript: transcript)
+        if settings.cleanupEnabled, let cleaner = cleaner() {
             state = .cleaning
-            let cleaner: (any Cleaning)?
-            do {
-                cleaner = try await engines.cleaner(for: settings.cleanupModel)
-            } catch {
-                Self.log.error(
-                    "cleanup model failed to load: \(String(describing: error), privacy: .public)")
-                cleaner = nil
-            }
-            if let cleaner {
-                outcome =
-                    (try? await DictationPipeline(
-                        transcriber: Passthrough(text: transcript), cleaner: cleaner
-                    ).run(text: transcript)) ?? outcome
-            } else {
-                outcome = DictationOutcome(
-                    transcript: transcript, cleaned: nil, cleanupFailed: true)
-            }
+            outcome =
+                (try? await DictationPipeline(
+                    transcriber: Passthrough(text: transcript), cleaner: cleaner
+                ).run(text: transcript)) ?? outcome
         }
         do {
             let entry = try await history.add(
@@ -188,11 +190,6 @@ public final class DictationController {
         state = .finished(outcome)
         return outcome
     }
-}
-
-extension DictationController {
-    fileprivate static let log = Logger(
-        subsystem: "io.github.maxnowack.outloud", category: "dictation")
 }
 
 private struct Passthrough: Transcribing {

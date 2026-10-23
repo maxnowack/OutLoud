@@ -8,9 +8,11 @@ import Testing
 private struct FakeFetcher: FileFetching {
     var contents: [String: Data]
     var delay: Duration = .zero
+    var active: [URL] = []
 
     func fetch(
-        _ url: URL, to destination: URL, progress: @escaping @Sendable (Int64) -> Void
+        _ url: URL, to destination: URL, overCellular: Bool,
+        progress: @escaping @Sendable (Int64) -> Void
     ) async throws {
         if delay > .zero { try await Task.sleep(for: delay) }
         guard let data = contents[url.lastPathComponent] else {
@@ -19,6 +21,8 @@ private struct FakeFetcher: FileFetching {
         try data.write(to: destination)
         progress(Int64(data.count))
     }
+
+    func activeDownloads() async -> [URL] { active }
 }
 
 private func sha256(_ data: Data) -> String {
@@ -41,13 +45,13 @@ struct ModelStoreTests {
     init() throws {
         root = FileManager.default.temporaryDirectory.appending(path: "ModelStoreTests-\(UUID())")
         model = ModelDescriptor(
-            id: "test", purpose: .transcription, displayName: "Test", repository: "org/model",
+            id: "test", displayName: "Test", repository: "org/model",
             revision: "0123456789abcdef0123456789abcdef01234567",
             files: [
                 .lfs("Encoder.mlmodelc/weights/weight.bin", size: 4096, sha256: sha256(weights)),
                 .git("config.json", size: Int64(config.count), blob: gitBlob(config)),
             ],
-            runtime: .parakeet, languages: ["de", "en"], attribution: "")
+            languages: ["de", "en"], attribution: "")
     }
 
     private func store(
@@ -106,10 +110,13 @@ struct ModelStoreTests {
         ) {
             try await store(fetcher: tampered).download(model)
         }
+        // The other file, downloaded at the same time, may stay: its own hash matched.
         let blobs =
             (try? FileManager.default.contentsOfDirectory(
                 atPath: repository.appending(path: "blobs").path)) ?? []
-        #expect(blobs.isEmpty)
+        #expect(!blobs.contains(sha256(weights)))
+        #expect(blobs.allSatisfy { !$0.hasSuffix(".incomplete") })
+        #expect(await store(fetcher: tampered).isInstalled(model) == false)
     }
 
     @Test func refusesAFileChangedInTheCacheAfterTheDownload() async throws {
@@ -141,6 +148,24 @@ struct ModelStoreTests {
         let offline = FakeFetcher(contents: ["config.json": config])
         try await store(fetcher: offline).download(model)
         #expect(await store(fetcher: offline).isInstalled(model))
+    }
+
+    @Test func usesAPartialFileThatFinishedWhileTheAppWasNotRunning() async throws {
+        let blobs = repository.appending(path: "blobs")
+        try FileManager.default.createDirectory(at: blobs, withIntermediateDirectories: true)
+        try weights.write(to: blobs.appending(path: "\(sha256(weights)).incomplete"))
+        let offline = FakeFetcher(contents: ["config.json": config])
+        try await store(fetcher: offline).download(model)
+        #expect(await store(fetcher: offline).isInstalled(model))
+    }
+
+    @Test func listsTheModelsStillDownloadingFromAnEarlierRun() async throws {
+        let parakeet = ModelCatalog.parakeetV3
+        let cache = HubCache(root: root.appending(path: "hub"))
+        let fetcher = FakeFetcher(
+            contents: [:], active: [cache.downloadURL(parakeet.files[0], of: parakeet)])
+        #expect(await store(fetcher: fetcher).modelsBeingFetched() == [parakeet])
+        #expect(await store().modelsBeingFetched().isEmpty)
     }
 
     @Test func cancellingRemovesThePartialFile() async throws {

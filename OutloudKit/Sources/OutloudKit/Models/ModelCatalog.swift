@@ -1,11 +1,5 @@
 import Foundation
 
-/// What a model is for (`docs/SPEC.md` §"Models").
-public enum ModelPurpose: String, CaseIterable, Codable, Sendable {
-    case transcription
-    case cleanup
-}
-
 /// One file of a model repository on Hugging Face, pinned to its content.
 ///
 /// The hash is the file's etag on the hub and the name of its blob in the hub cache: the
@@ -35,25 +29,15 @@ public struct ModelFile: Hashable, Sendable {
     }
 }
 
-/// How a model is run.
-public enum ModelRuntime: Hashable, Sendable {
-    /// Parakeet v3 through FluidAudio, loaded from the snapshot folder.
-    case parakeet
-    /// A GGUF file through LLM.swift.
-    case gguf(file: String)
-}
-
 /// A model Outloud offers, pinned to one revision of one Hugging Face repository.
 public struct ModelDescriptor: Identifiable, Hashable, Sendable {
     public let id: String
-    public let purpose: ModelPurpose
     public let displayName: String
     /// The repository on Hugging Face, `organisation/name`.
     public let repository: String
     /// The commit the files are pinned to.
     public let revision: String
     public let files: [ModelFile]
-    public let runtime: ModelRuntime
     /// The languages the model handles; Outloud offers only multilingual models.
     public let languages: [String]
     /// The attribution the model's licence requires.
@@ -62,7 +46,8 @@ public struct ModelDescriptor: Identifiable, Hashable, Sendable {
     public var totalSize: Int64 { files.reduce(0) { $0 + $1.size } }
 }
 
-/// The models Outloud offers (ADR 0006).
+/// The models Outloud downloads: the transcription model (ADR 0006); the cleanup runs on Apple's
+/// on-device model, which needs no download (ADR 0019).
 ///
 /// File lists, sizes and hashes come from the hub's `paths-info` API at the pinned revision.
 /// The Parakeet files are the ones `AsrModels.loadLocal(from:version: .v3)` of FluidAudio 0.17.7
@@ -70,7 +55,6 @@ public struct ModelDescriptor: Identifiable, Hashable, Sendable {
 public enum ModelCatalog {
     public static let parakeetV3 = ModelDescriptor(
         id: "parakeet-tdt-0.6b-v3",
-        purpose: .transcription,
         displayName: "Parakeet v3",
         repository: "FluidInference/parakeet-tdt-0.6b-v3-coreml",
         revision: "7dd20fe6b1797d35f5e3307e8b1732d9a178edfe",
@@ -139,7 +123,6 @@ public enum ModelCatalog {
                 "parakeet_vocab.json", size: 151_122,
                 blob: "c684822ec3b671ebc449c433a7012398d39b8bb0"),
         ],
-        runtime: .parakeet,
         languages: [
             "bg", "cs", "da", "de", "el", "en", "es", "et", "fi", "fr", "hr", "hu", "it", "lt",
             "lv",
@@ -150,29 +133,8 @@ public enum ModelCatalog {
             + "Core ML conversion by FluidInference."
     )
 
-    public static let qwen08B = ModelDescriptor(
-        id: "qwen3.5-0.8b-q4_k_m",
-        purpose: .cleanup,
-        displayName: "Qwen 3.5 0.8B",
-        repository: "unsloth/Qwen3.5-0.8B-GGUF",
-        revision: "6ab461498e2023f6e3c1baea90a8f0fe38ab64d0",
-        files: [
-            .lfs(
-                "Qwen3.5-0.8B-Q4_K_M.gguf", size: 532_517_120,
-                sha256: "bd258782e35f7f458f8aced1adc053e6e92e89bc735ba3be89d38a06121dc517")
-        ],
-        runtime: .gguf(file: "Qwen3.5-0.8B-Q4_K_M.gguf"),
-        languages: ["multilingual"],
-        attribution:
-            "Qwen 3.5 0.8B by the Qwen team, Apache License 2.0; GGUF quantisation by Unsloth."
-    )
-
     /// Every model, in the order the selection shows them.
-    public static let all: [ModelDescriptor] = [parakeetV3, qwen08B]
-
-    public static func models(for purpose: ModelPurpose) -> [ModelDescriptor] {
-        all.filter { $0.purpose == purpose }
-    }
+    public static let all: [ModelDescriptor] = [parakeetV3]
 
     public static func model(id: String) -> ModelDescriptor? {
         all.first { $0.id == id }

@@ -20,14 +20,12 @@ this area — read them before making changes here.
   macOS 27 (ADR 0012). The apps link it as a local package.
 - `precommit` also builds `OutloudUI` for the iOS Simulator with
   `xcodebuild`, since `swift build` only builds for the Mac.
-- **(MUST)** Pass `-skipMacroValidation` to every `xcodebuild` that builds
-  the package. LLM.swift ships a macro, and without the flag Xcode refuses
-  to build until someone trusts it in its interface.
 - `swift run outloud models | download | delete <id> | dictate <file>`
   works on the shared cache — the same one the macOS app uses. `dictate`
-  takes `--no-cleanup` and `--cleanup-model <file.gguf>` to compare
-  cleanup models. `Samples/` holds German and English recordings for it
-  (made with macOS `say`; `inj.wav` is a dictated instruction).
+  cleans up with Apple's on-device model, which needs Apple Intelligence
+  on the Mac, and takes `--no-cleanup` to skip it. `Samples/` holds German
+  and English recordings for it (made with macOS `say`; `inj.wav` is a
+  dictated instruction).
 
 ## Verifying a change
 
@@ -36,8 +34,8 @@ this area — read them before making changes here.
   user-visible effect is proven by the apps' end-to-end test plans
   (`docs/VERIFICATION.md`).
 - **(MUST)** Ask the user before running anything that downloads models or
-  runs them on the full models. A download is about 2 GB (ADR 0006) and
-  occupies the machine for minutes.
+  runs them on the full models. The download is about 0.5 GB (ADR 0006)
+  and occupies the machine for minutes.
 
 ## Tests
 

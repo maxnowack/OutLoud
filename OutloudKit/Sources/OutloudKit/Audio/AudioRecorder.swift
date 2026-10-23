@@ -13,7 +13,9 @@ public enum AudioRecorderError: Error, Equatable, Sendable {
 public final class AudioRecorder: @unchecked Sendable {
     public static let sampleRate = 16_000.0
 
-    private let engine = AVAudioEngine()
+    private var engine = AVAudioEngine()
+    /// Whether the input node carries the tap; only `start` and `stopEngine` change it.
+    private var tapInstalled = false
     private let lock = NSLock()
     // Guarded by `lock`.
     private var samples: [Float] = []
@@ -54,10 +56,14 @@ public final class AudioRecorder: @unchecked Sendable {
                 self.lock.withLock { self.samples.append(contentsOf: converted) }
                 level?(Self.level(of: converted))
             }
+            tapInstalled = true
             engine.prepare()
             try engine.start()
         } catch {
             stopEngine()
+            // An engine whose input node was created while the session was inactive keeps a
+            // format of 0 Hz, and every later start fails with `noInput`; a fresh one does not.
+            engine = AVAudioEngine()
             lock.withLock { isRecording = false }
             throw error
         }
@@ -74,7 +80,11 @@ public final class AudioRecorder: @unchecked Sendable {
     }
 
     private func stopEngine() {
-        engine.inputNode.removeTap(onBus: 0)
+        // Asking for the input node creates it, with the session's format at that moment.
+        if tapInstalled {
+            engine.inputNode.removeTap(onBus: 0)
+            tapInstalled = false
+        }
         engine.stop()
         #if os(iOS)
             try? AVAudioSession.sharedInstance().setActive(

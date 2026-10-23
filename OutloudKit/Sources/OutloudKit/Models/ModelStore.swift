@@ -68,12 +68,16 @@ public actor ModelStore {
         return cache.snapshotFolder(of: model)
     }
 
-    /// Downloads every missing file of the model. Cancelling the calling task stops the download
-    /// and removes the partial file.
+    /// Downloads every missing file of the model, all at once: a background session goes on with
+    /// every file it was given while the app runs in front, but treats files it is given later,
+    /// from the background, as postponable. Cancelling the calling task stops the download and
+    /// removes the partial files.
     ///
-    /// - Parameter progress: Receives the bytes of the model present so far and its total size.
+    /// - Parameters:
+    ///   - overCellular: Whether the user allowed cellular data (`FileFetching`).
+    ///   - progress: Receives the bytes of the model present so far and its total size.
     public func download(
-        _ model: ModelDescriptor,
+        _ model: ModelDescriptor, overCellular: Bool = false,
         progress: @escaping @Sendable (_ completed: Int64, _ total: Int64) -> Void = { _, _ in }
     ) async throws {
         let total = model.totalSize
@@ -83,14 +87,28 @@ public actor ModelStore {
         guard available >= missing else {
             throw ModelStoreError.insufficientSpace(needed: missing, available: available)
         }
-        var completed = total - missing
-        progress(completed, total)
-        for file in model.files where size(of: cache.snapshotFile(file, of: model)) != file.size {
-            try Task.checkCancellation()
-            let base = completed
-            try await install(file, of: model) { written in progress(base + written, total) }
-            completed += file.size
-            progress(completed, total)
+        let counter = ProgressCounter(base: total - missing) { progress($0, total) }
+        counter.report()
+        let files = model.files.filter { size(of: cache.snapshotFile($0, of: model)) != $0.size }
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            for file in files {
+                group.addTask {
+                    try await self.install(file, of: model, overCellular: overCellular) {
+                        counter.update(file.path, to: $0)
+                    }
+                    counter.update(file.path, to: file.size)
+                }
+            }
+            try await group.waitForAll()
+        }
+    }
+
+    /// The models with a file still downloading from an earlier run of the app.
+    public func modelsBeingFetched() async -> [ModelDescriptor] {
+        let urls = Set(await fetcher.activeDownloads())
+        guard !urls.isEmpty else { return [] }
+        return ModelCatalog.all.filter { model in
+            model.files.contains { urls.contains(cache.downloadURL($0, of: model)) }
         }
     }
 
@@ -123,7 +141,7 @@ public actor ModelStore {
     // MARK: - Installing one file
 
     private func install(
-        _ file: ModelFile, of model: ModelDescriptor,
+        _ file: ModelFile, of model: ModelDescriptor, overCellular: Bool,
         progress: @escaping @Sendable (Int64) -> Void
     ) async throws {
         let fileManager = FileManager.default
@@ -138,8 +156,12 @@ public actor ModelStore {
         } else {
             let partial = blob.appendingPathExtension("incomplete")
             do {
-                try await fetcher.fetch(
-                    cache.downloadURL(file, of: model), to: partial, progress: progress)
+                // A background download may have finished while the app was not running.
+                if size(of: partial) != file.size {
+                    try await fetcher.fetch(
+                        cache.downloadURL(file, of: model), to: partial, overCellular: overCellular,
+                        progress: progress)
+                }
                 try Task.checkCancellation()
                 guard try FileHashing.matches(partial, file.hash) else {
                     throw ModelStoreError.hashMismatch(path: file.path)
@@ -219,6 +241,32 @@ public actor ModelStore {
     public static let volumeCapacity: @Sendable (URL) throws -> Int64 = { url in
         let values = try url.resourceValues(forKeys: [.volumeAvailableCapacityForImportantUsageKey])
         return values.volumeAvailableCapacityForImportantUsage ?? 0
+    }
+}
+
+/// Sums the bytes of the files downloading at once; reports under its lock, so that the reports
+/// only grow.
+private final class ProgressCounter: @unchecked Sendable {
+    private let base: Int64
+    private let send: (Int64) -> Void
+    private let lock = NSLock()
+    // Guarded by `lock`.
+    private var written: [String: Int64] = [:]
+
+    init(base: Int64, report: @escaping (Int64) -> Void) {
+        self.base = base
+        self.send = report
+    }
+
+    func report() {
+        lock.withLock { send(base) }
+    }
+
+    func update(_ path: String, to bytes: Int64) {
+        lock.withLock {
+            written[path] = max(written[path] ?? 0, bytes)
+            send(base + written.values.reduce(0, +))
+        }
     }
 }
 

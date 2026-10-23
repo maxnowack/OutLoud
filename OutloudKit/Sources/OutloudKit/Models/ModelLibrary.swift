@@ -29,13 +29,22 @@ public final class ModelLibrary {
     public private(set) var states: [ModelDescriptor.ID: ModelState] = [:]
     @ObservationIgnored private var downloads: [ModelDescriptor.ID: Task<Void, Never>] = [:]
     @ObservationIgnored private var lastReport: [ModelDescriptor.ID: ContinuousClock.Instant] = [:]
+    @ObservationIgnored private let defaults: UserDefaults
 
     /// Called after a model was deleted, so that a loaded copy is released.
     @ObservationIgnored public var onDelete: ((ModelDescriptor) -> Void)?
 
-    public init(store: ModelStore) {
+    public init(store: ModelStore, defaults: UserDefaults = .standard) {
         self.store = store
+        self.defaults = defaults
         for model in ModelCatalog.all { states[model.id] = .notInstalled }
+    }
+
+    /// The downloads the user started and that have not ended, with whether cellular data was
+    /// allowed for each, kept across launches: iOS may end the app while it downloads.
+    private var pending: [ModelDescriptor.ID: Bool] {
+        get { defaults.dictionary(forKey: "pendingDownloads") as? [String: Bool] ?? [:] }
+        set { defaults.set(newValue, forKey: "pendingDownloads") }
     }
 
     public func state(of model: ModelDescriptor) -> ModelState {
@@ -50,6 +59,17 @@ public final class ModelLibrary {
         }
     }
 
+    /// Goes on with the downloads an earlier run of the app started: the files the system still
+    /// fetches, and the models whose download had not ended when the app was.
+    public func resumeDownloads() async {
+        let fetching = await store.modelsBeingFetched().map(\.id)
+        let pending = self.pending
+        for model in ModelCatalog.all where pending[model.id] != nil || fetching.contains(model.id)
+        {
+            download(model, overCellular: pending[model.id] ?? false)
+        }
+    }
+
     /// The bytes still to download for the models.
     public func missingBytes(of models: [ModelDescriptor]) async -> Int64 {
         var total: Int64 = 0
@@ -58,14 +78,17 @@ public final class ModelLibrary {
     }
 
     /// Starts downloading a model; the state follows its progress.
-    public func download(_ model: ModelDescriptor) {
+    ///
+    /// - Parameter overCellular: Whether the user allowed cellular data (`FileFetching`).
+    public func download(_ model: ModelDescriptor, overCellular: Bool = false) {
         guard downloads[model.id] == nil else { return }
         states[model.id] = .downloading(completed: 0, total: model.totalSize)
+        pending[model.id] = overCellular
         let store = self.store
         // The library lives as long as the app, so the task holds it strongly.
         downloads[model.id] = Task {
             do {
-                try await store.download(model) { completed, total in
+                try await store.download(model, overCellular: overCellular) { completed, total in
                     Task { @MainActor in self.report(model, completed: completed, total: total) }
                 }
                 _ = try await store.verifiedFolder(of: model)
@@ -79,8 +102,10 @@ public final class ModelLibrary {
     }
 
     /// Downloads every model that is not installed yet and waits for them.
-    public func downloadAll(_ models: [ModelDescriptor]) async {
-        for model in models where !state(of: model).isInstalled { download(model) }
+    public func downloadAll(_ models: [ModelDescriptor], overCellular: Bool = false) async {
+        for model in models where !state(of: model).isInstalled {
+            download(model, overCellular: overCellular)
+        }
         for model in models { await downloads[model.id]?.value }
     }
 
@@ -109,6 +134,7 @@ public final class ModelLibrary {
 
     private func finish(_ model: ModelDescriptor, state: ModelState) {
         downloads[model.id] = nil
+        pending[model.id] = nil
         lastReport[model.id] = nil
         states[model.id] = state
     }

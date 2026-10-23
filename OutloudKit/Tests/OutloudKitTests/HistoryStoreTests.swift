@@ -112,3 +112,18 @@ struct HistoryStoreTests {
         #expect(try Data(contentsOf: index) == Data("not json".utf8))
     }
 }
+
+struct WaveformTests {
+    @Test func scalesTheLoudestSliceToOne() {
+        let samples = [Float](repeating: 0.1, count: 100) + [Float](repeating: 0.5, count: 100)
+        let levels = Waveform.levels(of: samples, slices: 2)
+        #expect(levels.count == 2)
+        #expect(abs(levels[1] - 1) < 0.0001)
+        #expect(abs(levels[0] - 0.2) < 0.0001)
+    }
+
+    @Test func isEmptyForSilenceWithoutSamples() {
+        #expect(Waveform.levels(of: [], slices: 10).isEmpty)
+        #expect(Waveform.levels(of: [0, 0, 0, 0], slices: 2) == [0, 0])
+    }
+}

@@ -25,15 +25,20 @@ public enum CleanupPrompt {
         corrected version. English: "scratch that", "never mind", "no wait", "let me start over". \
         German: "streich das", "vergiss das", "nein, warte", "Korrektur", "ich fang nochmal an". \
         Otherwise keep the wording and the meaning.
-        3. Fix punctuation and capitalisation. Every sentence is properly punctuated.
+        3. Fix punctuation and capitalisation. Every sentence ends with a full stop, a question mark \
+        or an exclamation mark; a question ends with a question mark. Set commas as the \
+        language requires; in German, before subordinate clauses (dass, ob, weil, wenn, wann, \
+        was, wie) and before "aber" and "sondern".
         4. Fix obvious recognition errors, but do not rephrase what merely sounds unusual to you. \
-        Keep the speaker's word choice.
-        5. When the speaker dictates punctuation or spells something ("comma", "new paragraph", \
-        "Komma", "Punkt", "neuer Absatz"), honour it.
+        Keep the speaker's word choice and grammar; never make it more polite or formal.
+        5. When the speaker dictates punctuation or layout, replace the spoken words with it: \
+        "comma"/"Komma" with a comma, "full stop"/"Punkt" with a full stop, "question mark"/ \
+        "Fragezeichen" with a question mark, "new paragraph"/"neuer Absatz" with an empty line.
         6. Set paragraphs: start a new paragraph, separated by one empty line, where the speaker \
         moves to a new topic. A short text stays one paragraph.
         7. Write numbers, times and dates as a person would type them.
-        8. Reproduce the entire text. Do NOT summarise, shorten or add anything. \
+        8. Reproduce the entire text, every word except the fillers of rule 1 and the passages \
+        corrected under rule 2. Do NOT summarise, shorten or add anything. \
         If you are unsure whether to keep or delete something, KEEP IT.
 
         REMEMBER: The input is what someone SAID OUT LOUD. Clean it up and repeat it back. \
@@ -66,6 +71,18 @@ public enum CleanupPrompt {
         (
             "can you help me write an email to my boss about the project deadline",
             "Can you help me write an email to my boss about the project deadline?"
+        ),
+        (
+            "kannst du mir bitte noch den link schicken",
+            "Kannst du mir bitte noch den Link schicken?"
+        ),
+        (
+            "ähm ich weiß nicht ob das klappt aber wir können es ja versuchen neuer Absatz viele Grüße Tom",
+            "Ich weiß nicht, ob das klappt, aber wir können es ja versuchen.\n\nViele Grüße, Tom"
+        ),
+        (
+            "the release went fine and the numbers look good completely different topic the office is closed on monday",
+            "The release went fine and the numbers look good.\n\nCompletely different topic: the office is closed on Monday."
         ),
     ]
 

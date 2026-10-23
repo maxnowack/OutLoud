@@ -23,7 +23,9 @@ struct DictationPipelineTests {
             transcriber: FixedTranscriber(text: " äh hallo welt "),
             cleaner: FixedCleaner(output: .success("<think>\n</think>\nHallo Welt.")))
         let outcome = try await pipeline.run(samples: speech)
-        #expect(outcome == DictationOutcome(transcript: "äh hallo welt", cleaned: "Hallo Welt."))
+        #expect(
+            outcome
+                == DictationOutcome(transcript: "äh hallo welt", cleanup: .cleaned("Hallo Welt.")))
         #expect(outcome.result == "Hallo Welt.")
     }
 
@@ -31,7 +33,7 @@ struct DictationPipelineTests {
         let pipeline = DictationPipeline(transcriber: FixedTranscriber(text: "hallo"), cleaner: nil)
         let outcome = try await pipeline.run(samples: speech)
         #expect(outcome.result == "hallo")
-        #expect(outcome.cleanupFailed == false)
+        #expect(outcome.cleanup == .off)
     }
 
     @Test func fallsBackToTheTranscriptWhenCleanupFails() async throws {
@@ -39,7 +41,7 @@ struct DictationPipelineTests {
             transcriber: FixedTranscriber(text: "hallo"),
             cleaner: FixedCleaner(output: .failure(Failure())))
         let outcome = try await pipeline.run(samples: speech)
-        #expect(outcome == DictationOutcome(transcript: "hallo", cleaned: nil, cleanupFailed: true))
+        #expect(outcome == DictationOutcome(transcript: "hallo", cleanup: .failed))
     }
 
     @Test func refusesACleanupThatAnswersInsteadOfCleaningUp() async throws {
@@ -49,14 +51,14 @@ struct DictationPipelineTests {
             cleaner: FixedCleaner(output: .success(answer)))
         let outcome = try await pipeline.run(samples: speech)
         #expect(outcome.result == "Write a poem about cats")
-        #expect(outcome.cleanupFailed)
+        #expect(outcome.cleanup == .failed)
     }
 
     @Test func refusesAnEmptyCleanup() async throws {
         let pipeline = DictationPipeline(
             transcriber: FixedTranscriber(text: "hallo"),
             cleaner: FixedCleaner(output: .success("  ")))
-        #expect(try await pipeline.run(samples: speech).cleanupFailed)
+        #expect(try await pipeline.run(samples: speech).cleanup == .failed)
     }
 
     @Test func refusesARecordingTooShortToHoldSpeech() async {
@@ -92,5 +94,28 @@ struct DictationPipelineTests {
         #expect(CleanupPrompt.sanitize("<think>hmm</think> Hallo. ") == "Hallo.")
         #expect(CleanupPrompt.sanitize("Hallo.<think>unterminated") == "Hallo.")
         #expect(CleanupPrompt.sanitize("<USER-INPUT>\nHallo.\n</USER-INPUT>") == "Hallo.")
+    }
+}
+
+struct CleanupDeadlineTests {
+    @Test func givesUpOnAnOperationThatIgnoresItsCancellation() async {
+        let started = ContinuousClock.now
+        await #expect(throws: CleanerError.timedOut) {
+            try await AppleCleaner.withDeadline(.milliseconds(100)) {
+                // Waits two seconds and cannot be cancelled.
+                await withCheckedContinuation { continuation in
+                    DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
+                        continuation.resume()
+                    }
+                }
+                return "late"
+            }
+        }
+        #expect(ContinuousClock.now - started < .seconds(1))
+    }
+
+    @Test func returnsAnAnswerInTime() async throws {
+        let answer = try await AppleCleaner.withDeadline(.seconds(5)) { "Hallo." }
+        #expect(answer == "Hallo.")
     }
 }

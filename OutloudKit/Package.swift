@@ -18,19 +18,13 @@ let package = Package(
         // Parakeet v3 (ADR 0006). The text-normalisation trait would add a prebuilt binary
         // Outloud does not use.
         .package(
-            url: "https://github.com/FluidInference/FluidAudio.git", exact: "0.17.7", traits: []),
-        // The Qwen cleanup model (ADR 0006): ghost-pepper's fork, whose bundled llama.cpp runs
-        // the qwen35 architecture.
-        .package(
-            url: "https://github.com/obra/LLM.swift.git",
-            revision: "c2144e1a0e29c280ec6080b7da85e876d51f8509"),
+            url: "https://github.com/FluidInference/FluidAudio.git", exact: "0.17.7", traits: [])
     ],
     targets: [
         .target(
             name: "OutloudKit",
             dependencies: [
-                .product(name: "FluidAudio", package: "FluidAudio"),
-                .product(name: "LLM", package: "LLM.swift"),
+                .product(name: "FluidAudio", package: "FluidAudio")
             ],
             resources: [.process("Resources")]),
         .target(
