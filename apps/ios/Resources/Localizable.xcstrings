@@ -1,0 +1,346 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Acknowledgements": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Danksagungen"
+          }
+        }
+      }
+    },
+    "Clean Up Text": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text bereinigen"
+          }
+        }
+      }
+    },
+    "Clean Up Text with Outloud": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text mit Outloud bereinigen"
+          }
+        }
+      }
+    },
+    "Clean Up and Copy": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bereinigen und kopieren"
+          }
+        }
+      }
+    },
+    "Clean up the transcript": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transkript bereinigen"
+          }
+        }
+      }
+    },
+    "Cleanup model": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bereinigungsmodell"
+          }
+        }
+      }
+    },
+    "Clear": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Leeren"
+          }
+        }
+      }
+    },
+    "Copied to the clipboard": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In die Zwischenablage kopiert"
+          }
+        }
+      }
+    },
+    "Copied to the clipboard.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In die Zwischenablage kopiert."
+          }
+        }
+      }
+    },
+    "Copy": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kopieren"
+          }
+        }
+      }
+    },
+    "Delete All": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle löschen"
+          }
+        }
+      }
+    },
+    "Delete All Results": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Ergebnisse löschen"
+          }
+        }
+      }
+    },
+    "Delete all results?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alle Ergebnisse löschen?"
+          }
+        }
+      }
+    },
+    "Dictate": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Diktieren"
+          }
+        }
+      }
+    },
+    "Dictate with Outloud": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mit Outloud diktieren"
+          }
+        }
+      }
+    },
+    "Each result keeps the transcript, the recording and the cleaned version. A shorter period also applies to results already kept.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zu jedem Ergebnis gehören das Transkript, die Aufnahme und die bereinigte Fassung. Ein kürzerer Zeitraum gilt auch für bereits behaltene Ergebnisse."
+          }
+        }
+      }
+    },
+    "History": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verlauf"
+          }
+        }
+      }
+    },
+    "In Settings › Action Button, choose Shortcut › Outloud › Dictate. Pressing the button then opens Outloud and starts recording.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wähle in Einstellungen › Action-Taste › Kurzbefehl › Outloud › Diktieren. Ein Druck auf die Taste öffnet dann Outloud und startet die Aufnahme."
+          }
+        }
+      }
+    },
+    "Open Outloud once to download its models.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffne Outloud einmal, um die Modelle zu laden."
+          }
+        }
+      }
+    },
+    "Opens Outloud and starts recording. Tap Stop when you are done; the text is copied to the clipboard.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Öffnet Outloud und startet die Aufnahme. Tippe auf Stopp, wenn du fertig bist; der Text wird in die Zwischenablage kopiert."
+          }
+        }
+      }
+    },
+    "Or use the keyboard's dictation": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oder das Diktat der Tastatur verwenden"
+          }
+        }
+      }
+    },
+    "Outloud": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outloud"
+          }
+        }
+      }
+    },
+    "Privacy": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Datenschutz"
+          }
+        }
+      }
+    },
+    "Removes filler words, fixes punctuation and sets paragraphs, then copies the text to the clipboard.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entfernt Füllwörter, korrigiert die Zeichensetzung, setzt Absätze und kopiert den Text in die Zwischenablage."
+          }
+        }
+      }
+    },
+    "Removes filler words, fixes punctuation and sets paragraphs, without changing what you said.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Entfernt Füllwörter, korrigiert die Zeichensetzung und setzt Absätze, ohne zu ändern, was du gesagt hast."
+          }
+        }
+      }
+    },
+    "Settings": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Einstellungen"
+          }
+        }
+      }
+    },
+    "Tap to dictate. Paste the text in any app afterwards.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippe zum Diktieren. Füge den Text danach in einer beliebigen App ein."
+          }
+        }
+      }
+    },
+    "Tap to stop. The text is copied to the clipboard.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tippe zum Beenden. Der Text wird in die Zwischenablage kopiert."
+          }
+        }
+      }
+    },
+    "Text": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text"
+          }
+        }
+      }
+    },
+    "Text to clean up": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Zu bereinigender Text"
+          }
+        }
+      }
+    },
+    "The Action Button": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Action-Taste"
+          }
+        }
+      }
+    },
+    "There was no text to clean up.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Es gab keinen Text zum Bereinigen."
+          }
+        }
+      }
+    },
+    "Transcription model": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transkriptionsmodell"
+          }
+        }
+      }
+    },
+    "Transcripts, recordings and cleaned versions are deleted from this iPhone.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transkripte, Aufnahmen und bereinigte Fassungen werden von diesem iPhone gelöscht."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

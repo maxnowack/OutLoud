@@ -1,0 +1,36 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Clean up text with ${applicationName}": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text mit ${applicationName} bereinigen"
+          }
+        }
+      }
+    },
+    "Dictate with ${applicationName}": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mit ${applicationName} diktieren"
+          }
+        }
+      }
+    },
+    "Start ${applicationName}": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "${applicationName} starten"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

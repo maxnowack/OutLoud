@@ -5,7 +5,8 @@ cd "$(dirname "$0")/.."
 
 xcodegen generate --quiet
 xcrun swift-format lint --strict --recursive Sources
+# LLM.swift ships a macro; -skipMacroValidation trusts it without Xcode's interactive prompt.
 xcodebuild -project Outloud.xcodeproj -scheme Outloud -configuration Debug \
     -destination 'generic/platform=iOS Simulator' -derivedDataPath .build/DerivedData -jobs 4 \
-    -quiet CODE_SIGNING_ALLOWED=NO \
+    -quiet -skipMacroValidation CODE_SIGNING_ALLOWED=NO \
     build

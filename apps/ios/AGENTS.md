@@ -26,7 +26,15 @@ this area — read them before making changes here.
   installing on the user's device (`docs/VERIFICATION.md`).
 - **(MUST)** State that a simulator run proves behaviour, not memory or
   speed: whether the models fit an iPhone is only shown on a device
-  (ADR 0006).
+  (ADR 0006). In the simulator, llama.cpp generates so slowly that cleanup
+  always times out; launch with `-cleanupEnabled NO` to check the screens.
+- Debug builds take `-OutloudSampleAudio <wav> -OutloudAutoDictate YES` to
+  dictate a file once at launch (the file must be inside the app's
+  container, e.g. its `tmp/`), and `-OutloudTab history|settings` to open
+  a tab first. Settings can be set for one launch as arguments, e.g.
+  `-hasCompletedSetup YES`. `xcrun simctl io booted screenshot` captures
+  the screen; the simulator shares its clipboard with the Mac, so read
+  results from the history's `index.json`, not from the clipboard.
 
 ## Tests
 
@@ -40,6 +48,14 @@ this area — read them before making changes here.
   flow, with `e2e/README.md` as the coverage index; the first screen
   ships with the first plan (`docs/ARCHITECTURE_PRINCIPLES.md`
   §"End-to-end test plans").
+
+## Localisation
+
+- **(MUST)** Every user-visible string of the app gets its German
+  translation in `Resources/Localizable.xcstrings`, App Shortcut phrases in
+  `Resources/AppShortcuts.xcstrings` and `Info.plist` texts in
+  `Resources/InfoPlist.xcstrings`, in the same change set; see
+  `OutloudKit/AGENTS.md` §"Localisation" for finding the keys.
 
 ## Security
 

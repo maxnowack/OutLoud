@@ -4,6 +4,7 @@ options:
   bundleIdPrefix: io.github.maxnowack
   deploymentTarget:
     iOS: "27.0"
+  developmentLanguage: en
 packages:
   OutloudKit:
     path: ../../OutloudKit
@@ -15,19 +16,30 @@ settings:
     GCC_TREAT_WARNINGS_AS_ERRORS: YES
     MARKETING_VERSION: "0.1.0"
     CURRENT_PROJECT_VERSION: "1"
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    SWIFT_EMIT_LOC_STRINGS: YES
 targets:
   Outloud:
     type: application
     platform: iOS
     sources:
       - Sources
+      - Resources
     dependencies:
       - package: OutloudKit
+        product: OutloudKit
+      - package: OutloudKit
+        product: OutloudUI
     info:
       path: Generated/Info.plist
       properties:
         CFBundleDisplayName: Outloud
+        CFBundleDevelopmentRegion: en
+        CFBundleLocalizations: [en, de]
         UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        NSMicrophoneUsageDescription: Outloud records your voice while you dictate, to turn it into text on this iPhone.
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.github.maxnowack.outloud
