@@ -254,7 +254,9 @@ reversed. The first three block parts of the plan.
 14. **ghost-pepper ideas** not built: screen (OCR) context, a correction
     store, learning from edits after a paste, an editable prompt.
 15. **iOS distribution channel**: TestFlight or the App Store — not
-    discussed yet (`docs/RELEASE.md` §"iOS").
+    discussed yet (`docs/RELEASE.md` §"iOS"). *Addendum 2026-10-23:*
+    TestFlight first, the App Store later (ADR 0023); 0.1.0 (1) was
+    uploaded the same day.
 
 ## Open questions
 

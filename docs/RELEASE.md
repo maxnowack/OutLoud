@@ -57,13 +57,47 @@ Each release:
    `Outloud-<version>.zip` and `appcast.xml`.
 5. Check: the previous version finds the update via "Check for Updates…".
 
-### iOS
+### iOS — TestFlight (ADR 0023)
 
-Not decided: the distribution channel (TestFlight, App Store) is open
-(`plans/FIRST_VERSION.md` §"Decisions for the user"). Builds for the
-user's iPhone: from `apps/ios/`,
-`xcodebuild -project Outloud.xcodeproj -scheme Outloud -destination 'id=<device id>' -derivedDataPath .build/DerivedData -allowProvisioningUpdates -skipMacroValidation build`,
-then `xcrun devicectl device install app --device <device id> .build/DerivedData/Build/Products/Debug-iphoneos/Outloud.app`.
+Once:
+
+1. The app record `dev.nowack.outloud` in App Store Connect — created on
+   2026-10-23 — and an internal testing group with the testers.
+2. The team's account signed in to Xcode (Settings › Accounts); automatic
+   signing creates the distribution certificate and profiles on the first
+   upload.
+   Without an account signed in to Xcode, an App Store Connect API key does
+   the same: create one under Users and Access ›
+   Integrations with the role Admin, keep the `.p8` file outside the
+   repository, and set `ASC_KEY_ID`, `ASC_ISSUER_ID` and `ASC_KEY_PATH` for
+   `./scripts/release` — or, with the key in a keychain item instead of a
+   file, `ASC_KEY_KEYCHAIN_ITEM` (its name) in place of `ASC_KEY_PATH`. For example:
+   `ASC_KEY_ID=<key id> ASC_ISSUER_ID=<issuer id> ASC_KEY_KEYCHAIN_ITEM=<item name> ./scripts/release`.
+   The role matters: signing for distribution uses cloud-managed
+   certificates and profiles, which only an Admin key may use. A key with
+   a lesser role (App Manager, tried 2026-10-23) is refused access to
+   certificates (403) and the export fails with "Cloud signing permission
+   error", even with an Apple Distribution certificate in the keychain. Without an Admin key, the upload goes through Xcode:
+   Product › Archive, then Distribute App › App Store Connect › Upload.
+
+Each build:
+
+1. Raise `CURRENT_PROJECT_VERSION` in `apps/ios/project.yml` (and
+   `MARKETING_VERSION` for a new version), commit.
+2. From `apps/ios/`: `./scripts/precommit`, then `./scripts/release`. It
+   archives the Release build and uploads it to App Store Connect;
+   `./scripts/release --export` writes the `.ipa` to
+   `.build/release/export/` instead.
+3. Once App Store Connect has processed the build, add it to the testing
+   group in TestFlight.
+
+The app declares `ITSAppUsesNonExemptEncryption = NO` and ships
+`Resources/PrivacyInfo.xcprivacy`; a new use of a required-reason API
+adds its reason there.
+
+Builds for the user's iPhone by cable: from `apps/ios/`,
+`xcodebuild -project Outloud.xcodeproj -scheme Outloud -destination 'id=<device id>' -derivedDataPath .build/DeviceData -allowProvisioningUpdates build`,
+then `xcrun devicectl device install app --device <device id> .build/DeviceData/Build/Products/Debug-iphoneos/Outloud.app`.
 
 ## Rollback procedure
 

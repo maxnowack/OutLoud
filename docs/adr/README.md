@@ -69,3 +69,4 @@ able to tell what was decided without opening the file.
 - [0020 – On macOS, the default push-to-talk shortcut is ⌥ ⌘ held alone, watched with event monitors that need Accessibility access; ⌥ Space stands in until it is granted](0020-macos-push-to-talk-is-option-command-held-alone.md)
 - [0021 – Holding ⌥ ⌘ is cancelled by another modifier at any time and by another key only within its first second; later keys are typed and the recording goes on](0021-option-command-cancels-on-modifiers-and-early-keys-only.md)
 - [0022 – On iOS, a shortcut starts and stops a recording in the background, with an audio session that mixes with other audio and a Live Activity, and copies the text Outloud returns](0022-ios-background-dictation-with-a-mixable-session-and-a-live-activity.md)
+- [0023 – The iOS app is distributed through TestFlight first; the App Store is decided later](0023-ios-is-distributed-through-testflight-first.md)
