@@ -131,6 +131,16 @@
         }
       }
     },
+    "Clean up text": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text bereinigen"
+          }
+        }
+      }
+    },
     "Cleaned up": {
       "localizations": {
         "de": {
@@ -167,6 +177,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Bereinigung fehlgeschlagen – das ist das Transkript."
+          }
+        }
+      }
+    },
+    "Cleanup model": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bereinigungsmodell"
           }
         }
       }
@@ -277,6 +297,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Über mobile Daten laden?"
+          }
+        }
+      }
+    },
+    "Download the models once. After that, everything stays on this device.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lade einmal die Modelle. Danach bleibt alles auf diesem Gerät."
+          }
+        }
+      }
+    },
+    "Fast": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schnell"
           }
         }
       }
@@ -431,6 +471,36 @@
         }
       }
     },
+    "Outloud will have to download the model again before you use it again.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Outloud muss das Modell erneut laden, bevor du es wieder verwendest."
+          }
+        }
+      }
+    },
+    "Paste the text in any app: touch and hold, then Paste.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Füge den Text in einer beliebigen App ein: lange tippen, dann Einsetzen."
+          }
+        }
+      }
+    },
+    "Pause": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause"
+          }
+        }
+      }
+    },
     "Play": {
       "localizations": {
         "de": {
@@ -441,12 +511,32 @@
         }
       }
     },
+    "Preferably on Wi-Fi.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Am besten im WLAN."
+          }
+        }
+      }
+    },
     "Ready": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Bereit"
+          }
+        }
+      }
+    },
+    "Recording": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aufnahme"
           }
         }
       }
@@ -467,6 +557,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Entfernt Füllwörter, korrigiert die Zeichensetzung und setzt Absätze. Optional."
+          }
+        }
+      }
+    },
+    "Removes filler words, sets punctuation and paragraphs": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Füllwörter weg, Satzzeichen, Absätze"
           }
         }
       }
@@ -501,12 +601,32 @@
         }
       }
     },
+    "Show text": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Text anzeigen"
+          }
+        }
+      }
+    },
     "Something went wrong": {
       "localizations": {
         "de": {
           "stringUnit": {
             "state": "translated",
             "value": "Etwas ist schiefgegangen"
+          }
+        }
+      }
+    },
+    "Speech recognition": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spracherkennung"
           }
         }
       }
@@ -537,6 +657,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Diktat beenden"
+          }
+        }
+      }
+    },
+    "The larger model also applies spoken corrections such as “scratch that”, but takes about four times as long.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das größere Modell setzt auch gesprochene Korrekturen wie „streich das“ um, braucht aber etwa viermal so lange."
           }
         }
       }
@@ -621,6 +751,16 @@
         }
       }
     },
+    "Thorough": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gründlich"
+          }
+        }
+      }
+    },
     "Transcribing…": {
       "localizations": {
         "de": {
@@ -691,6 +831,26 @@
         }
       }
     },
+    "Welcome to Outloud": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Willkommen bei Outloud"
+          }
+        }
+      }
+    },
+    "What happens with my data?": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Was passiert mit meinen Daten?"
+          }
+        }
+      }
+    },
     "With audio": {
       "localizations": {
         "de": {
@@ -737,6 +897,76 @@
           "stringUnit": {
             "state": "translated",
             "value": "nicht geladen"
+          }
+        }
+      }
+    },
+    "Apple Intelligence is still getting ready; cleanup starts once it is.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apple Intelligence wird noch vorbereitet; die Bereinigung beginnt, sobald es bereit ist."
+          }
+        }
+      }
+    },
+    "Model download": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Modell-Download"
+          }
+        }
+      }
+    },
+    "Switch on Apple Intelligence in the system settings to clean up text.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schalte Apple Intelligence in den Systemeinstellungen ein, um Text zu bereinigen."
+          }
+        }
+      }
+    },
+    "The only data transfer is downloading the speech recognition model from Hugging Face, once.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die einzige Datenübertragung ist das einmalige Herunterladen des Spracherkennungsmodells von Hugging Face."
+          }
+        }
+      }
+    },
+    "This device does not support Apple Intelligence; you get the transcript.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieses Gerät unterstützt Apple Intelligence nicht; du bekommst das Transkript."
+          }
+        }
+      }
+    },
+    "Transcription runs on this device, and the cleanup uses Apple Intelligence's model on this device. Neither your voice nor your text is sent anywhere.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Spracherkennung läuft auf diesem Gerät, und die Bereinigung nutzt das Modell von Apple Intelligence auf diesem Gerät. Weder deine Stimme noch dein Text werden irgendwohin gesendet."
+          }
+        }
+      }
+    },
+    "Uses Apple Intelligence on this device. No download.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nutzt Apple Intelligence auf diesem Gerät. Kein Download."
           }
         }
       }

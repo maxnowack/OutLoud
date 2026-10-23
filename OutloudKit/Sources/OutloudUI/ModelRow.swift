@@ -23,7 +23,7 @@ public struct ModelRow: View {
                 VStack(alignment: .leading, spacing: Tokens.Spacing.xs) {
                     Text(model.displayName).font(Tokens.heading)
                     Text(
-                        "\(model.purpose.title) · \(model.totalSize.formattedBytes) · \(model.languageSummary)"
+                        "\(localized("Transcription")) · \(model.totalSize.formattedBytes) · \(model.languageSummary)"
                     )
                     .font(Tokens.caption)
                     .foregroundStyle(Tokens.textSecondary)
@@ -70,7 +70,7 @@ public struct ModelRow: View {
             titleVisibility: .visible
         ) {
             Button(localized("Download \(model.totalSize.formattedBytes)")) {
-                library.download(model)
+                library.download(model, overCellular: true)
             }
         } message: {
             Text(

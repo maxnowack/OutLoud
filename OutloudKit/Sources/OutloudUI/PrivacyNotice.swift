@@ -15,12 +15,12 @@ public struct PrivacyNotice: View {
             point(
                 "cpu", localized("On this device"),
                 localized(
-                    "Transcription and cleanup run on this device. Neither your voice nor your text is sent anywhere."
+                    "Transcription runs on this device, and the cleanup uses Apple Intelligence's model on this device. Neither your voice nor your text is sent anywhere."
                 ))
             point(
-                "arrow.down.circle", localized("Model downloads"),
+                "arrow.down.circle", localized("Model download"),
                 localized(
-                    "The only data transfer is downloading the models from Hugging Face, once, when you choose them."
+                    "The only data transfer is downloading the speech recognition model from Hugging Face, once."
                 ))
             point(
                 "clock", localized("Kept results"),
@@ -57,13 +57,7 @@ public struct Acknowledgements: View {
 
     static let entries: [(name: String, notice: String)] = [
         (ModelCatalog.parakeetV3.displayName, ModelCatalog.parakeetV3.attribution),
-        (ModelCatalog.qwen08B.displayName, ModelCatalog.qwen08B.attribution),
         ("FluidAudio", "FluidInference, Apache License 2.0 (github.com/FluidInference/FluidAudio)"),
-        (
-            "LLM.swift",
-            "MIT License (github.com/eastriverlee/LLM.swift, the fork github.com/obra/LLM.swift)"
-        ),
-        ("llama.cpp", "The ggml authors, MIT License (github.com/ggml-org/llama.cpp)"),
         (
             "ghost-pepper",
             "The cleanup prompt is adapted from ghost-pepper, MIT License as stated in its README (github.com/matthartman/ghost-pepper)"

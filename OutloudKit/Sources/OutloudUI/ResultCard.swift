@@ -18,14 +18,7 @@ public struct ResultCard: View {
                 .textSelection(.enabled)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .fixedSize(horizontal: false, vertical: true)
-            if outcome.cleanupFailed {
-                Label(
-                    localized("Cleanup failed — this is the transcript."),
-                    systemImage: "exclamationmark.circle"
-                )
-                .font(Tokens.caption)
-                .foregroundStyle(Tokens.warning)
-            }
+            CleanupNotice(outcome: outcome)
             HStack {
                 Spacer()
                 Button {
@@ -93,5 +86,22 @@ public struct FailureNotice: View {
         case .modelsMissing: localized("Download models")
         default: nil
         }
+    }
+}
+
+/// Says why the result is the transcript, when cleanup was on but did not clean it up.
+struct CleanupNotice: View {
+    let outcome: DictationOutcome
+
+    var body: some View {
+        if outcome.cleanup == .failed {
+            notice(localized("Cleanup failed — this is the transcript."))
+        }
+    }
+
+    private func notice(_ text: String) -> some View {
+        Label(text, systemImage: "exclamationmark.circle")
+            .font(Tokens.caption)
+            .foregroundStyle(Tokens.warning)
     }
 }

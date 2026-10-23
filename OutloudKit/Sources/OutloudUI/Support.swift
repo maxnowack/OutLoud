@@ -36,23 +36,6 @@ extension Int64 {
     }
 }
 
-extension ModelPurpose {
-    var title: String {
-        switch self {
-        case .transcription: localized("Transcription")
-        case .cleanup: localized("Cleanup")
-        }
-    }
-
-    var explanation: String {
-        switch self {
-        case .transcription: localized("Turns speech into text. Required.")
-        case .cleanup:
-            localized("Removes filler words, fixes punctuation and sets paragraphs. Optional.")
-        }
-    }
-}
-
 extension ModelDescriptor {
     var languageSummary: String {
         languages == ["multilingual"]

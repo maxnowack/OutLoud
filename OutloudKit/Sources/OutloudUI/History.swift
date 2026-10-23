@@ -87,29 +87,14 @@ public struct HistoryEntryDetail: View {
     public var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Tokens.Spacing.l) {
-                HStack {
-                    Text(
-                        entry.createdAt,
-                        format: .dateTime.weekday().day().month().year().hour().minute()
-                    )
-                    .font(Tokens.caption)
-                    .foregroundStyle(Tokens.textSecondary)
-                    Spacer()
-                    if entry.hasAudio {
-                        let isPlaying = history.playing == entry.id
-                        Button {
-                            if isPlaying {
-                                history.stop()
-                            } else {
-                                Task { await history.play(entry) }
-                            }
-                        } label: {
-                            Label(
-                                isPlaying ? localized("Stop") : localized("Play"),
-                                systemImage: isPlaying ? "stop.fill" : "play.fill")
-                        }
-                        .tint(Tokens.accent)
-                    }
+                Text(
+                    entry.createdAt,
+                    format: .dateTime.weekday().day().month().year().hour().minute()
+                )
+                .font(Tokens.caption)
+                .foregroundStyle(Tokens.textSecondary)
+                if entry.hasAudio {
+                    AudioPlayer(entry: entry, history: history)
                 }
                 if let cleaned = entry.cleaned {
                     section(title: localized("Cleaned up"), text: cleaned)

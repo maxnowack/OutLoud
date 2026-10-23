@@ -48,7 +48,10 @@ public enum Tokens {
     public static let radiusSmall: CGFloat = 6
     public static let radiusMedium: CGFloat = 10
     public static let radiusLarge: CGFloat = 16
-    public static let recordButtonSize: CGFloat = 88
+    public static let recordButtonSize: CGFloat = 104
+    public static let playButtonSize: CGFloat = 56
+    public static let waveformHeight: CGFloat = 36
+    public static let confirmationIconSize: CGFloat = 64
 
     // MARK: Elevation
 
