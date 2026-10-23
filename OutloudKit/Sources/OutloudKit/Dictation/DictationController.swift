@@ -37,6 +37,8 @@ public final class DictationController {
     public private(set) var state: DictationState = .idle
     /// The input level while recording, 0 to 1.
     public private(set) var level: Float = 0
+    /// Roughly how far the cleanup is, 0 to 1, while it runs after a recording; `nil` otherwise.
+    public private(set) var cleanupProgress: Double?
 
     @ObservationIgnored private let settings: OutloudSettings
     @ObservationIgnored private let library: ModelLibrary
@@ -79,8 +81,10 @@ public final class DictationController {
     }
 
     /// Starts a recording. Returns `false` and sets a failed state when it cannot start.
+    ///
+    /// - Parameter mixable: Opens a session that mixes with other audio (`AudioRecorder`).
     @discardableResult
-    public func startRecording() async -> Bool {
+    public func startRecording(mixable: Bool = false) async -> Bool {
         guard !state.isBusy else { return false }
         guard hasRequiredModels else {
             state = .failed(.modelsMissing)
@@ -93,7 +97,7 @@ public final class DictationController {
             }
         }
         do {
-            try recorder.start { [weak self] level in
+            try recorder.start(mixable: mixable) { [weak self] level in
                 Task { @MainActor [weak self] in self?.level = level }
             }
             state = .recording
@@ -110,7 +114,7 @@ public final class DictationController {
         guard state == .recording else { return nil }
         let samples = recorder.stop()
         level = 0
-        return await transcribe(samples)
+        return await transcribe(samples, showsProgress: true)
     }
 
     /// Ends the recording and drops it.
@@ -127,10 +131,12 @@ public final class DictationController {
     @discardableResult
     public func process(samples: [Float]) async -> DictationOutcome? {
         guard !state.isBusy else { return nil }
-        return await transcribe(samples)
+        return await transcribe(samples, showsProgress: false)
     }
 
-    private func transcribe(_ samples: [Float]) async -> DictationOutcome? {
+    /// - Parameter showsProgress: Publishes `cleanupProgress`. Only where someone sees it: the
+    ///   cleanup streams for it, which uses up Apple's budget in the background sooner.
+    private func transcribe(_ samples: [Float], showsProgress: Bool) async -> DictationOutcome? {
         guard hasRequiredModels else {
             state = .failed(.modelsMissing)
             return nil
@@ -148,7 +154,7 @@ public final class DictationController {
             state = .failed(.transcriptionFailed(error.localizedDescription))
             return nil
         }
-        return await finish(transcript: transcript, audio: samples)
+        return await finish(transcript: transcript, audio: samples, showsProgress: showsProgress)
     }
 
     /// Cleans up text that system dictation supplied, and keeps the result in the history. Returns
@@ -161,7 +167,13 @@ public final class DictationController {
             state = .failed(.nothingRecognised)
             return nil
         }
-        return await finish(transcript: transcript, audio: nil)
+        return await finish(transcript: transcript, audio: nil, showsProgress: false)
+    }
+
+    private func advanceCleanupProgress(to value: Double) {
+        // Reports arrive out of order across tasks; the bar only moves forward.
+        guard state == .cleaning, let current = cleanupProgress, value > current else { return }
+        cleanupProgress = value
     }
 
     /// Returns to the idle state after a result or a failure was shown.
@@ -170,14 +182,24 @@ public final class DictationController {
         state = .idle
     }
 
-    private func finish(transcript: String, audio: [Float]?) async -> DictationOutcome {
+    private func finish(transcript: String, audio: [Float]?, showsProgress: Bool) async
+        -> DictationOutcome
+    {
         var outcome = DictationOutcome(transcript: transcript)
         if settings.cleanupEnabled, let cleaner = cleaner() {
             state = .cleaning
+            cleanupProgress = showsProgress ? 0 : nil
+            var progress: (@Sendable (Double) -> Void)?
+            if showsProgress {
+                progress = { [weak self] value in
+                    Task { @MainActor in self?.advanceCleanupProgress(to: value) }
+                }
+            }
             outcome =
                 (try? await DictationPipeline(
                     transcriber: Passthrough(text: transcript), cleaner: cleaner
-                ).run(text: transcript)) ?? outcome
+                ).run(text: transcript, progress: progress)) ?? outcome
+            cleanupProgress = nil
         }
         do {
             let entry = try await history.add(

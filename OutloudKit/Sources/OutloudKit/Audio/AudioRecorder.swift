@@ -25,8 +25,12 @@ public final class AudioRecorder: @unchecked Sendable {
 
     /// Starts recording.
     ///
-    /// - Parameter level: Receives the input level, 0 to 1, from the audio thread.
-    public func start(level: (@Sendable (Float) -> Void)? = nil) throws {
+    /// - Parameters:
+    ///   - mixable: iOS: opens the audio session so that it mixes with other audio instead of
+    ///     interrupting it, which iOS allows an app in the background; an exclusive session it
+    ///     refuses there (`plans/BACKGROUND_DICTATION.md`, spike 2).
+    ///   - level: Receives the input level, 0 to 1, from the audio thread.
+    public func start(mixable: Bool = false, level: (@Sendable (Float) -> Void)? = nil) throws {
         try lock.withLock {
             guard !isRecording else { throw AudioRecorderError.alreadyRecording }
             isRecording = true
@@ -35,7 +39,12 @@ public final class AudioRecorder: @unchecked Sendable {
         do {
             #if os(iOS)
                 let session = AVAudioSession.sharedInstance()
-                try session.setCategory(.record, mode: .default)
+                if mixable {
+                    try session.setCategory(
+                        .playAndRecord, mode: .default, options: [.mixWithOthers])
+                } else {
+                    try session.setCategory(.record, mode: .default)
+                }
                 try session.setActive(true)
             #endif
             let input = engine.inputNode

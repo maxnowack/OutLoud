@@ -54,10 +54,13 @@ struct DictationControllerTests {
     }
 
     @Test func refusesASecondDictationWhileOneIsRunning() async throws {
-        let cleaner = StandInCleaner(answer: .success("Erste."), delay: .milliseconds(300))
+        let cleaner = StandInCleaner(answer: .success("Erste."), delay: .milliseconds(500))
         let controller = try controller(cleaner: cleaner)
         let first = Task { await controller.process(text: "erste") }
-        try await Task.sleep(for: .milliseconds(50))
+        let deadline = ContinuousClock.now + .seconds(5)
+        while controller.state != .cleaning, ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(5))
+        }
         #expect(controller.state == .cleaning)
         #expect(await controller.process(text: "zweite") == nil)
         #expect(await first.value?.cleaned == "Erste.")

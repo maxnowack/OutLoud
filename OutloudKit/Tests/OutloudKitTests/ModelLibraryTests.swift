@@ -36,18 +36,19 @@ struct ModelLibraryTests {
     @Test func goesOnWithADownloadTheAppDidNotFinish() async throws {
         let defaults = try #require(UserDefaults(suiteName: "\(UUID())"))
         let model = ModelCatalog.parakeetV3
-        let first = library(WaitingFetcher(), defaults: defaults)
-        first.download(model, overCellular: true)
-        // The app ends here; a new launch reads what was pending.
+        // What an ended app leaves behind: the pending download, and no file locks.
+        defaults.set([model.id: true], forKey: "pendingDownloads")
         let fetcher = WaitingFetcher()
-        let second = library(fetcher, defaults: defaults)
-        await second.resumeDownloads()
-        #expect(second.state(of: model).isDownloading)
-        try await Task.sleep(for: .milliseconds(100))
+        let library = library(fetcher, defaults: defaults)
+        await library.resumeDownloads()
+        #expect(library.state(of: model).isDownloading)
+        let deadline = ContinuousClock.now + .seconds(5)
+        while fetcher.overCellular.isEmpty, ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(10))
+        }
         #expect(!fetcher.overCellular.isEmpty)
         #expect(fetcher.overCellular.allSatisfy { $0 })
-        first.cancelDownload(model)
-        second.cancelDownload(model)
+        library.cancelDownload(model)
     }
 
     @Test func forgetsADownloadTheUserStopped() async throws {
@@ -56,7 +57,10 @@ struct ModelLibraryTests {
         let first = library(WaitingFetcher(), defaults: defaults)
         first.download(model)
         first.cancelDownload(model)
-        try await Task.sleep(for: .milliseconds(100))
+        let deadline = ContinuousClock.now + .seconds(5)
+        while first.state(of: model).isDownloading, ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(10))
+        }
         let second = library(WaitingFetcher(), defaults: defaults)
         await second.resumeDownloads()
         #expect(!second.state(of: model).isDownloading)

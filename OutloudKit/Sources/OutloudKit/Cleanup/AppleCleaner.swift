@@ -49,14 +49,36 @@ public struct AppleCleaner: Cleaning {
     }
 
     public func clean(_ transcript: String) async throws -> String {
+        try await respond(to: transcript, progress: nil)
+    }
+
+    /// Streams the answer and estimates the progress from its length: a cleaned text is about as
+    /// long as the transcript. The estimate stays below 1 until the answer is complete.
+    public func clean(
+        _ transcript: String, progress: @escaping @Sendable (Double) -> Void
+    ) async throws -> String {
+        try await respond(to: transcript, progress: progress)
+    }
+
+    private func respond(
+        to transcript: String, progress: (@Sendable (Double) -> Void)?
+    ) async throws -> String {
         guard transcript.count <= Self.maximumCharacters else { throw CleanerError.tooLong }
         let session = LanguageModelSession(transcript: Self.examples)
         let prompt = CleanupPrompt.userMessage(for: transcript)
+        let options = GenerationOptions(samplingMode: .greedy)
+        let expected = Double(max(transcript.count, 1))
         return try await Self.withDeadline(timeout) {
             do {
-                return try await session.respond(
-                    to: prompt, options: GenerationOptions(samplingMode: .greedy)
-                ).content
+                guard let progress else {
+                    return try await session.respond(to: prompt, options: options).content
+                }
+                var answer = ""
+                for try await snapshot in session.streamResponse(to: prompt, options: options) {
+                    answer = snapshot.content
+                    progress(min(0.95, Double(answer.count) / expected))
+                }
+                return answer
             } catch let error as LanguageModelError {
                 throw CleanerError.refused(Self.name(of: error))
             }

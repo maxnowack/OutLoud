@@ -9,6 +9,18 @@ public protocol Transcribing: Sendable {
 /// Cleans up a transcript (`docs/SPEC.md` §"Cleanup").
 public protocol Cleaning: Sendable {
     func clean(_ transcript: String) async throws -> String
+    /// Like `clean(_:)`, reporting roughly how far the cleanup is, from 0 to 1.
+    func clean(
+        _ transcript: String, progress: @escaping @Sendable (Double) -> Void
+    ) async throws -> String
+}
+
+extension Cleaning {
+    public func clean(
+        _ transcript: String, progress: @escaping @Sendable (Double) -> Void
+    ) async throws -> String {
+        try await clean(transcript)
+    }
 }
 
 /// What one dictation produced.
@@ -68,18 +80,30 @@ public struct DictationPipeline: Sendable {
     }
 
     /// The path of text that system dictation supplied: cleanup only.
-    public func run(text: String) async throws -> DictationOutcome {
+    ///
+    /// - Parameter progress: Receives how far the cleanup is, where someone shows it.
+    public func run(
+        text: String, progress: (@Sendable (Double) -> Void)? = nil
+    ) async throws -> DictationOutcome {
         let transcript = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !transcript.isEmpty else { throw DictationError.nothingRecognised }
-        return await cleanUp(transcript)
+        return await cleanUp(transcript, progress: progress)
     }
 
-    private func cleanUp(_ transcript: String) async -> DictationOutcome {
+    private func cleanUp(
+        _ transcript: String, progress: (@Sendable (Double) -> Void)? = nil
+    ) async -> DictationOutcome {
         guard let cleaner else { return DictationOutcome(transcript: transcript) }
         let start = ContinuousClock.now
         do {
             let prepared = HesitationFilter.apply(to: transcript)
-            let cleaned = CleanupPrompt.sanitize(try await cleaner.clean(prepared))
+            let answer =
+                if let progress {
+                    try await cleaner.clean(prepared, progress: progress)
+                } else {
+                    try await cleaner.clean(prepared)
+                }
+            let cleaned = CleanupPrompt.sanitize(answer)
             guard Self.isUsable(cleaned, for: transcript) else {
                 // Lengths and timings only: the texts are personal data.
                 Self.log.notice(
