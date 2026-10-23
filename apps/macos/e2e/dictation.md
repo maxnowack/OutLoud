@@ -12,12 +12,13 @@ is not. TextEdit is open with an empty document focused.
 
 ## Steps
 
-1. Hold the shortcut (⌥ ⌘; ⌥ Space without Accessibility access). The overlay appears at
-   the bottom of the screen with "Recording…" and a level meter; the menu bar icon turns into a
-   record circle. TextEdit keeps the focus.
+1. Hold the shortcut (⌥ ⌘; ⌥ Space without Accessibility access). The overlay — a glass
+   capsule just as wide as its content — appears at the bottom of the screen with "Recording…"
+   and a level meter; the menu bar icon turns into a record circle. TextEdit keeps the focus.
 2. Say "Also ähm ich komme heute so gegen acht vorbei" and release.
-   The overlay shows "Transcribing…", then "Cleaning up…", then "Pasted" (paste branch) or
-   "Copied — press ⌘V. Allow Accessibility to paste automatically." (fallback branch).
+   The overlay shows "Transcribing…", then "Cleaning up…" with a filling progress bar, then
+   "Pasted" (paste branch) or "Copied — press ⌘V. Allow Accessibility to paste automatically."
+   (fallback branch).
 3. Paste branch: the cleaned text appears in TextEdit at the cursor; the clipboard holds what it
    held before step 1. Fallback branch: press ⌘V in TextEdit; the cleaned text appears.
 4. Tap ⌥ Space for less than a quarter second. Nothing is recorded; the overlay disappears.

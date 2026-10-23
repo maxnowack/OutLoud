@@ -1,426 +1,428 @@
 {
-  "sourceLanguage": "en",
-  "strings": {
-    "%@ is used by another app. Choose another shortcut in Settings.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ wird von einer anderen App verwendet. Wähle in den Einstellungen ein anderes Kürzel."
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%@ is used by another app. Choose another shortcut in Settings." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ wird von einer anderen App verwendet. Wähle in den Einstellungen ein anderes Kürzel."
           }
         }
       }
     },
-    "Accessibility access": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zugriff für Bedienungshilfen"
+    "%@ needs Accessibility access. Until it is allowed, hold %@." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ braucht Zugriff auf die Bedienungshilfen. Bis er erlaubt ist, halte %@."
           }
         }
       }
     },
-    "Acknowledgements": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Danksagungen"
+    "Accessibility access" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zugriff für Bedienungshilfen"
           }
         }
       }
     },
-    "Allow Accessibility…": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bedienungshilfen erlauben …"
+    "Acknowledgements" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Danksagungen"
           }
         }
       }
     },
-    "Allowed": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Erlaubt"
+    "Allow Accessibility…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bedienungshilfen erlauben …"
           }
         }
       }
     },
-    "Allow…": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Erlauben …"
+    "Allow…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erlauben …"
           }
         }
       }
     },
-    "Check for Updates…": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nach Updates suchen …"
+    "Allowed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erlaubt"
           }
         }
       }
     },
-    "Clean up the transcript": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Transkript bereinigen"
+    "Check for Updates…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nach Updates suchen …"
           }
         }
       }
     },
-    "Cleanup": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bereinigung"
+    "Clean up the transcript" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transkript bereinigen"
           }
         }
       }
     },
-    "Copied — press ⌘V where you want the text.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kopiert – drücke ⌘V dort, wo der Text hin soll."
+    "Cleanup" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bereinigung"
           }
         }
       }
     },
-    "Copied — press ⌘V.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kopiert – drücke ⌘V."
+    "Copied — press ⌘V where you want the text." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopiert – drücke ⌘V dort, wo der Text hin soll."
           }
         }
       }
     },
-    "Copied — press ⌘V. Allow Accessibility to paste automatically.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kopiert – drücke ⌘V. Erlaube Bedienungshilfen, um automatisch einzufügen."
+    "Copied — press ⌘V." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopiert – drücke ⌘V."
           }
         }
       }
     },
-    "Delete All": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alle löschen"
+    "Copied — press ⌘V. Allow Accessibility to paste automatically." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopiert – drücke ⌘V. Erlaube Bedienungshilfen, um automatisch einzufügen."
           }
         }
       }
     },
-    "Delete All Results…": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alle Ergebnisse löschen …"
+    "Delete All" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle löschen"
           }
         }
       }
     },
-    "Delete all results?": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Alle Ergebnisse löschen?"
+    "Delete all results?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Ergebnisse löschen?"
           }
         }
       }
     },
-    "Dictating": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Diktieren"
+    "Delete All Results…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Ergebnisse löschen …"
           }
         }
       }
     },
-    "Each result keeps the transcript, the recording and the cleaned version. A shorter period also applies to results already kept.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zu jedem Ergebnis gehören das Transkript, die Aufnahme und die bereinigte Fassung. Ein kürzerer Zeitraum gilt auch für bereits behaltene Ergebnisse."
+    "Dictating" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diktieren"
           }
         }
       }
     },
-    "General": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Allgemein"
+    "Each result keeps the transcript, the recording and the cleaned version. A shorter period also applies to results already kept." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zu jedem Ergebnis gehören das Transkript, die Aufnahme und die bereinigte Fassung. Ein kürzerer Zeitraum gilt auch für bereits behaltene Ergebnisse."
           }
         }
       }
     },
-    "History": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Verlauf"
+    "General" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Allgemein"
           }
         }
       }
     },
-    "History…": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Verlauf …"
+    "History" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verlauf"
           }
         }
       }
     },
-    "Hold %@ anywhere, speak, and release. Outloud asks for the microphone once. To paste into the active text field automatically, it also needs Accessibility access; without it, the result is copied to the clipboard.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Halte überall %@ gedrückt, sprich und lass los. Outloud fragt einmal nach dem Mikrofon. Um automatisch ins aktive Textfeld einzufügen, braucht es außerdem Zugriff für Bedienungshilfen; ohne ihn landet das Ergebnis in der Zwischenablage."
+    "History…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Verlauf …"
           }
         }
       }
     },
-    "Hold %@ to dictate, release it to paste.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Halte %@ zum Diktieren, lass los zum Einfügen."
+    "Hold %@ anywhere, speak, and release. Outloud asks for the microphone once. To paste into the active text field automatically, it also needs Accessibility access; without it, the result is copied to the clipboard." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Halte überall %@ gedrückt, sprich und lass los. Outloud fragt einmal nach dem Mikrofon. Um automatisch ins aktive Textfeld einzufügen, braucht es außerdem Zugriff für Bedienungshilfen; ohne ihn landet das Ergebnis in der Zwischenablage."
           }
         }
       }
     },
-    "Hold the shortcut while you speak; Outloud transcribes when you release it.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Halte das Kürzel, während du sprichst; Outloud transkribiert, wenn du loslässt."
+    "Hold %@ to dictate, release it to paste." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Halte %@ zum Diktieren, lass los zum Einfügen."
           }
         }
       }
     },
-    "Model": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Modell"
+    "Hold the shortcut while you speak; Outloud transcribes when you release it." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Halte das Kürzel, während du sprichst; Outloud transkribiert, wenn du loslässt."
           }
         }
       }
     },
-    "Models": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Modelle"
+    "Model" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modell"
           }
         }
       }
     },
-    "Outloud needs its models before you can dictate.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Outloud braucht seine Modelle, bevor du diktieren kannst."
+    "Models" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Modelle"
           }
         }
       }
     },
-    "Paste into the active text field": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ins aktive Textfeld einfügen"
+    "Outloud needs its models before you can dictate." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outloud braucht seine Modelle, bevor du diktieren kannst."
           }
         }
       }
     },
-    "Pasted": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Eingefügt"
+    "Paste into the active text field" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ins aktive Textfeld einfügen"
           }
         }
       }
     },
-    "Privacy": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Datenschutz"
+    "Pasted" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eingefügt"
           }
         }
       }
     },
-    "Push-to-talk shortcut": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Push-to-talk-Kürzel"
+    "Privacy" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Datenschutz"
           }
         }
       }
     },
-    "Quit": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beenden"
+    "Push-to-talk shortcut" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Push-to-talk-Kürzel"
           }
         }
       }
     },
-    "Removes filler words, fixes punctuation and sets paragraphs, without changing what you said.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Entfernt Füllwörter, korrigiert die Zeichensetzung und setzt Absätze, ohne zu ändern, was du gesagt hast."
+    "Quit" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beenden"
           }
         }
       }
     },
-    "Select a result": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Wähle ein Ergebnis"
+    "Removes filler words, fixes punctuation and sets paragraphs, without changing what you said." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entfernt Füllwörter, korrigiert die Zeichensetzung und setzt Absätze, ohne zu ändern, was du gesagt hast."
           }
         }
       }
     },
-    "Set Up Outloud": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Outloud einrichten"
+    "Select a result" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wähle ein Ergebnis"
           }
         }
       }
     },
-    "Set Up Outloud…": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Outloud einrichten …"
+    "Set Up Outloud" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outloud einrichten"
           }
         }
       }
     },
-    "Settings…": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Einstellungen …"
+    "Set Up Outloud…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outloud einrichten …"
           }
         }
       }
     },
-    "This shortcut is used by another app. Choose another one.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Dieses Kürzel wird von einer anderen App verwendet. Wähle ein anderes."
+    "Settings…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen …"
           }
         }
       }
     },
-    "To paste automatically, Outloud needs Accessibility access.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Zum automatischen Einfügen braucht Outloud Zugriff für Bedienungshilfen."
+    "This shortcut is used by another app. Choose another one." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieses Kürzel wird von einer anderen App verwendet. Wähle ein anderes."
           }
         }
       }
     },
-    "Transcription": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Transkription"
+    "To paste automatically, Outloud needs Accessibility access." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum automatischen Einfügen braucht Outloud Zugriff für Bedienungshilfen."
           }
         }
       }
     },
-    "Transcripts, recordings and cleaned versions are deleted from this Mac.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Transkripte, Aufnahmen und bereinigte Fassungen werden von diesem Mac gelöscht."
+    "Transcription" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transkription"
           }
         }
       }
     },
-    "Without it, or when no text field is focused, the result stays on the clipboard for pasting with ⌘V.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ohne ihn, oder wenn kein Textfeld ausgewählt ist, bleibt das Ergebnis zum Einfügen mit ⌘V in der Zwischenablage."
+    "Transcripts, recordings and cleaned versions are deleted from this Mac." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transkripte, Aufnahmen und bereinigte Fassungen werden von diesem Mac gelöscht."
           }
         }
       }
     },
-    "%@ needs Accessibility access. Until it is allowed, hold %@.": {
-      "localizations": {
-        "de": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "%@ braucht Zugriff auf die Bedienungshilfen. Bis er erlaubt ist, halte %@."
+    "Without it, or when no text field is focused, the result stays on the clipboard for pasting with ⌘V." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ohne ihn, oder wenn kein Textfeld ausgewählt ist, bleibt das Ergebnis zum Einfügen mit ⌘V in der Zwischenablage."
           }
         }
       }
     }
   },
-  "version": "1.0"
+  "version" : "1.0"
 }

@@ -51,8 +51,10 @@ final class HotkeyMonitor {
     private var handler: EventHandlerRef?
     private var eventMonitors: [Any] = []
     private var isPressed = false
-    /// While the chord is held: another key was pressed, so it is a different shortcut.
+    /// While the chord is held: it turned out to be a different shortcut, so it does not start a
+    /// recording again until ⌥ or ⌘ is released.
     private var chordSpoiled = false
+    private var chordPressedAt: ContinuousClock.Instant?
     private let onEvent: (Event) -> Void
 
     init(onEvent: @escaping (Event) -> Void) {
@@ -150,13 +152,22 @@ final class HotkeyMonitor {
         ].compactMap { $0 }
     }
 
+    /// How long after ⌥ ⌘ another key still makes it a shortcut, such as ⌥ ⌘ D; after that the key
+    /// is typed and the recording goes on (decided by the user, 2026-10-23).
+    static let shortcutWindow: Duration = .seconds(1)
+
     private func modifiersChanged(_ flags: NSEvent.ModifierFlags) {
-        let held =
-            flags.intersection([.shift, .control, .option, .command]) == [.option, .command]
-        if held, !isPressed, !chordSpoiled {
+        let modifiers = flags.intersection([.shift, .control, .option, .command])
+        let chord: NSEvent.ModifierFlags = [.option, .command]
+        if modifiers == chord {
+            guard !isPressed, !chordSpoiled else { return }
             isPressed = true
+            chordPressedAt = .now
             onEvent(.pressed)
-        } else if !held {
+        } else if modifiers.isSuperset(of: chord) {
+            // ⇧ or ⌃ joined ⌥ ⌘: a shortcut, at any time.
+            cancelChord()
+        } else {
             chordSpoiled = false
             if isPressed {
                 isPressed = false
@@ -166,9 +177,16 @@ final class HotkeyMonitor {
     }
 
     private func otherKeyPressed() {
+        guard isPressed, let pressedAt = chordPressedAt,
+            ContinuousClock.now - pressedAt < Self.shortcutWindow
+        else { return }
+        cancelChord()
+    }
+
+    private func cancelChord() {
+        chordSpoiled = true
         guard isPressed else { return }
         isPressed = false
-        chordSpoiled = true
         onEvent(.cancelled)
     }
 }

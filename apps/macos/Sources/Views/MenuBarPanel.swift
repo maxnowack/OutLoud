@@ -20,7 +20,7 @@ struct MenuBarPanel: View {
                     .foregroundStyle(Tokens.textSecondary)
                 Button("Set Up Outloud…", action: showSetup)
                     .buttonStyle(.borderedProminent)
-                    .tint(Tokens.accent)
+                    .tint(Tokens.accentFill)
             } else if app.hotkeyAvailable {
                 Text(
                     "Hold \(app.activeHotkey?.title ?? app.hotkey.title) to dictate, release it to paste."

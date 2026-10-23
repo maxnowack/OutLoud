@@ -10,7 +10,10 @@ Setup completed.
 ## Steps
 
 1. With Accessibility access allowed, the shortcut is "⌥ ⌘". In another app, hold ⌥ ⌘ and speak,
-   release: the result is pasted. Hold ⌥ ⌘ and press D: no dictation (the overlay may flash).
+   release: the result is pasted. Hold ⌥ ⌘ and press D at once: no dictation (the overlay may
+   flash). Hold ⌥ ⌘, speak, add ⇧ after a few seconds: the recording is cancelled. Hold ⌥ ⌘,
+   speak for two seconds, press a letter, speak on, release: the letter reaches the app and the
+   whole dictation is pasted (ADR 0021).
 2. Remove Outloud from System Settings › Privacy & Security › Accessibility and reopen Settings:
    a note says ⌥ ⌘ needs Accessibility access and to hold ⌥ Space until then; ⌥ Space dictates,
    ⌥ ⌘ does nothing. Click "Allow…" and allow it: the note disappears and ⌥ ⌘ works again,

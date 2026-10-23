@@ -4,8 +4,9 @@ import OutloudKit
 import OutloudUI
 import SwiftUI
 
-/// The small floating panel that shows recording and processing while the hotkey is used
-/// (`docs/DESIGN.md` §"Screens": macOS recording overlay).
+/// The small floating pill that shows recording and processing while the hotkey is used
+/// (`docs/DESIGN.md` §"Screens": macOS recording overlay). The panel takes the pill's size and
+/// stays centred at the bottom of the screen as the pill grows and shrinks.
 ///
 /// The panel never becomes key or active, so the app the user is typing in keeps the focus and
 /// receives the paste.
@@ -27,6 +28,7 @@ final class RecordingOverlay {
         panel.ignoresMouseEvents = true
         panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
         panel.contentView = NSHostingView(rootView: OverlayView(model: model))
+        model.onResize = { [weak self] size in self?.resize(to: size) }
     }
 
     func bind(to dictation: DictationController) {
@@ -63,6 +65,12 @@ final class RecordingOverlay {
         }
     }
 
+    private func resize(to size: CGSize) {
+        guard size != panel.frame.size, size.width > 0, size.height > 0 else { return }
+        panel.setContentSize(size)
+        position()
+    }
+
     private func position() {
         guard let screen = NSScreen.main else { return }
         let size = panel.frame.size
@@ -76,6 +84,8 @@ final class RecordingOverlay {
 final class OverlayModel {
     var dictation: DictationController?
     var delivery: AutoPaster.Delivery?
+    /// Called with the pill's size whenever its content changes it.
+    @ObservationIgnored var onResize: ((CGSize) -> Void)?
 }
 
 private struct OverlayView: View {
@@ -91,8 +101,10 @@ private struct OverlayView: View {
                 Text(Self.message(for: delivery))
                     .font(Tokens.detail)
                     .lineLimit(2)
+                    .frame(maxWidth: Tokens.overlayTextWidth)
+                    .fixedSize(horizontal: false, vertical: true)
             } else if let dictation = model.dictation {
-                StatusIndicator(state: dictation.state)
+                StatusIndicator(state: dictation.state, progress: dictation.cleanupProgress)
                 if dictation.state == .recording {
                     LevelMeter(level: dictation.level)
                 }
@@ -105,12 +117,15 @@ private struct OverlayView: View {
         }
         .padding(.horizontal, Tokens.Spacing.l)
         .padding(.vertical, Tokens.Spacing.m)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: Tokens.radiusLarge))
-        .shadow(
-            color: .black.opacity(Tokens.overlayShadowOpacity), radius: Tokens.overlayShadowRadius
-        )
-        .padding(Tokens.Spacing.s)
+        .glassEffect(.regular, in: .capsule)
+        // Room for the glass's own shadow inside the panel.
+        .padding(Tokens.Spacing.m)
+        .fixedSize()
+        .onGeometryChange(for: CGSize.self) {
+            $0.size
+        } action: {
+            model.onResize?($0)
+        }
     }
 
     static func message(for delivery: AutoPaster.Delivery) -> String {
