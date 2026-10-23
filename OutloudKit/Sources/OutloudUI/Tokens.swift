@@ -63,11 +63,21 @@ public enum Tokens {
     /// The macOS recording overlay is a Liquid Glass capsule, which brings its own depth; its
     /// text wraps at this width.
     public static let overlayTextWidth: CGFloat = 320
+    /// The transparent area the overlay's panel takes at the bottom of the screen; the capsule
+    /// moves and grows inside it.
+    public static let overlayAreaSize = CGSize(width: 640, height: 160)
+    /// The area's distance from the bottom of the visible screen.
+    public static let overlayBottomInset: CGFloat = 68
 
     // MARK: Motion
 
     public static let standard = Animation.easeInOut(duration: 0.2)
     public static let pulse = Animation.easeInOut(duration: 1).repeatForever(autoreverses: true)
+    /// The macOS recording overlay fading and rising in, and fading out.
+    public static let overlayAppear = Animation.spring(duration: 0.4, bounce: 0.25)
+    public static let overlayFadeDuration: Duration = .milliseconds(400)
+    /// The overlay's capsule following its content's size.
+    public static let overlayResize = Animation.smooth(duration: 0.3)
 }
 
 extension Color {
