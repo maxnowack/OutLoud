@@ -23,6 +23,7 @@ struct SettingsView: View {
 
 private struct GeneralSettings: View {
     @Bindable var app: AppModel
+    @State private var cleanup = CleanupAvailability.current
 
     var body: some View {
         Form {
@@ -39,23 +40,36 @@ private struct GeneralSettings: View {
                     )
                     .foregroundStyle(Tokens.warning)
                 }
+                if app.hotkeyFallsBack {
+                    HStack {
+                        Label(
+                            "\(HotkeyPreset.optionCommand.title) needs Accessibility access. Until it is allowed, hold \(HotkeyPreset.fallback.title).",
+                            systemImage: "exclamationmark.triangle"
+                        )
+                        .foregroundStyle(Tokens.warning)
+                        Spacer()
+                        Button("Allow…") { app.requestAccessibility() }
+                    }
+                }
             } footer: {
                 Text("Hold the shortcut while you speak; Outloud transcribes when you release it.")
             }
 
             Section {
-                Toggle("Clean up the transcript", isOn: Bindable(app.settings).cleanupEnabled)
-                if app.settings.cleanupEnabled
-                    && !app.library.state(of: app.settings.cleanupModel).isInstalled
-                {
-                    ModelRow(
-                        model: app.settings.cleanupModel, library: app.library, network: app.network
-                    )
-                }
-            } footer: {
-                Text(
-                    "Removes filler words, fixes punctuation and sets paragraphs, without changing what you said."
+                Toggle(
+                    "Clean up the transcript",
+                    isOn: Binding(
+                        get: { app.settings.cleanupEnabled && cleanup == .available },
+                        set: { app.settings.cleanupEnabled = $0 })
                 )
+                .disabled(cleanup != .available)
+            } footer: {
+                VStack(alignment: .leading, spacing: Tokens.Spacing.s) {
+                    Text(
+                        "Removes filler words, fixes punctuation and sets paragraphs, without changing what you said."
+                    )
+                    CleanupAvailabilityNote(availability: cleanup)
+                }
             }
 
             Section {
@@ -77,6 +91,7 @@ private struct GeneralSettings: View {
             }
         }
         .formStyle(.grouped)
+        .trackingCleanupAvailability($cleanup)
         .onAppear { app.refreshAccessibility() }
     }
 }
@@ -86,30 +101,14 @@ private struct ModelSettings: View {
 
     var body: some View {
         Form {
-            ForEach(ModelPurpose.allCases, id: \.self) { purpose in
-                Section(purpose == .transcription ? "Transcription" : "Cleanup") {
-                    let models = ModelCatalog.models(for: purpose)
-                    if models.count > 1 {
-                        Picker("Model", selection: binding(for: purpose)) {
-                            ForEach(models) { Text($0.displayName).tag($0.id) }
-                        }
-                    }
-                    ForEach(models) { model in
-                        ModelRow(model: model, library: app.library, network: app.network)
-                    }
+            Section("Transcription") {
+                ForEach(ModelCatalog.all) { model in
+                    ModelRow(model: model, library: app.library, network: app.network)
                 }
             }
         }
         .formStyle(.grouped)
         .task { await app.library.refresh() }
-    }
-
-    private func binding(for purpose: ModelPurpose) -> Binding<String> {
-        let settings = app.settings
-        return purpose == .transcription
-            ? Binding(
-                get: { settings.transcriptionModelID }, set: { settings.transcriptionModelID = $0 })
-            : Binding(get: { settings.cleanupModelID }, set: { settings.cleanupModelID = $0 })
     }
 }
 

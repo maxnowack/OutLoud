@@ -1,0 +1,51 @@
+#!/bin/sh
+# Builds the GitHub download of the macOS app: archive, Developer ID signature, notarisation,
+# stapling, the Sparkle-signed zip and the appcast (docs/RELEASE.md, ADR 0016).
+#
+# Needs, once per Mac: a "Developer ID Application" certificate of team 95ZC649QPM in the
+# keychain, a notarytool profile named "outloud-notary", and Sparkle's EdDSA key in the
+# keychain (docs/RELEASE.md §"Release procedure"). Uploading is left to the person releasing.
+set -eu
+cd "$(dirname "$0")/.."
+
+version=$(sed -n 's/^ *MARKETING_VERSION: *"\(.*\)"/\1/p' project.yml)
+out=.build/release
+rm -rf "$out"
+mkdir -p "$out/updates"
+
+xcodegen generate --quiet
+xcodebuild -project Outloud.xcodeproj -scheme Outloud -configuration Release \
+    -destination 'generic/platform=macOS' -derivedDataPath .build/DerivedData -jobs 4 -quiet \
+    -archivePath "$out/Outloud.xcarchive" \
+    archive
+
+cat > "$out/ExportOptions.plist" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>method</key><string>developer-id</string>
+  <key>teamID</key><string>95ZC649QPM</string>
+  <key>signingStyle</key><string>manual</string>
+</dict>
+</plist>
+EOF
+xcodebuild -exportArchive -archivePath "$out/Outloud.xcarchive" \
+    -exportOptionsPlist "$out/ExportOptions.plist" -exportPath "$out/export" -quiet
+
+app="$out/export/Outloud.app"
+zip="$out/updates/Outloud-$version.zip"
+ditto -c -k --keepParent "$app" "$zip"
+xcrun notarytool submit "$zip" --keychain-profile outloud-notary --wait
+xcrun stapler staple "$app"
+rm "$zip"
+ditto -c -k --keepParent "$app" "$zip"
+
+# Sparkle's tools come with its package; generate_appcast signs the zip with the EdDSA key
+# from the keychain and writes the appcast next to it.
+tools=$(find .build/DerivedData/SourcePackages/artifacts -type d -path '*Sparkle/bin' | head -1)
+"$tools/generate_appcast" \
+    --download-url-prefix "https://github.com/maxnowack/OutLoud/releases/download/v$version/" \
+    "$out/updates"
+
+echo "Upload $zip and $out/updates/appcast.xml to the GitHub release v$version."

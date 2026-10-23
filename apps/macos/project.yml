@@ -1,13 +1,17 @@
 # The source of the macOS app's Xcode project; generate it with `xcodegen generate` (ADR 0011).
 name: Outloud
 options:
-  bundleIdPrefix: io.github.maxnowack
+  bundleIdPrefix: dev.nowack
   deploymentTarget:
     macOS: "27.0"
   developmentLanguage: en
 packages:
   OutloudKit:
     path: ../../OutloudKit
+  # Updates of the GitHub download (ADR 0016).
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    exactVersion: 2.10.0
 settings:
   base:
     SWIFT_VERSION: "6.0"
@@ -33,6 +37,7 @@ targets:
         product: OutloudKit
       - package: OutloudKit
         product: OutloudUI
+      - package: Sparkle
     info:
       path: Generated/Info.plist
       properties:
@@ -42,6 +47,11 @@ targets:
         LSUIElement: true
         LSApplicationCategoryType: public.app-category.productivity
         NSMicrophoneUsageDescription: Outloud records your voice while you hold the shortcut, to turn it into text on this Mac.
+        # Sparkle reads the appcast from the latest GitHub release (ADR 0016). The public
+        # EdDSA key is added as SUPublicEDKey once generated (docs/RELEASE.md); until then the
+        # app does not start the updater.
+        SUFeedURL: https://github.com/maxnowack/OutLoud/releases/latest/download/appcast.xml
+        SUEnableAutomaticChecks: true
     entitlements:
       path: Generated/Outloud.entitlements
       properties:
@@ -49,9 +59,17 @@ targets:
         com.apple.security.device.audio-input: true
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: io.github.maxnowack.outloud
+        PRODUCT_BUNDLE_IDENTIFIER: dev.nowack.outloud
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        DEVELOPMENT_TEAM: 95ZC649QPM
         CODE_SIGN_STYLE: Manual
-        CODE_SIGN_IDENTITY: "-"
         ENABLE_HARDENED_RUNTIME: YES
         GENERATE_INFOPLIST_FILE: NO
+      configs:
+        # A stable signature keeps the microphone and Accessibility permissions across builds.
+        Debug:
+          CODE_SIGN_IDENTITY: Apple Development
+        # The GitHub download: Developer ID, notarised (docs/RELEASE.md).
+        Release:
+          CODE_SIGN_IDENTITY: Developer ID Application
+          OTHER_CODE_SIGN_FLAGS: --timestamp

@@ -9,20 +9,28 @@ Setup completed.
 
 ## Steps
 
-1. Settings › General › "Push-to-talk shortcut" › "⌃ ⌥ Space". Hold ⌃ ⌥ Space: a recording
+1. With Accessibility access allowed, the shortcut is "⌥ ⌘". In another app, hold ⌥ ⌘ and speak,
+   release: the result is pasted. Hold ⌥ ⌘ and press D: no dictation (the overlay may flash).
+2. Remove Outloud from System Settings › Privacy & Security › Accessibility and reopen Settings:
+   a note says ⌥ ⌘ needs Accessibility access and to hold ⌥ Space until then; ⌥ Space dictates,
+   ⌥ ⌘ does nothing. Click "Allow…" and allow it: the note disappears and ⌥ ⌘ works again,
+   without a relaunch.
+3. Settings › General › "Push-to-talk shortcut" › "⌃ ⌥ Space". Hold ⌃ ⌥ Space: a recording
    starts; ⌥ Space alone does nothing.
-2. Turn off "Clean up the transcript" and dictate: the result equals the transcript (fillers
-   stay).
-3. Turn off "Paste into the active text field" and dictate: the overlay reads "Copied — press ⌘V."
-4. With auto-paste on and Accessibility not allowed, "Accessibility access" shows "Allow…";
+4. Under "Clean up the transcript", the note reads "Uses Apple Intelligence on this device. No
+   download." Turn the toggle off and dictate: the result equals the transcript (fillers stay).
+   With Apple Intelligence switched off in System Settings, the toggle is off and disabled, and
+   the note says to switch it on.
+5. Turn off "Paste into the active text field" and dictate: the overlay reads "Copied — press ⌘V."
+6. With auto-paste on and Accessibility not allowed, "Accessibility access" shows "Allow…";
    clicking it opens the system prompt. After allowing, it shows "Allowed".
-5. Settings › History: choose "3 days"; the Privacy tab reads "… kept on this device for 3 days,
+7. Settings › History: choose "3 days"; the Privacy tab reads "… kept on this device for 3 days,
    then deleted."
-6. Settings › Privacy shows the three points and the acknowledgements with the model licences.
+8. Settings › Privacy shows the three points and the acknowledgements with the model licences.
 
 ## Assertions
 
-- `defaults read io.github.maxnowack.outloud` shows `hotkey`, `cleanupEnabled`, `autoPaste` and
+- `defaults read dev.nowack.outloud` shows `hotkey`, `cleanupEnabled`, `autoPaste` and
   `retentionPeriod` with the chosen values.
 
 ## Screen reader pass

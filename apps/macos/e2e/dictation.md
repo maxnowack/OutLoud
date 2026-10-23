@@ -12,8 +12,9 @@ is not. TextEdit is open with an empty document focused.
 
 ## Steps
 
-1. Hold ⌥ Space. The overlay appears at the bottom of the screen with "Recording…" and a level
-   meter; the menu bar icon turns into a record circle. TextEdit keeps the focus.
+1. Hold the shortcut (⌥ ⌘; ⌥ Space without Accessibility access). The overlay appears at
+   the bottom of the screen with "Recording…" and a level meter; the menu bar icon turns into a
+   record circle. TextEdit keeps the focus.
 2. Say "Also ähm ich komme heute so gegen acht vorbei" and release.
    The overlay shows "Transcribing…", then "Cleaning up…", then "Pasted" (paste branch) or
    "Copied — press ⌘V. Allow Accessibility to paste automatically." (fallback branch).
@@ -33,7 +34,7 @@ is not. TextEdit is open with an empty document focused.
 ## Assertions
 
 - The result contains no "ähm"; the transcript in the history (`history.md`) still does.
-- The process exits with status 0 on Quit (no llama.cpp abort).
+- The process exits with status 0 on Quit.
 - Do not assert the exact wording of the cleanup; the model may phrase punctuation differently.
 
 ## Screen reader pass

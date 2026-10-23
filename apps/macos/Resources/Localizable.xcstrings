@@ -61,6 +61,16 @@
         }
       }
     },
+    "Check for Updates…": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nach Updates suchen …"
+          }
+        }
+      }
+    },
     "Clean up the transcript": {
       "localizations": {
         "de": {
@@ -397,6 +407,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Ohne ihn, oder wenn kein Textfeld ausgewählt ist, bleibt das Ergebnis zum Einfügen mit ⌘V in der Zwischenablage."
+          }
+        }
+      }
+    },
+    "%@ needs Accessibility access. Until it is allowed, hold %@.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ braucht Zugriff auf die Bedienungshilfen. Bis er erlaubt ist, halte %@."
           }
         }
       }

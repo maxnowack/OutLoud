@@ -17,9 +17,11 @@ describe this area — read them before making changes here.
 - **(MUST)** Build into `.build/DerivedData` (`-derivedDataPath`), as
   `./scripts/precommit` does. The shared DerivedData folder is used by
   the user's Xcode and by other sessions.
-- The app runs outside the App Sandbox (ADR 0009) and is signed ad hoc
-  for local builds; the signing of the GitHub download is open
-  (`plans/FIRST_VERSION.md` §"Open questions").
+- The app runs outside the App Sandbox (ADR 0009). Debug builds are
+  signed with "Apple Development" of team 95ZC649QPM, so the microphone
+  and Accessibility permissions survive rebuilds; `./scripts/release`
+  builds the Developer ID, notarised download with its Sparkle appcast
+  (ADR 0016, `docs/RELEASE.md`).
 
 ## Verifying a change
 
@@ -38,8 +40,8 @@ describe this area — read them before making changes here.
   agent cannot grant. It writes the user's clipboard and history, so save
   and restore the clipboard and delete the test entries afterwards.
 - The first launch of a newly built app takes up to a minute before the
-  first dictation: CoreML and llama.cpp prepare the models for it. Later
-  launches load both models in about a second (`plans/FIRST_VERSION.md`
+  first dictation: CoreML prepares the transcription model for it. Later
+  launches load it in about a second (`plans/FIRST_VERSION.md`
   §"Status").
 
 ## Tests
@@ -69,9 +71,6 @@ describe this area — read them before making changes here.
   that takes text and is not a password field (ADR 0004). The app holds
   the microphone and Accessibility access outside a sandbox; any other
   use of them acts in the user's name without their action.
-- **(MUST)** On terminating, release the loaded models
-  (`Engines.unloadAll()`) before `QwenCleaner.shutDownBackend()`;
-  llama.cpp aborts the process at exit while a model holds Metal buffers.
 
 ## Coding rules
 

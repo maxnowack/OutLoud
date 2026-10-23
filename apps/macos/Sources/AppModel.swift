@@ -16,16 +16,21 @@ final class AppModel {
     /// The last result and how it was handed over, for the menu bar panel.
     private(set) var lastOutcome: DictationOutcome?
     private(set) var lastDelivery: AutoPaster.Delivery?
-    /// Whether the push-to-talk shortcut could be registered.
-    private(set) var hotkeyAvailable = true
+    /// The shortcut that works: the chosen one, its fallback while ⌥ ⌘ lacks Accessibility
+    /// access (ADR 0020), or `nil` when another app holds it.
+    private(set) var activeHotkey: HotkeyPreset? = .default
     private(set) var accessibilityTrusted = AutoPaster.isTrusted
 
     var hotkey: HotkeyPreset {
         didSet {
             UserDefaults.standard.set(hotkey.rawValue, forKey: "hotkey")
-            hotkeyAvailable = hotkeyMonitor?.register(hotkey) ?? false
+            registerHotkey()
         }
     }
+
+    var hotkeyAvailable: Bool { activeHotkey != nil }
+    /// Whether ⌥ ⌘ was chosen but ⌥ Space stands in for it, for want of Accessibility access.
+    var hotkeyFallsBack: Bool { hotkey.isModifierChord && activeHotkey == .fallback }
 
     var autoPasteEnabled: Bool {
         didSet { UserDefaults.standard.set(autoPasteEnabled, forKey: "autoPaste") }
@@ -81,11 +86,13 @@ final class AppModel {
             switch event {
             case .pressed: Task { await self.hotkeyPressed() }
             case .released: Task { await self.hotkeyReleased() }
+            case .cancelled: self.hotkeyCancelled()
             }
         }
-        hotkeyAvailable = hotkeyMonitor?.register(hotkey) ?? false
+        registerHotkey()
         history.startExpiringEntries()
         await library.refresh()
+        await library.resumeDownloads()
         #if DEBUG
             let preloadStart = ContinuousClock.now
         #endif
@@ -130,6 +137,14 @@ final class AppModel {
         }
     }
 
+    /// Another key joined the shortcut — ⌥ ⌘ D, say —, so it was not meant as a dictation.
+    func hotkeyCancelled() {
+        guard recordingStarted != nil else { return }
+        recordingStarted = nil
+        dictation.cancelRecording()
+        overlay.hide()
+    }
+
     func hotkeyReleased() async {
         guard let started = recordingStarted else { return }
         recordingStarted = nil
@@ -165,13 +180,21 @@ final class AppModel {
             for _ in 0..<120 {
                 try? await Task.sleep(for: .seconds(1))
                 guard let self else { return }
-                self.accessibilityTrusted = AutoPaster.isTrusted
+                self.refreshAccessibility()
                 if self.accessibilityTrusted { return }
             }
         }
     }
 
     func refreshAccessibility() {
-        accessibilityTrusted = AutoPaster.isTrusted
+        let trusted = AutoPaster.isTrusted
+        guard trusted != accessibilityTrusted else { return }
+        accessibilityTrusted = trusted
+        // ⌥ ⌘ works only with Accessibility access; it replaces or gives way to its fallback.
+        if hotkey.isModifierChord { registerHotkey() }
+    }
+
+    private func registerHotkey() {
+        activeHotkey = hotkeyMonitor?.register(hotkey)
     }
 }

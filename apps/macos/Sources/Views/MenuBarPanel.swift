@@ -6,6 +6,7 @@ import SwiftUI
 /// The panel under the menu bar icon (`docs/DESIGN.md` §"Screens": macOS menu bar panel).
 struct MenuBarPanel: View {
     let app: AppModel
+    let updater: Updater
     let showSetup: () -> Void
     let showHistory: () -> Void
 
@@ -21,9 +22,11 @@ struct MenuBarPanel: View {
                     .buttonStyle(.borderedProminent)
                     .tint(Tokens.accent)
             } else if app.hotkeyAvailable {
-                Text("Hold \(app.hotkey.title) to dictate, release it to paste.")
-                    .font(Tokens.detail)
-                    .foregroundStyle(Tokens.textSecondary)
+                Text(
+                    "Hold \(app.activeHotkey?.title ?? app.hotkey.title) to dictate, release it to paste."
+                )
+                .font(Tokens.detail)
+                .foregroundStyle(Tokens.textSecondary)
             } else {
                 Label(
                     "\(app.hotkey.title) is used by another app. Choose another shortcut in Settings.",
@@ -62,6 +65,9 @@ struct MenuBarPanel: View {
             HStack {
                 Button("History…", action: showHistory)
                 SettingsLink { Text("Settings…") }
+                if updater.isAvailable {
+                    Button("Check for Updates…") { updater.checkForUpdates() }
+                }
                 Spacer()
                 Button("Quit") { NSApp.terminate(nil) }
             }

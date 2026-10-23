@@ -11,7 +11,8 @@ struct OutloudApp: App {
     var body: some Scene {
         MenuBarExtra {
             MenuBarPanel(
-                app: delegate.app, showSetup: delegate.showSetup, showHistory: delegate.showHistory)
+                app: delegate.app, updater: delegate.updater, showSetup: delegate.showSetup,
+                showHistory: delegate.showHistory)
         } label: {
             MenuBarIcon(state: delegate.app.dictation.state)
         }
@@ -27,17 +28,13 @@ struct OutloudApp: App {
 final class AppDelegate: NSObject, NSApplicationDelegate {
     let app = AppModel()
     let windows = WindowManager()
+    let updater = Updater()
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Task {
             await app.start()
             if app.needsSetup { showSetup() }
         }
-    }
-
-    func applicationWillTerminate(_ notification: Notification) {
-        app.engines.unloadAll()
-        QwenCleaner.shutDownBackend()
     }
 
     func showSetup() {

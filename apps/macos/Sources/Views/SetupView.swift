@@ -20,12 +20,10 @@ struct SetupView: View {
                     }
                 }
                 Divider()
-                PrivacyNotice(period: app.settings.retentionPeriod)
-                Divider()
                 VStack(alignment: .leading, spacing: Tokens.Spacing.s) {
                     Text("Dictating").font(Tokens.heading)
                     Text(
-                        "Hold \(app.hotkey.title) anywhere, speak, and release. Outloud asks for the microphone once. To paste into the active text field automatically, it also needs Accessibility access; without it, the result is copied to the clipboard."
+                        "Hold \(app.activeHotkey?.title ?? app.hotkey.title) anywhere, speak, and release. Outloud asks for the microphone once. To paste into the active text field automatically, it also needs Accessibility access; without it, the result is copied to the clipboard."
                     )
                     .font(Tokens.detail)
                     .foregroundStyle(Tokens.textSecondary)
