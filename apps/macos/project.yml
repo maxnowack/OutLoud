@@ -42,6 +42,8 @@ targets:
       path: Generated/Info.plist
       properties:
         CFBundleDisplayName: Outloud
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         CFBundleDevelopmentRegion: en
         CFBundleLocalizations: [en, de]
         LSUIElement: true
