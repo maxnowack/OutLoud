@@ -86,8 +86,11 @@ which brings its own depth and shadow.
 ### Motion
 
 `standard`: 0.2 s ease-in-out for state changes. `pulse`: 1 s repeating
-scale of the recording icon. With Reduce Motion on, nothing pulses and
-state changes cross-fade.
+scale of the recording icon. `overlayAppear`: a 0.4 s spring with a little
+bounce, for the macOS overlay rising and fading in and settling and fading
+out. `overlayResize`: 0.3 s smooth, for the overlay's capsule following its
+content's size. With Reduce Motion on, nothing pulses or rises, and state
+changes and the overlay only cross-fade.
 
 ## Components
 
@@ -253,10 +256,13 @@ design canvas outside the repository on 2026-10-23.
 
 - **macOS menu bar panel** — StatusIndicator, ResultCard, FailureNotice,
   buttons for History, Settings and Quit.
-- **macOS recording overlay** — a Liquid Glass capsule (`glassEffect`) as
-  wide as its content: StatusIndicator (with the cleanup's progress),
-  LevelMeter, or the delivery message, which wraps at `overlayTextWidth`;
-  centred at the bottom of the screen.
+- **macOS recording overlay** — a Liquid Glass capsule (`glassEffect` in a
+  `GlassEffectContainer`, drawn in its active look although the panel never
+  becomes key) as wide as its content: StatusIndicator (with the cleanup's
+  progress), LevelMeter, or the delivery message, which wraps at
+  `overlayTextWidth`. It rises and fades in, follows its content's size
+  smoothly, and fades out; centred at the bottom of the screen, inside a
+  fixed transparent area of `overlayAreaSize`.
 - **macOS setup window** — ModelSetup, PrivacyNotice.
 - **macOS settings window** — General (cleanup with its
   CleanupAvailabilityNote; the shortcut, with a `warning` note and "Allow…"
