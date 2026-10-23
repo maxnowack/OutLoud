@@ -92,7 +92,7 @@ struct SettingsScreen: View {
                 }
 
                 Section {
-                    Button("Ways to start Outloud") { showingGuide = true }
+                    Button("Dictate from any app") { showingGuide = true }
                     NavigationLink("Privacy") {
                         ScrollView {
                             PrivacyNotice(period: app.settings.retentionPeriod).padding(

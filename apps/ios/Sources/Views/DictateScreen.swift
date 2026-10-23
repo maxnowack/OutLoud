@@ -42,7 +42,7 @@ struct DictateScreen: View {
                     } label: {
                         Image(systemName: "bolt")
                     }
-                    .accessibilityLabel("Ways to start Outloud")
+                    .accessibilityLabel("Dictate from any app")
                 }
             }
             .sheet(isPresented: $showingGuide) { ShortcutGuide() }
@@ -64,7 +64,7 @@ struct DictateScreen: View {
         } else {
             switch app.dictation.state {
             case .transcribing, .cleaning:
-                StatusIndicator(state: app.dictation.state)
+                StatusIndicator(state: app.dictation.state, progress: app.dictation.cleanupProgress)
             case .finished(let outcome):
                 DeliveryConfirmation(outcome: outcome)
             case .failed(let failure):
@@ -92,28 +92,34 @@ struct DictateScreen: View {
     }
 }
 
-/// Points to the ways of starting Outloud without opening it, until dismissed.
+/// Points to dictating from any app — the shortcut and the ways of running it — until dismissed.
 private struct ShortcutHintCard: View {
     let open: () -> Void
     let dismiss: () -> Void
 
     var body: some View {
-        HStack(spacing: Tokens.Spacing.m) {
+        HStack(alignment: .top, spacing: Tokens.Spacing.s) {
             Button(action: open) {
                 HStack(spacing: Tokens.Spacing.m) {
                     Image(systemName: "bolt.fill")
                         .foregroundStyle(.white)
                         .frame(width: 40, height: 40)
                         .background(
-                            Tokens.accent, in: RoundedRectangle(cornerRadius: Tokens.radiusMedium))
-                    VStack(alignment: .leading, spacing: Tokens.Spacing.xs / 2) {
-                        Text("Dictate with the Action Button").font(Tokens.heading)
-                        Text("Or from the Control Center, the Lock Screen, Siri …")
-                            .font(Tokens.caption)
-                            .foregroundStyle(Tokens.textSecondary)
+                            Tokens.accentFill,
+                            in: RoundedRectangle(cornerRadius: Tokens.radiusMedium))
+                    VStack(alignment: .leading, spacing: Tokens.Spacing.xs) {
+                        Text("Dictate from any app").font(Tokens.heading)
+                        Text(
+                            "Set up a shortcut once, then start and stop without leaving your app."
+                        )
+                        .font(Tokens.caption)
+                        .foregroundStyle(Tokens.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
                     }
                     Spacer(minLength: 0)
                 }
+                .padding(.vertical, Tokens.Spacing.m)
+                .padding(.leading, Tokens.Spacing.m)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
@@ -126,7 +132,6 @@ private struct ShortcutHintCard: View {
             .buttonStyle(.plain)
             .accessibilityLabel("Hide")
         }
-        .padding(.leading, Tokens.Spacing.m)
         .background(
             Tokens.accent.opacity(0.12), in: RoundedRectangle(cornerRadius: Tokens.radiusLarge))
     }

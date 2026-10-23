@@ -100,7 +100,14 @@ final class AppModel {
     // MARK: Dictation
 
     func toggleRecording() async {
-        if isRecording { await stopRecording() } else { await startRecording() }
+        // A recording started from another app ends with its Live Activity.
+        if isRecording, BackgroundDictation.shared.isRunning {
+            _ = await BackgroundDictation.shared.stop(viaShortcut: false)
+        } else if isRecording {
+            await stopRecording()
+        } else {
+            await startRecording()
+        }
     }
 
     func startRecording() async {
@@ -123,15 +130,6 @@ final class AppModel {
             outcome = await dictation.stopRecording()
         }
         if let outcome { deliver(outcome) }
-    }
-
-    /// Transcribes a recording made elsewhere — by a shortcut — and keeps it in the history. It
-    /// does not touch the clipboard: the shortcut copies what it returns.
-    func transcribe(samples: [Float]) async -> DictationOutcome? {
-        let outcome = await dictation.process(samples: samples)
-        // The dictate tab would otherwise say "Copied" for a text Outloud did not copy.
-        dictation.reset()
-        return outcome
     }
 
     /// Cleans up text a shortcut hands over and keeps it in the history, without the clipboard:

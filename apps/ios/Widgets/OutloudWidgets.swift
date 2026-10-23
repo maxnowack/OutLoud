@@ -6,6 +6,7 @@ import WidgetKit
 struct OutloudWidgets: WidgetBundle {
     var body: some Widget {
         DictateControl()
+        DictationLiveActivity()
     }
 }
 

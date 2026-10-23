@@ -2,8 +2,9 @@ import AppIntents
 import OutloudUI
 import SwiftUI
 
-/// The ways of starting a dictation without opening Outloud first, each with its steps and its
-/// trade-offs (`docs/SPEC.md` §"Dictation on iOS").
+/// Dictating from any app (`docs/SPEC.md` §"Dictation on iOS", ADR 0022): first the shortcut the
+/// user sets up once, then the ways of running it, each with its steps and trade-offs, and last
+/// the control that opens Outloud instead.
 struct ShortcutGuide: View {
     @Environment(\.dismiss) private var dismiss
 
@@ -11,36 +12,45 @@ struct ShortcutGuide: View {
         NavigationStack {
             List {
                 Section {
-                    Text(
-                        "A shortcut that records and lets Outloud transcribe leaves you in your app. The other ways open Outloud and start recording at once."
-                    )
-                    .font(Tokens.detail)
-                    .foregroundStyle(Tokens.textSecondary)
-                }
-                ForEach(Way.all) { way in
-                    NavigationLink {
-                        WayDetail(way: way)
-                    } label: {
-                        Label {
-                            VStack(alignment: .leading, spacing: Tokens.Spacing.xs / 2) {
-                                Text(way.title).font(Tokens.heading)
-                                Text(way.summary)
-                                    .font(Tokens.caption)
-                                    .foregroundStyle(Tokens.textSecondary)
-                            }
-                        } icon: {
-                            Image(systemName: way.symbol).foregroundStyle(Tokens.accent)
-                        }
+                    ForEach(Array(Self.setupSteps.enumerated()), id: \.offset) { index, step in
+                        NumberedStep(number: index + 1, text: step)
                     }
-                }
-                Section {
                     ShortcutsLink()
                         .shortcutsLinkStyle(.automaticOutline)
                         .frame(maxWidth: .infinity)
-                        .listRowBackground(Color.clear)
+                } header: {
+                    Text("1. Set up the shortcut, once")
+                } footer: {
+                    Text(
+                        "Run it once to start recording and again to stop. Outloud stays in the background, the Dynamic Island shows what is happening, and the text lands on the clipboard."
+                    )
+                }
+
+                Section {
+                    ForEach(Trigger.all) { trigger in
+                        NavigationLink {
+                            TriggerDetail(trigger: trigger)
+                        } label: {
+                            TriggerRow(trigger: trigger)
+                        }
+                    }
+                } header: {
+                    Text("2. Choose how to run it")
+                }
+
+                Section {
+                    NavigationLink {
+                        TriggerDetail(trigger: .openOutloud)
+                    } label: {
+                        TriggerRow(trigger: .openOutloud)
+                    }
+                } header: {
+                    Text("Or open Outloud and record")
+                } footer: {
+                    Text("Needs no shortcut, but Outloud comes to the front.")
                 }
             }
-            .navigationTitle("Start Outloud")
+            .navigationTitle("Dictate from Any App")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
@@ -49,38 +59,73 @@ struct ShortcutGuide: View {
             }
         }
     }
+
+    static var setupSteps: [LocalizedStringKey] {
+        [
+            "In the Shortcuts app, tap + to create a shortcut.",
+            "Add the action Start or Stop Dictation with Outloud.",
+            "Below it, add Copy to Clipboard.",
+            "Name the shortcut, e.g. Dictate.",
+        ]
+    }
 }
 
-private struct WayDetail: View {
-    let way: Way
+private struct NumberedStep: View {
+    let number: Int
+    let text: LocalizedStringKey
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: Tokens.Spacing.m) {
+            Text("\(number)")
+                .font(Tokens.caption.weight(.semibold))
+                .foregroundStyle(.white)
+                .frame(width: 24, height: 24)
+                .background(Tokens.accentFill, in: Circle())
+            Text(text)
+        }
+    }
+}
+
+private struct TriggerRow: View {
+    let trigger: Trigger
+
+    var body: some View {
+        Label {
+            VStack(alignment: .leading, spacing: Tokens.Spacing.xs / 2) {
+                Text(trigger.title).font(Tokens.heading)
+                Text(trigger.summary)
+                    .font(Tokens.caption)
+                    .foregroundStyle(Tokens.textSecondary)
+            }
+        } icon: {
+            Image(systemName: trigger.symbol).foregroundStyle(Tokens.accent)
+        }
+    }
+}
+
+private struct TriggerDetail: View {
+    let trigger: Trigger
 
     var body: some View {
         List {
             Section("Set up") {
-                ForEach(Array(way.steps.enumerated()), id: \.offset) { index, step in
-                    HStack(alignment: .firstTextBaseline, spacing: Tokens.Spacing.m) {
-                        Text("\(index + 1)")
-                            .font(Tokens.caption.weight(.semibold))
-                            .foregroundStyle(.white)
-                            .frame(width: 24, height: 24)
-                            .background(Tokens.accent, in: Circle())
-                        Text(step)
-                    }
+                ForEach(Array(trigger.steps.enumerated()), id: \.offset) { index, step in
+                    NumberedStep(number: index + 1, text: step)
                 }
             }
             Section("Good") {
-                ForEach(Array(way.pros.enumerated()), id: \.offset) { Text($0.element) }
+                ForEach(Array(trigger.pros.enumerated()), id: \.offset) { Text($0.element) }
             }
             Section("Keep in mind") {
-                ForEach(Array(way.cons.enumerated()), id: \.offset) { Text($0.element) }
+                ForEach(Array(trigger.cons.enumerated()), id: \.offset) { Text($0.element) }
             }
         }
-        .navigationTitle(way.title)
+        .navigationTitle(trigger.title)
     }
 }
 
-/// One way of starting a dictation.
-struct Way: Identifiable {
+/// One way of running the shortcut — or, for `openOutloud`, of opening Outloud to record.
+struct Trigger: Identifiable {
     let id: String
     let symbol: String
     let title: LocalizedStringKey
@@ -89,79 +134,75 @@ struct Way: Identifiable {
     let pros: [LocalizedStringKey]
     let cons: [LocalizedStringKey]
 
-    static var all: [Way] {
+    static var all: [Trigger] {
         [
-            Way(
-                id: "any-app", symbol: "waveform.badge.mic", title: "In any app",
-                summary: "Record, transcribe, copy — Outloud stays closed",
+            Trigger(
+                id: "assistive-touch", symbol: "circle.circle", title: "AssistiveTouch",
+                summary: "A small button on the screen, one tap",
                 steps: [
-                    "In the Shortcuts app, create a shortcut and add Record Audio. Set it to start immediately and to finish on tap.",
-                    "Add Transcribe Audio with Outloud, then Copy to Clipboard.",
-                    "Run it with Back Tap, the Action Button (Shortcut) or Siri.",
+                    "Open Settings › Accessibility › Touch › AssistiveTouch and switch it on.",
+                    "Under Custom Actions, set Single-Tap to your shortcut.",
+                    "Set Idle Opacity to about 15 %, so that the button stays out of the way.",
+                    "Optional: under Settings › Accessibility › Accessibility Shortcut, choose AssistiveTouch. A triple-click on the side button then shows or hides the button.",
                 ],
                 pros: [
-                    "You stay in the app you are writing in.",
-                    "The microphone is open only while you record.",
+                    "One tap, recognised every time.",
+                    "Hidden with a triple-click when you do not need it.",
                 ],
-                cons: ["Set up once in the Shortcuts app."]),
-            Way(
-                id: "action", symbol: "button.vertical.left.press", title: "Action Button",
-                summary: "One press, also on the Lock Screen",
+                cons: ["While it is on, a small button lies on the screen."]),
+            Trigger(
+                id: "action-button", symbol: "button.vertical.left.press",
+                title: "Action Button",
+                summary: "One press, also with the iPhone locked",
                 steps: [
                     "Open Settings › Action Button.",
-                    "Swipe to Controls and tap Choose a Control.",
-                    "Search for Outloud and choose Dictate.",
+                    "Swipe to Shortcut and choose your shortcut.",
                 ],
-                pros: ["One press from anywhere, even with the iPhone locked."],
+                pros: ["A button you can feel, in any app."],
                 cons: [
                     "Only on iPhones with an Action Button.",
-                    "Replaces what the button does now, e.g. silent mode.",
+                    "Replaces what the button does now, e.g. the flashlight.",
                 ]),
-            Way(
+            Trigger(
+                id: "back-tap", symbol: "hand.tap", title: "Back Tap",
+                summary: "Tap the back of the iPhone",
+                steps: [
+                    "Open Settings › Accessibility › Touch › Back Tap.",
+                    "Choose Double Tap or Triple Tap and pick your shortcut.",
+                ],
+                pros: ["No button needed, on every iPhone."],
+                cons: [
+                    "Not always recognised, above all through a thick case.",
+                    "Can start by accident, e.g. when you put the iPhone down.",
+                ]),
+            Trigger(
                 id: "control-center", symbol: "switch.2", title: "Control Center",
                 summary: "Swipe down, tap",
                 steps: [
                     "Swipe down from the top right corner.",
                     "Touch and hold an empty space, then tap Add a Control.",
-                    "Search for Outloud and choose Dictate.",
+                    "Choose Shortcuts › Run Shortcut, then your shortcut.",
                 ],
-                pros: ["Works on every iPhone, in every app."],
+                pros: ["On every iPhone, in every app."],
                 cons: ["Two steps: swipe down, then tap."]),
-            Way(
-                id: "lock-screen", symbol: "lock.iphone", title: "Lock Screen",
-                summary: "A button at the bottom of the Lock Screen",
-                steps: [
-                    "Touch and hold the Lock Screen, then tap Customize › Lock Screen.",
-                    "Remove the flashlight or the camera control at the bottom.",
-                    "Tap the plus and choose Outloud › Dictate.",
-                ],
-                pros: ["Ready before you unlock the iPhone."],
-                cons: ["Takes the place of the flashlight or the camera."]),
-            Way(
-                id: "back-tap", symbol: "hand.tap", title: "Back Tap",
-                summary: "Tap the back of the iPhone twice",
-                steps: [
-                    "Set up the shortcut from In any app.",
-                    "Open Settings › Accessibility › Touch › Back Tap.",
-                    "Choose Double Tap and pick that shortcut.",
-                ],
-                pros: ["No button needed; works on every iPhone and leaves you in your app."],
-                cons: ["Can start by accident, e.g. when putting the iPhone down."]),
-            Way(
+            Trigger(
                 id: "siri", symbol: "mic.badge.plus", title: "Siri",
-                summary: "Say “Dictate with Outloud”",
-                steps: ["Say “Hey Siri, dictate with Outloud”."],
+                summary: "Say the shortcut's name",
+                steps: ["Say “Hey Siri” and the name of your shortcut, e.g. “Dictate”."],
                 pros: ["Hands-free."],
                 cons: ["You speak out loud before dictating; Siri must be on."]),
-            Way(
-                id: "home-screen", symbol: "apps.iphone", title: "Home Screen",
-                summary: "An icon next to your apps",
-                steps: [
-                    "Open the Shortcuts app and find Outloud › Dictate.",
-                    "Touch and hold it, then choose Add to Home Screen.",
-                ],
-                pros: ["Easy to find and to explain to others."],
-                cons: ["Only from the Home Screen, with the iPhone unlocked."]),
         ]
+    }
+
+    static var openOutloud: Trigger {
+        Trigger(
+            id: "open-outloud", symbol: "arrow.up.forward.app", title: "Outloud's Dictate control",
+            summary: "Opens Outloud and starts recording",
+            steps: [
+                "Open Settings › Action Button, swipe to Controls and choose Outloud › Dictate.",
+                "Or add Outloud › Dictate to the Control Center or the Lock Screen: touch and hold an empty space, then tap Add a Control.",
+            ],
+            pros: ["Works without setting up a shortcut."],
+            cons: ["Outloud comes to the front; you switch back to paste."])
     }
 }

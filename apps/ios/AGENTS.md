@@ -73,8 +73,9 @@ this area — read them before making changes here.
 ## Coding rules
 
 - SwiftUI; the models live in the app's own container (ADR 0009).
-- **(MUST NOT)** Use the microphone or the clipboard on a path an App Intent reaches while
-  the app is in the background. iOS refuses both there, the clipboard without an error
-  (ADR 0018). Return the text and let the shortcut copy it. Apple's on-device model may be
-  used there; a refusal (`CleanerError.refused`, e.g. `rateLimited`) falls back to the
-  transcript (ADR 0019).
+- **(MUST NOT)** Write the clipboard, or open an exclusive audio session, on a path an App
+  Intent reaches while the app is in the background. iOS ignores the clipboard there without
+  an error (ADR 0018) and refuses an exclusive session; a recording from the background takes
+  a session that mixes with other audio and a running Live Activity (ADR 0022). Return the
+  text and let the shortcut copy it. Apple's on-device model may be used there; a refusal
+  (`CleanerError.refused`, e.g. `rateLimited`) falls back to the transcript (ADR 0019).

@@ -46,6 +46,9 @@ targets:
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
         NSMicrophoneUsageDescription: Outloud records your voice while you dictate, to turn it into text on this iPhone.
+        # A dictation from another app records in the background with a Live Activity (ADR 0022).
+        NSSupportsLiveActivities: true
+        UIBackgroundModes: [audio]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.nowack.outloud

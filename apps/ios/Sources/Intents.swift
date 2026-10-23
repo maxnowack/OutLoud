@@ -34,38 +34,9 @@ struct CleanUpTextIntent: AppIntent {
     }
 }
 
-/// Transcribes a recording — what "Record Audio" produced in a shortcut — and returns the text,
-/// so that the shortcut can copy it while the user stays in their app: iOS lets the Shortcuts app
-/// record and write the clipboard in the background, but not Outloud
-/// (`plans/BACKGROUND_DICTATION.md`).
-struct TranscribeAudioIntent: AppIntent {
-    static let title: LocalizedStringResource = "Transcribe Audio with Outloud"
-    static let description = IntentDescription(
-        "Turns a recording into text on this iPhone and returns it, e.g. for Copy to Clipboard."
-    )
-    static let supportedModes: IntentModes = .background
-
-    @Parameter(title: "Audio", supportedContentTypes: [.audio])
-    var audio: IntentFile
-
-    @MainActor
-    func perform() async throws -> some IntentResult & ReturnsValue<String> {
-        let app = AppModel.shared
-        await app.start()
-        guard app.dictation.hasRequiredModels else { throw OutloudIntentError.modelsMissing }
-        guard !app.dictation.state.isBusy else { throw OutloudIntentError.busy }
-        let samples = try AudioFile.samples(of: audio.data, named: audio.filename)
-        guard let outcome = await app.transcribe(samples: samples) else {
-            throw OutloudIntentError.nothingRecognised
-        }
-        return .result(value: outcome.result)
-    }
-}
-
 enum OutloudIntentError: Error, CustomLocalizedStringResourceConvertible {
     case modelsMissing
     case nothingToCleanUp
-    case nothingRecognised
     case cleanupUnavailable
     case cleanupOff
     case cleanupFailed
@@ -75,7 +46,6 @@ enum OutloudIntentError: Error, CustomLocalizedStringResourceConvertible {
         switch self {
         case .modelsMissing: "Open Outloud once to download its models."
         case .nothingToCleanUp: "There was no text to clean up."
-        case .nothingRecognised: "Nothing was recognised in the recording."
         case .cleanupUnavailable: "Cleaning up text needs Apple Intelligence, switched on."
         case .cleanupOff: "Cleanup is switched off in Outloud's settings."
         case .cleanupFailed: "Outloud could not clean up this text. Please try again."
@@ -94,9 +64,5 @@ struct OutloudShortcuts: AppShortcutsProvider {
             intent: CleanUpTextIntent(),
             phrases: ["Clean up text with \(.applicationName)"],
             shortTitle: "Clean Up Text", systemImageName: "text.badge.checkmark")
-        AppShortcut(
-            intent: TranscribeAudioIntent(),
-            phrases: ["Transcribe audio with \(.applicationName)"],
-            shortTitle: "Transcribe Audio", systemImageName: "waveform")
     }
 }

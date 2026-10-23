@@ -4,7 +4,23 @@
     "Dictate" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Diktieren" } } } },
     "Dictate with Outloud" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Mit Outloud diktieren" } } } },
     "Opens Outloud and starts recording." : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Öffnet Outloud und startet die Aufnahme." } } } },
-    "Opens Outloud and starts recording. Tap Stop when you are done; the text is copied to the clipboard." : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Öffnet Outloud und startet die Aufnahme. Tippe auf Stopp, wenn du fertig bist; der Text wird in die Zwischenablage kopiert." } } } }
+    "Opens Outloud and starts recording. Tap Stop when you are done; the text is copied to the clipboard." : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Öffnet Outloud und startet die Aufnahme. Tippe auf Stopp, wenn du fertig bist; der Text wird in die Zwischenablage kopiert." } } } },
+    "Cleaning up…" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Wird bereinigt…" } } } },
+    "Copied" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Kopiert" } } } },
+    "Dictation failed" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Diktat fehlgeschlagen" } } } },
+    "Not copied: run the shortcut again to end a dictation." : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Nicht kopiert: Beende ein Diktat, indem du den Kurzbefehl erneut startest." } } } },
+    "Nothing recognised" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Nichts erkannt" } } } },
+    "Open Outloud to see what happened." : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Öffne Outloud, um zu sehen, was passiert ist." } } } },
+    "Paste it anywhere." : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Füge den Text überall ein." } } } },
+    "Recording" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Aufnahme" } } } },
+    "Saved in Outloud" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "In Outloud gespeichert" } } } },
+    "Stop dictation" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Diktat beenden" } } } },
+    "Transcribing…" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Wird erkannt…" } } } },
+    "Try speaking a little longer." : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Sprich etwas länger." } } } },
+    "Turning your words into text" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Worte werden zu Text" } } } },
+    "Start or Stop Dictation with Outloud" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Diktat mit Outloud starten oder beenden" } } } },
+    "Starts recording without opening Outloud, or ends the recording and returns the cleaned text, e.g. for Copy to Clipboard." : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Startet die Aufnahme, ohne Outloud zu öffnen, oder beendet sie und gibt den bereinigten Text zurück, z. B. für „In Zwischenablage kopieren“." } } } },
+    "Stop Dictation" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Diktat beenden" } } } }
   },
   "version" : "1.0"
 }

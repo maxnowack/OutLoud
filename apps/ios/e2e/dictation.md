@@ -14,7 +14,8 @@ Setup completed; microphone allowed (simulator: `xcrun simctl privacy booted gra
 1. On the Dictate tab, tap the record button at the bottom ("Start dictation"). It turns red
    with a stop square; the status in the middle reads "Recording…" with a level meter.
 2. Say "Also ähm ich komme heute so gegen acht vorbei" and tap the button ("Stop dictation").
-   The status reads "Transcribing…", then "Cleaning up…", then "Done".
+   The status reads "Transcribing…", then "Cleaning up…" with a filling progress bar, then
+   "Done".
 3. A large check mark, "Copied" and a sentence on pasting appear; the text is not shown. Tap
    "Show text": the result card with the cleaned text and "Copy" appears. Switch to Notes and
    paste: the cleaned text appears.

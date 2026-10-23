@@ -11,6 +11,8 @@ struct OutloudApp: App {
 
     init() {
         StartDictationIntent.start = { await AppModel.shared.startRecording() }
+        ToggleDictationIntent.toggle = { await BackgroundDictation.shared.toggle() }
+        StopDictationIntent.stop = { _ = await BackgroundDictation.shared.stop(viaShortcut: false) }
     }
 
     var body: some Scene {
