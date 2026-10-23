@@ -41,6 +41,7 @@ user's checks of the end-to-end plans are open
 | `OutloudKit/` | The shared Swift package: models, downloads, transcription, cleanup, settings, history, the interface components, and the `outloud` developer CLI. |
 | `apps/macos/` | The macOS menu bar app, with its end-to-end plans in `e2e/`; its Xcode project is generated from `project.yml`. |
 | `apps/ios/` | The iOS app, with its end-to-end plans in `e2e/`; its Xcode project is generated from `project.yml`. |
+| `apps/shared/` | Resources both apps build from: the app icon (`AppIcon.icon`, `docs/DESIGN.md` §"App icon"). |
 | `docs/SPEC.md` | What the product does. |
 | `docs/ARCHITECTURE.md` | Components, trust boundaries and data. |
 | `docs/DESIGN.md` | The visual style: tokens, components, screens. |

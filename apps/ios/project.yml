@@ -25,6 +25,9 @@ targets:
     sources:
       - Sources
       - Resources
+      # The app icon, one Icon Composer document for both apps (docs/DESIGN.md §"App icon").
+      - path: ../shared/AppIcon.icon
+        buildPhase: resources
     dependencies:
       - package: OutloudKit
         product: OutloudKit
@@ -43,5 +46,6 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.github.maxnowack.outloud
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         TARGETED_DEVICE_FAMILY: "1"
         GENERATE_INFOPLIST_FILE: NO

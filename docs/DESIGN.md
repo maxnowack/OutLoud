@@ -173,6 +173,27 @@ results are kept. Reads `body`, `detail`.
 The licences and attributions of the models and libraries Outloud
 includes or downloads.
 
+## App icon
+
+An "O" with two sound arcs to its right: the name, said out loud. One
+Icon Composer document, `apps/shared/AppIcon.icon`, serves both apps;
+the system renders the glass, the dark and the tinted appearance from
+it. On macOS the icon shows in Finder, Spotlight and the system's
+windows, not in the Dock (`LSUIElement`); the menu bar keeps the
+StatusIndicator.
+
+| Layer | Geometry (100 × 100 canvas) | Light | Dark |
+| --- | --- | --- | --- |
+| Background | the system's icon shape | `accent` light, `#1F7A70` | `#0E1C1A` |
+| `ring` | circle at (40, 50), radius 16, stroke 9 | white | `accent` dark, `#4CC2B2` |
+| `echo-near` | arc of radius 29 around the ring's centre, ±40°, stroke 5, round caps, 75 % opacity | white | `accent` dark |
+| `echo-far` | arc of radius 39, ±40°, stroke 5, round caps, 40 % opacity | white | `accent` dark |
+
+The layers are SVGs in the document's `Assets/`; change them there or in
+Icon Composer, never as exported PNGs. The rejected directions —
+waveform-to-text, a speech bubble, a microphone — were compared in a
+design canvas outside the repository on 2026-10-23.
+
 ## Screens
 
 - **macOS menu bar panel** — StatusIndicator, ResultCard, FailureNotice,

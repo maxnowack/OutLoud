@@ -227,6 +227,9 @@ reversed. The first three block parts of the plan.
 11. **ADR 0013** (capture, components and CLI in the package) and
     **ADR 0014** (hash checks of model files).
 12. **App icon**: none yet; both apps use the system default.
+    *Addendum 2026-10-23:* the user chose the "O with echo" icon; both
+    apps build it from one Icon Composer document,
+    `apps/shared/AppIcon.icon` (`docs/DESIGN.md` §"App icon").
 13. **Launch at login** for the macOS app (ghost-pepper enables it by
     default): not built.
 14. **ghost-pepper ideas** not built: screen (OCR) context, a correction
