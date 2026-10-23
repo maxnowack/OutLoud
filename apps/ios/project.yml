@@ -49,6 +49,8 @@ targets:
         # A dictation from another app records in the background with a Live Activity (ADR 0022).
         NSSupportsLiveActivities: true
         UIBackgroundModes: [audio]
+        # Outloud only uses HTTPS, which is exempt; no export question on every upload.
+        ITSAppUsesNonExemptEncryption: false
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: dev.nowack.outloud

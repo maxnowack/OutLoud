@@ -1,0 +1,73 @@
+#!/bin/sh
+# Builds the iOS app for TestFlight: archive, App Store distribution signature, upload to App
+# Store Connect (docs/RELEASE.md §"iOS", ADR 0023).
+#
+# Signs and uploads with automatic signing of team 95ZC649QPM: with an App Store Connect API key
+# when ASC_KEY_ID and ASC_ISSUER_ID are set — which works without an account signed in to Xcode —,
+# otherwise with the account signed in to Xcode. The key's .p8 is
+# ASC_KEY_PATH, or the keychain item named ASC_KEY_KEYCHAIN_ITEM, written to a temporary file
+# only this user can read and removed when the script ends. Raise CURRENT_PROJECT_VERSION in project.yml before each upload: App Store
+# Connect takes every build number of a version only once.
+#
+# Usage: ./scripts/release            archive and upload
+#        ./scripts/release --export   archive and export the .ipa locally, without uploading
+set -eu
+cd "$(dirname "$0")/.."
+destination=upload
+if [ "${1:-}" = "--export" ]; then destination=export; fi
+version=$(sed -n 's/^ *MARKETING_VERSION: *"\(.*\)"/\1/p' project.yml)
+build=$(sed -n 's/^ *CURRENT_PROJECT_VERSION: *"\(.*\)"/\1/p' project.yml)
+set --
+if [ -n "${ASC_KEY_ID:-}" ]; then
+    key=${ASC_KEY_PATH:-}
+    if [ -z "$key" ]; then
+        key=$(mktemp -t outloud-asc-key)
+        trap 'rm -f "$key"' EXIT INT TERM
+        chmod 600 "$key"
+        secret=$(security find-generic-password -s "$ASC_KEY_KEYCHAIN_ITEM" -w)
+        # `security` prints a value with line breaks as hex.
+        if printf '%s' "$secret" | grep -Eq '^([0-9a-f]{2})+$'; then
+            printf '%s' "$secret" | xxd -r -p >"$key"
+        else
+            printf '%s\n' "$secret" >"$key"
+        fi
+        unset secret
+        if ! grep -q 'BEGIN PRIVATE KEY' "$key"; then
+            body=$(tr -d ' \n' <"$key")
+            printf -- '-----BEGIN PRIVATE KEY-----\n%s\n-----END PRIVATE KEY-----\n' "$body" >"$key"
+            unset body
+        fi
+    fi
+    set -- -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+        -authenticationKeyPath "$key"
+fi
+out=.build/release
+rm -rf "$out"
+mkdir -p "$out"
+xcodegen generate --quiet
+xcodebuild -project Outloud.xcodeproj -scheme Outloud -configuration Release \
+    -destination 'generic/platform=iOS' -derivedDataPath .build/DerivedData -jobs 4 -quiet \
+    -allowProvisioningUpdates "$@" -archivePath "$out/Outloud.xcarchive" \
+    archive
+cat > "$out/ExportOptions.plist" <<PLIST
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>method</key><string>app-store-connect</string>
+  <key>destination</key><string>$destination</string>
+  <key>teamID</key><string>95ZC649QPM</string>
+  <key>signingStyle</key><string>automatic</string>
+  <key>signingCertificate</key><string>Apple Distribution</string>
+  <key>manageAppVersionAndBuildNumber</key><false/>
+</dict>
+</plist>
+PLIST
+xcodebuild -exportArchive -archivePath "$out/Outloud.xcarchive" \
+    -exportOptionsPlist "$out/ExportOptions.plist" -exportPath "$out/export" \
+    -allowProvisioningUpdates "$@" -quiet
+if [ "$destination" = upload ]; then
+    echo "Uploaded $version ($build). App Store Connect processes it; then it appears in TestFlight."
+else
+    echo "Exported $version ($build) to $out/export."
+fi

@@ -21,6 +21,13 @@ this area — read them before making changes here.
   device build signs automatically with team 95ZC649QPM and needs
   `-allowProvisioningUpdates` and the team's account signed in to Xcode
   (`docs/RELEASE.md` §"iOS").
+- `./scripts/release` uploads a build to TestFlight (ADR 0023). **(MUST)** A
+  new use of a required-reason API — `UserDefaults`, file timestamps, disk
+  space, system boot time and the others Apple lists — adds its reason to
+  `Resources/PrivacyInfo.xcprivacy` in the same change set; App Store
+  Connect refuses an upload without it.
+- **(MUST)** Ask before running `./scripts/release` without `--export`: it
+  uploads to App Store Connect.
 
 ## Verifying a change
 
