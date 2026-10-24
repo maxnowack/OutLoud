@@ -251,7 +251,11 @@ The layers are SVGs in the document's `Assets/`; change them there or in
 Icon Composer, never as exported PNGs. An open shape is drawn as a closed,
 filled outline, never as a stroked open path: App Store Connect fills an
 open path as if it were closed, so a stroked arc showed a filled segment
-there (2026-10-23), while Xcode and Icon Composer drew it correctly. The rejected directions —
+there (2026-10-23), while Xcode and Icon Composer drew it correctly.
+The README shows `docs/images/app-icon.png`, rendered from the document
+in its default appearance at 256 × 256 px; render it again whenever a
+layer changes:
+`"$(xcode-select -p)/../Applications/Icon Composer.app/Contents/Executables/ictool" apps/shared/AppIcon.icon --export-image --output-file docs/images/app-icon.png --platform iOS --rendition Default --width 128 --height 128 --scale 2`. The rejected directions —
 waveform-to-text, a speech bubble, a microphone — were compared in a
 design canvas outside the repository on 2026-10-23.
 

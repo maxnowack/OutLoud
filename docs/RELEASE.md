@@ -94,6 +94,11 @@ Each build:
 3. Once App Store Connect has processed the build, add it to the testing
    group in TestFlight.
 
+When the app is first published in the App Store, put its link into
+`README.md`: the download line at the top and §"iPhone: speech to text in
+any app", where "App Store: coming soon" stands (the comment above the
+download line marks both), and drop the TestFlight sentence there.
+
 The app declares `ITSAppUsesNonExemptEncryption = NO` and ships
 `Resources/PrivacyInfo.xcprivacy`; a new use of a required-reason API
 adds its reason there.
