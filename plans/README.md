@@ -22,6 +22,7 @@ change; the authoritative status description always lives in the plan's own
 | Plan | Topic | Done |
 | --- | --- | --- |
 | `CONCEPT.md` | Shaping the product concept until nothing has to be guessed | 2026-10-22; the remaining questions moved to `FIRST_VERSION.md` |
+| `MAC_LOGIN_OVERLAY_PROGRESS.md` | Open the Mac app at login, no hanging pill, the microphone at launch, a truthful cleanup progress | 2026-10-24; the prewarming on the iPhone not checked |
 
 ## The shape of a plan
 

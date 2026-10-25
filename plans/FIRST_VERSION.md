@@ -250,7 +250,8 @@ reversed. The first three block parts of the plan.
     apps build it from one Icon Composer document,
     `apps/shared/AppIcon.icon` (`docs/DESIGN.md` §"App icon").
 13. **Launch at login** for the macOS app (ghost-pepper enables it by
-    default): not built.
+    default): not built. *Addendum 2026-10-24:* built, preselected in the
+    setup window (`plans/done/MAC_LOGIN_OVERLAY_PROGRESS.md`).
 14. **ghost-pepper ideas** not built: screen (OCR) context, a correction
     store, learning from edits after a paste, an editable prompt.
 15. **iOS distribution channel**: TestFlight or the App Store — not

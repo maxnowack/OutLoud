@@ -155,7 +155,14 @@ Rules:
 
 - A recording starts only on a user action.
 - Outloud needs the microphone permission; auto-paste usually also needs
-  Accessibility access.
+  Accessibility access. It asks for the microphone at its first launch,
+  not at the first dictation.
+- A release of the hotkey while Outloud still waits — for the microphone
+  dialog, say — ends that dictation: nothing is recorded and the overlay
+  goes away. A press always ends a recording that runs without the hotkey
+  held, and starts a new one.
+- Outloud can open at login. The setup window offers it, preselected; the
+  settings switch it and say when macOS wants it approved in Login Items.
 - Auto-paste happens only once the user has granted it. Without the
   permission, or when the target field is not suitable, the result stays
   available for pasting by hand.
@@ -182,6 +189,13 @@ Acceptance criteria:
   clipboard and the overlay says so.
 - The menu bar panel shows the state and the last result with a copy
   button.
+- While the cleanup runs, the overlay's bar moves evenly from its start,
+  by the time passed over the usual duration of a cleanup, learned on the
+  device, and is full only at the end.
+- Releasing the hotkey while the microphone dialog is open, then allowing
+  the microphone, leaves no overlay and no recording.
+- After a restart with "Open at login" on, the hotkey works without
+  opening Outloud.
 
 Acceptance criteria are proposals written on 2026-10-23 from the rules
 above, while the user was away (`plans/FIRST_VERSION.md` §"Decisions for

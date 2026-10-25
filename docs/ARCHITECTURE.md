@@ -115,8 +115,13 @@ following Hugging Face's redirect to its CDN; nothing is uploaded.
   ISO 8601, `transcript`, `cleaned`, `hasAudio`) and one 16-bit mono
   16 kHz WAV file per entry with audio, named `<id>.wav`.
 - **Settings** — `UserDefaults` keys `cleanupEnabled`, `retentionPeriod`,
-  `transcriptionModel`, `cleanupModel`, `hasCompletedSetup`, and on macOS
-  `hotkey` and `autoPaste`.
+  `transcriptionModel`, `hasCompletedSetup`, and on macOS `hotkey` and
+  `autoPaste`. Opening at login is the system's login item
+  (`SMAppService`), not a stored setting.
+- **Cleanup timing** — `UserDefaults` keys `cleanupSeconds`, the moving
+  average of a cleanup's duration after a recording, and `cleanupPrompt`,
+  the SHA-256 of the prompt and examples it was measured with; a different
+  prompt starts the average anew.
 
 ## Trust boundaries
 

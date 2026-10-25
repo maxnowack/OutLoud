@@ -94,13 +94,34 @@ changes and the overlay only cross-fade.
 
 ## Components
 
+### Buttons
+
+Buttons follow Apple's Human Interface Guidelines
+(https://developer.apple.com/design/human-interface-guidelines/buttons),
+as the user decided on 2026-10-25 after text-only buttons had been tried
+and rejected: they lacked a button's spacing, hit area and states.
+
+- **System styles only.** On macOS an action is a push button in the
+  system style, which brings its spacing, its hit area, its pressed and
+  focus states and its tooltip; no text-only or link-style buttons stand
+  in for actions. One prominent button (`accentFill`) for a view's most
+  likely action, such as "Continue" in the setup window and "Set Up
+  Outloud…" in the menu bar panel; a destructive action has the
+  destructive role and is never the prominent one.
+- **A trailing ellipsis** marks a button that opens another window, a
+  confirmation or another app: "Allow…", "Open Login Items…", "History…",
+  "Delete All Results…". In German it follows a space, as in Apple's own
+  German texts: "Erlauben …".
+
 ### StatusIndicator
 
 The dictation state as icon and label: idle (waveform, `accent`),
 recording (record circle, `recording`, pulsing), transcribing and
 cleaning (progress spinner, "Transcribing…", "Cleaning up…" — while
 cleaning, with a progress bar of `progressBarWidth` in `accent` where the
-progress is known), finished
+progress is known; it moves evenly from the cleanup's start, by the time
+passed over the learned usual duration, and fills only at the end),
+finished
 (checkmark, `success`), failed (exclamation, `failure`). Reads `heading`,
 `motion`. Accessibility: one combined element, its label is the state's
 words; a state change is announced.
@@ -261,8 +282,11 @@ design canvas outside the repository on 2026-10-23.
 
 ## Screens
 
-- **macOS menu bar panel** — StatusIndicator, ResultCard, FailureNotice,
-  buttons for History, Settings and Quit.
+- **macOS menu bar panel** — a popover under the menu bar icon, opened by
+  a click: StatusIndicator, ResultCard, FailureNotice and one push button,
+  "History…". A right-click (or ⌃-click) on the icon opens a menu instead:
+  "Settings…" (⌘,), "Check for Updates…", "Quit Outloud" (⌘Q); the settings
+  open in a window of their own.
 - **macOS recording overlay** — a Liquid Glass capsule (`glassEffect` in a
   `GlassEffectContainer`, drawn in its active look although the panel never
   becomes key) as wide as its content: StatusIndicator (with the cleanup's
@@ -270,8 +294,11 @@ design canvas outside the repository on 2026-10-23.
   `overlayTextWidth`. It rises and fades in, follows its content's size
   smoothly, and fades out; centred at the bottom of the screen, inside a
   fixed transparent area of `overlayAreaSize`.
-- **macOS setup window** — ModelSetup, PrivacyNotice.
-- **macOS settings window** — General (cleanup with its
+- **macOS setup window** — ModelSetup, PrivacyNotice, and the switch
+  "Open Outloud at login", preselected.
+- **macOS settings window** — General ("Open at login", with a `warning`
+  note and "Open Login Items…" while macOS waits for the user's approval;
+  cleanup with its
   CleanupAvailabilityNote; the shortcut, with a `warning` note and "Allow…"
   while ⌥ ⌘ waits for Accessibility access; auto-paste), Models (ModelRow of the
   transcription model), History (RetentionPicker), Privacy (PrivacyNotice,
