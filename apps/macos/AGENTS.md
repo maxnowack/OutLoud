@@ -74,5 +74,7 @@ describe this area — read them before making changes here.
 
 ## Coding rules
 
-- SwiftUI; the menu bar is a `MenuBarExtra`, and the app has no Dock icon
-  (`LSUIElement`).
+- SwiftUI; the app has no Dock icon (`LSUIElement`). The menu bar icon is
+  an AppKit status item (`Sources/StatusItem.swift`) with the SwiftUI panel
+  in a popover: `MenuBarExtra` cannot tell a click from a right-click, and
+  the right-click opens the menu (`docs/DESIGN.md` §"Screens").
