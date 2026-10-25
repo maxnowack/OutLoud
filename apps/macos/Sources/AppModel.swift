@@ -11,6 +11,7 @@ final class AppModel {
     let library: ModelLibrary
     let history: HistoryModel
     let dictation: DictationController
+    let loginItem = LoginItem()
     @ObservationIgnored let engines: Engines
 
     /// The last result and how it was handed over, for the menu bar panel.
@@ -37,7 +38,10 @@ final class AppModel {
     }
 
     @ObservationIgnored private var hotkeyMonitor: HotkeyMonitor?
+    /// When the held shortcut was pressed; `nil` once it is released.
     @ObservationIgnored private var recordingStarted: ContinuousClock.Instant?
+    /// Counts the presses, so that a press can tell whether a later one came while it waited.
+    @ObservationIgnored private var presses = 0
     @ObservationIgnored let overlay = RecordingOverlay()
     @ObservationIgnored private var trustPolling: Task<Void, Never>?
     /// A recording to process instead of the microphone, for testing (debug builds only).
@@ -90,6 +94,10 @@ final class AppModel {
             }
         }
         registerHotkey()
+        // Ask for the microphone at the first launch, not at the first dictation.
+        if sampleAudio == nil, MicrophonePermission.status == .undetermined {
+            Task { _ = await MicrophonePermission.request() }
+        }
         history.startExpiringEntries()
         await library.refresh()
         await library.resumeDownloads()
@@ -123,14 +131,29 @@ final class AppModel {
     // MARK: Push to talk
 
     func hotkeyPressed() async {
+        // A recording without a held key — its release came while Outloud still waited — ends
+        // with the next press, which then starts its own.
+        if dictation.state == .recording, recordingStarted == nil {
+            dictation.cancelRecording()
+            overlay.hide()
+        }
         guard !dictation.state.isBusy else { return }
+        presses += 1
+        let press = presses
+        recordingStarted = .now
         if sampleAudio != nil {
-            recordingStarted = .now
             overlay.show()
             return
         }
-        recordingStarted = .now
-        if await dictation.startRecording() {
+        let started = await dictation.startRecording()
+        // Released, or pressed again, while Outloud waited — for the microphone dialog, say:
+        // this press no longer wants a recording, and its pill must not stay.
+        guard press == presses, recordingStarted != nil else {
+            if started { dictation.cancelRecording() }
+            overlay.hide()
+            return
+        }
+        if started {
             overlay.show()
         } else {
             overlay.showBriefly()

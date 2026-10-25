@@ -12,8 +12,9 @@ it is (`swift run outloud download`).
 
 ## Steps
 
-1. Launch the app. The setup window "Set Up Outloud" opens and comes to the front; the menu bar
-   shows the waveform icon.
+1. Launch the app, with the microphone not yet asked for (`tccutil reset Microphone
+   dev.nowack.outloud`). macOS asks for the microphone at once — allow it. The setup window "Set
+   Up Outloud" opens and comes to the front; the menu bar shows the waveform icon.
 2. Read the cards. "Speech recognition" shows Parakeet v3 · 483.1 MB, marked required; "Clean
    up text" has a check box and "Uses Apple Intelligence on this device. No download." — with
    Apple Intelligence off, the check box is off and disabled and the note says to switch it on.
@@ -22,7 +23,9 @@ it is (`swift run outloud download`).
    again and wait: the card shows "Already on this device", the button turns into "Continue".
    Confirm branch: the card shows "Already on this device" at once; the button reads "Continue".
 4. Untick "Clean up text": the download size and "Continue" stay as they were.
-5. Click "Continue". macOS asks for the microphone once (allow it); the setup window closes.
+5. "Open Outloud at login" is switched on. Click "Continue": the setup window closes, and System
+   Settings › General › Login Items lists Outloud under "Open at Login". (A Debug build registers
+   its own path: switch it off in Settings › General afterwards.)
 6. Click the menu bar icon. The panel shows "Ready" and "Hold ⌥ Space to dictate, release it to
    paste." — ⌥ Space, since Accessibility access is not allowed yet; with it, "Hold ⌥ ⌘ …"
    (ADR 0020).

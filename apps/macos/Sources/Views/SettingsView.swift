@@ -18,6 +18,9 @@ struct SettingsView: View {
                 .tabItem { Label("Privacy", systemImage: "hand.raised") }
         }
         .frame(width: 520, height: 440)
+        // Push buttons, as the HIG asks: inside a grouped form, the automatic style draws
+        // text only (`docs/DESIGN.md` §"Buttons").
+        .buttonStyle(.bordered)
     }
 }
 
@@ -57,6 +60,33 @@ private struct GeneralSettings: View {
 
             Section {
                 Toggle(
+                    "Open at login",
+                    isOn: Binding(
+                        get: { app.loginItem.isEnabled },
+                        set: { app.loginItem.setEnabled($0) }))
+                if app.loginItem.needsApproval {
+                    HStack {
+                        Label(
+                            "macOS asks you to allow Outloud in Login Items.",
+                            systemImage: "exclamationmark.triangle"
+                        )
+                        .foregroundStyle(Tokens.warning)
+                        Spacer()
+                        Button("Open Login Items…") { app.loginItem.openSystemSettings() }
+                    }
+                } else if app.loginItem.failed {
+                    Label(
+                        "macOS did not allow it. Add Outloud in System Settings › General › Login Items.",
+                        systemImage: "exclamationmark.triangle"
+                    )
+                    .foregroundStyle(Tokens.warning)
+                }
+            } footer: {
+                Text("Outloud waits in the menu bar, so the shortcut works right after you log in.")
+            }
+
+            Section {
+                Toggle(
                     "Clean up the transcript",
                     isOn: Binding(
                         get: { app.settings.cleanupEnabled && cleanup == .available },
@@ -92,7 +122,10 @@ private struct GeneralSettings: View {
         }
         .formStyle(.grouped)
         .trackingCleanupAvailability($cleanup)
-        .onAppear { app.refreshAccessibility() }
+        .onAppear {
+            app.refreshAccessibility()
+            app.loginItem.refresh()
+        }
     }
 }
 

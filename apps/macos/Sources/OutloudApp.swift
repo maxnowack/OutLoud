@@ -9,18 +9,9 @@ struct OutloudApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var delegate
 
     var body: some Scene {
-        MenuBarExtra {
-            MenuBarPanel(
-                app: delegate.app, updater: delegate.updater, showSetup: delegate.showSetup,
-                showHistory: delegate.showHistory)
-        } label: {
-            MenuBarIcon(state: delegate.app.dictation.state)
-        }
-        .menuBarExtraStyle(.window)
-
-        Settings {
-            SettingsView(app: delegate.app)
-        }
+        // The menu bar icon is an AppKit status item (`StatusItem`), and the settings open in a
+        // window of their own; a SwiftUI app needs one scene all the same.
+        Settings { EmptyView() }
     }
 }
 
@@ -29,8 +20,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     let app = AppModel()
     let windows = WindowManager()
     let updater = Updater()
+    private var statusItem: StatusItem?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        statusItem = StatusItem(
+            app: app, updater: updater, showSetup: { [weak self] in self?.showSetup() },
+            showHistory: { [weak self] in self?.showHistory() },
+            showSettings: { [weak self] in self?.showSettings() })
         Task {
             await app.start()
             if app.needsSetup { showSetup() }
@@ -50,25 +46,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
+    func showSettings() {
+        windows.show(
+            "settings", title: String(localized: "Settings"), size: NSSize(width: 520, height: 440),
+            resizable: false
+        ) {
+            SettingsView(app: app)
+        }
+    }
+
     func showHistory() {
         windows.show(
             "history", title: String(localized: "History"), size: NSSize(width: 720, height: 480)
         ) {
             HistoryWindow(app: app)
-        }
-    }
-}
-
-/// The menu bar icon follows the dictation state.
-private struct MenuBarIcon: View {
-    let state: DictationState
-
-    var body: some View {
-        switch state {
-        case .recording: Image(systemName: "record.circle")
-        case .transcribing, .cleaning: Image(systemName: "ellipsis.circle")
-        case .failed: Image(systemName: "exclamationmark.circle")
-        default: Image(systemName: "waveform")
         }
     }
 }

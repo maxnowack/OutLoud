@@ -6,18 +6,17 @@ import SwiftUI
 struct SetupView: View {
     let app: AppModel
     let finish: () -> Void
+    /// Preselected: a dictation app in the menu bar is meant to be ready after a restart.
+    @State private var openAtLogin = true
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: Tokens.Spacing.xl) {
                 ModelSetup(library: app.library, settings: app.settings, network: app.network) {
-                    Task {
-                        // Ask for the microphone now rather than at the first dictation.
-                        if MicrophonePermission.status == .undetermined {
-                            _ = await MicrophonePermission.request()
-                        }
-                        finish()
+                    if openAtLogin != app.loginItem.isEnabled {
+                        app.loginItem.setEnabled(openAtLogin)
                     }
+                    finish()
                 }
                 Divider()
                 VStack(alignment: .leading, spacing: Tokens.Spacing.s) {
@@ -29,6 +28,7 @@ struct SetupView: View {
                     .foregroundStyle(Tokens.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
                 }
+                Toggle("Open Outloud at login", isOn: $openAtLogin)
             }
             .padding(Tokens.Spacing.xl)
         }

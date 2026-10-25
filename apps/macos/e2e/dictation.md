@@ -16,7 +16,8 @@ is not. TextEdit is open with an empty document focused.
    capsule just as wide as its content — appears at the bottom of the screen with "Recording…"
    and a level meter; the menu bar icon turns into a record circle. TextEdit keeps the focus.
 2. Say "Also ähm ich komme heute so gegen acht vorbei" and release.
-   The overlay shows "Transcribing…", then "Cleaning up…" with a filling progress bar, then
+   The overlay shows "Transcribing…", then "Cleaning up…" with a progress bar that moves from
+   the start and fills only at the end, without standing at zero and jumping, then
    "Pasted" (paste branch) or "Copied — press ⌘V. Allow Accessibility to paste automatically."
    (fallback branch).
 3. Paste branch: the cleaned text appears in TextEdit at the cursor; the clipboard holds what it
@@ -27,7 +28,11 @@ is not. TextEdit is open with an empty document focused.
 6. Open the menu bar panel. It shows "Done" and the last result with a "Copy" button.
 7. Without the microphone permission, hold the shortcut: the panel and overlay show "Outloud may
    not use the microphone…" with "Open Settings".
-8. Microphone-free check: quit Outloud, run
+8. Hanging overlay: quit Outloud, run `tccutil reset Microphone dev.nowack.outloud`, launch it and
+   leave its microphone dialog open. Hold the shortcut, release it, then click "Allow": no
+   overlay stays, and the menu bar icon is the waveform, not the record circle. Hold the shortcut
+   again: a recording starts and ends as usual.
+9. Microphone-free check: quit Outloud, run
    `Outloud.app/Contents/MacOS/Outloud -OutloudSampleAudio OutloudKit/Samples/de.wav -OutloudAutoDictate YES -OutloudQuitAfterAutoDictate YES`.
    The process prints "OutloudAutoDictate: …", exits with status 0, and the clipboard holds the
    German sample's text.

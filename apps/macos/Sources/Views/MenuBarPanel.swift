@@ -6,7 +6,6 @@ import SwiftUI
 /// The panel under the menu bar icon (`docs/DESIGN.md` §"Screens": macOS menu bar panel).
 struct MenuBarPanel: View {
     let app: AppModel
-    let updater: Updater
     let showSetup: () -> Void
     let showHistory: () -> Void
 
@@ -62,16 +61,9 @@ struct MenuBarPanel: View {
 
             Divider()
 
-            HStack {
-                Button("History…", action: showHistory)
-                SettingsLink { Text("Settings…") }
-                if updater.isAvailable {
-                    Button("Check for Updates…") { updater.checkForUpdates() }
-                }
-                Spacer()
-                Button("Quit") { NSApp.terminate(nil) }
-            }
-            .buttonStyle(.borderless)
+            // The rest — Settings, updates, Quit — is in the icon's right-click menu.
+            Button("History…", action: showHistory)
+                .buttonStyle(.bordered)
         }
         .padding(Tokens.Spacing.l)
         .frame(width: 340)

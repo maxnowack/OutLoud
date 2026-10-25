@@ -242,6 +242,26 @@
         }
       }
     },
+    "macOS asks you to allow Outloud in Login Items." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "macOS bittet dich, Outloud in den Anmeldeobjekten zu erlauben."
+          }
+        }
+      }
+    },
+    "macOS did not allow it. Add Outloud in System Settings › General › Login Items." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "macOS hat es nicht erlaubt. Füge Outloud unter Systemeinstellungen › Allgemein › Anmeldeobjekte hinzu."
+          }
+        }
+      }
+    },
     "Model" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -263,12 +283,52 @@
         }
       }
     },
+    "Open at login" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bei der Anmeldung öffnen"
+          }
+        }
+      }
+    },
+    "Open Login Items…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anmeldeobjekte öffnen …"
+          }
+        }
+      }
+    },
+    "Open Outloud at login" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outloud bei der Anmeldung öffnen"
+          }
+        }
+      }
+    },
     "Outloud needs its models before you can dictate." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Outloud braucht seine Modelle, bevor du diktieren kannst."
+          }
+        }
+      }
+    },
+    "Outloud waits in the menu bar, so the shortcut works right after you log in." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outloud wartet in der Menüleiste, damit der Kurzbefehl direkt nach der Anmeldung funktioniert."
           }
         }
       }
@@ -313,12 +373,12 @@
         }
       }
     },
-    "Quit" : {
+    "Quit Outloud" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Beenden"
+            "value" : "Outloud beenden"
           }
         }
       }
@@ -369,6 +429,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Einstellungen …"
+          }
+        }
+      }
+    },
+    "Settings" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen"
           }
         }
       }
