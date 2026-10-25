@@ -13,39 +13,10 @@ private struct FixedCleaner: Cleaning {
     func clean(_ transcript: String) async throws -> String { try output.get() }
 }
 
-/// Reports half way, then answers.
-private struct ReportingCleaner: Cleaning {
-    func clean(_ transcript: String) async throws -> String { "Hallo." }
-
-    func clean(
-        _ transcript: String, progress: @escaping @Sendable (Double) -> Void
-    ) async throws -> String {
-        progress(0.5)
-        return "Hallo."
-    }
-}
-
-private final class Reports: @unchecked Sendable {
-    private let lock = NSLock()
-    private var stored: [Double] = []
-    var values: [Double] { lock.withLock { stored } }
-    func append(_ value: Double) { lock.withLock { stored.append(value) } }
-}
-
 private struct Failure: Error {}
 
 struct DictationPipelineTests {
     let speech = [Float](repeating: 0.1, count: 16_000)
-
-    @Test func passesTheCleanupProgressOnWhereItIsShown() async throws {
-        let pipeline = DictationPipeline(
-            transcriber: FixedTranscriber(text: "hallo"), cleaner: ReportingCleaner())
-        let reports = Reports()
-        let outcome = try await pipeline.run(text: "hallo") { reports.append($0) }
-        #expect(reports.values == [0.5])
-        #expect(outcome.cleaned == "Hallo.")
-        #expect(try await pipeline.run(text: "hallo").cleaned == "Hallo.")
-    }
 
     @Test func cleansUpTheTranscriptWhenCleanupIsOn() async throws {
         let pipeline = DictationPipeline(

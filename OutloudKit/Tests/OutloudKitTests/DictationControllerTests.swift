@@ -20,7 +20,8 @@ struct DictationControllerTests {
         path: "DictationControllerTests-\(UUID())")
 
     private func controller(
-        cleanupEnabled: Bool = true, cleaner: (any Cleaning)?
+        cleanupEnabled: Bool = true, cleaner: (any Cleaning)?,
+        timings: CleanupTimings? = nil
     ) throws -> DictationController {
         let store = ModelStore(
             cache: HubCache(root: root.appending(path: "hub")),
@@ -30,7 +31,27 @@ struct DictationControllerTests {
         settings.retentionPeriod = .nothing
         return DictationController(
             settings: settings, library: ModelLibrary(store: store), engines: Engines(store: store),
-            history: HistoryStore(folder: root.appending(path: "history")), cleaner: { cleaner })
+            history: HistoryStore(folder: root.appending(path: "history")), cleaner: { cleaner },
+            timings: try timings
+                ?? CleanupTimings(defaults: #require(UserDefaults(suiteName: "\(UUID())"))))
+    }
+
+    @Test func movesTheCleanupBarByTimeAndLearnsTheDuration() async throws {
+        let timings = CleanupTimings(
+            defaults: try #require(UserDefaults(suiteName: "\(UUID())")), prompt: "test")
+        let controller = try controller(
+            cleaner: StandInCleaner(answer: .success("Hallo."), delay: .milliseconds(600)),
+            timings: timings)
+        let run = Task {
+            await controller.finish(transcript: "äh hallo", audio: nil, showsProgress: true)
+        }
+        try await Task.sleep(for: .milliseconds(400))
+        let halfway = try #require(controller.cleanupProgress)
+        #expect(halfway > 0 && halfway < CleanupProgress.onTime)
+        _ = await run.value
+        #expect(controller.cleanupProgress == nil)
+        let learned = timings.expectedDuration
+        #expect(learned > .milliseconds(500) && learned < .seconds(2))
     }
 
     @Test func cleansUpWithTheModel() async throws {

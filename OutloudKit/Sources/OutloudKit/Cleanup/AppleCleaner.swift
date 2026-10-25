@@ -37,50 +37,53 @@ public enum CleanupAvailability: Equatable, Sendable {
 /// Cleans up with Apple's on-device model through Foundation Models (ADR 0019): a fresh session
 /// per text, the instructions and worked examples as earlier turns of it, greedy sampling. The
 /// model runs in a system process, so an iOS app may use it in the background, within a budget.
+///
+/// A cleaner prewarms its first session when it is made, so that the model reads the
+/// instructions and examples before the text arrives — while the user still speaks, when it is
+/// made at the start of a recording. That halves the cleanup on a Mac
+/// (`plans/done/MAC_LOGIN_OVERLAY_PROGRESS.md` §"Problem").
 public struct AppleCleaner: Cleaning {
     /// Transcripts longer than this are not cleaned up, so that prompt and answer fit the model's
     /// context (`docs/SPEC.md` §"Scope of the first version": short texts).
     public static let maximumCharacters = 4000
 
     private let timeout: Duration
+    private let prepared = PreparedSession()
 
     public init(timeout: Duration = .seconds(20)) {
         self.timeout = timeout
     }
 
     public func clean(_ transcript: String) async throws -> String {
-        try await respond(to: transcript, progress: nil)
-    }
-
-    /// Streams the answer and estimates the progress from its length: a cleaned text is about as
-    /// long as the transcript. The estimate stays below 1 until the answer is complete.
-    public func clean(
-        _ transcript: String, progress: @escaping @Sendable (Double) -> Void
-    ) async throws -> String {
-        try await respond(to: transcript, progress: progress)
-    }
-
-    private func respond(
-        to transcript: String, progress: (@Sendable (Double) -> Void)?
-    ) async throws -> String {
         guard transcript.count <= Self.maximumCharacters else { throw CleanerError.tooLong }
-        let session = LanguageModelSession(transcript: Self.examples)
+        let session = prepared.take() ?? LanguageModelSession(transcript: Self.examples)
         let prompt = CleanupPrompt.userMessage(for: transcript)
         let options = GenerationOptions(samplingMode: .greedy)
-        let expected = Double(max(transcript.count, 1))
         return try await Self.withDeadline(timeout) {
             do {
-                guard let progress else {
-                    return try await session.respond(to: prompt, options: options).content
-                }
-                var answer = ""
-                for try await snapshot in session.streamResponse(to: prompt, options: options) {
-                    answer = snapshot.content
-                    progress(min(0.95, Double(answer.count) / expected))
-                }
-                return answer
+                return try await session.respond(to: prompt, options: options).content
             } catch let error as LanguageModelError {
                 throw CleanerError.refused(Self.name(of: error))
+            }
+        }
+    }
+
+    /// The prewarmed session, handed out once: a session keeps its turns, so a second text gets
+    /// a fresh one.
+    private final class PreparedSession: @unchecked Sendable {
+        private let lock = NSLock()
+        private var session: LanguageModelSession?
+
+        init() {
+            let session = LanguageModelSession(transcript: AppleCleaner.examples)
+            session.prewarm()
+            self.session = session
+        }
+
+        func take() -> LanguageModelSession? {
+            lock.withLock {
+                defer { session = nil }
+                return session
             }
         }
     }

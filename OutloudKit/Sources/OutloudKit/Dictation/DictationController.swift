@@ -47,13 +47,17 @@ public final class DictationController {
     @ObservationIgnored private let recorder = AudioRecorder()
     @ObservationIgnored private let now: () -> Date
     @ObservationIgnored private let cleaner: @MainActor () -> (any Cleaning)?
+    @ObservationIgnored private let timings: CleanupTimings
+    /// The cleaner made when the recording started, so that it prepares while the user speaks.
+    @ObservationIgnored private var preparedCleaner: (any Cleaning)?
     /// Called after a result was added to the history.
     @ObservationIgnored public var onHistoryChange: (() -> Void)?
 
     public init(
         settings: OutloudSettings, library: ModelLibrary, engines: Engines, history: HistoryStore,
         now: @escaping () -> Date = Date.init,
-        cleaner: @escaping @MainActor () -> (any Cleaning)? = DictationController.appleCleaner
+        cleaner: @escaping @MainActor () -> (any Cleaning)? = DictationController.appleCleaner,
+        timings: CleanupTimings = CleanupTimings()
     ) {
         self.settings = settings
         self.library = library
@@ -61,6 +65,7 @@ public final class DictationController {
         self.history = history
         self.now = now
         self.cleaner = cleaner
+        self.timings = timings
     }
 
     /// Apple's on-device model where the system offers it; asked per dictation, since the user
@@ -95,12 +100,15 @@ public final class DictationController {
                 state = .failed(.microphoneDenied)
                 return false
             }
+            // Another start may have run while the user answered the dialog.
+            guard !state.isBusy else { return false }
         }
         do {
             try recorder.start(mixable: mixable) { [weak self] level in
                 Task { @MainActor [weak self] in self?.level = level }
             }
             state = .recording
+            preparedCleaner = settings.cleanupEnabled ? cleaner() : nil
             return true
         } catch {
             state = .failed(.recordingFailed(error.localizedDescription))
@@ -122,6 +130,7 @@ public final class DictationController {
         guard state == .recording else { return }
         _ = recorder.stop()
         level = 0
+        preparedCleaner = nil
         state = .idle
     }
 
@@ -134,8 +143,8 @@ public final class DictationController {
         return await transcribe(samples, showsProgress: false)
     }
 
-    /// - Parameter showsProgress: Publishes `cleanupProgress`. Only where someone sees it: the
-    ///   cleanup streams for it, which uses up Apple's budget in the background sooner.
+    /// - Parameter showsProgress: Publishes `cleanupProgress` and takes the cleanup's duration
+    ///   into the learned average: after a recording, whose cleaner was prewarmed.
     private func transcribe(_ samples: [Float], showsProgress: Bool) async -> DictationOutcome? {
         guard hasRequiredModels else {
             state = .failed(.modelsMissing)
@@ -170,10 +179,16 @@ public final class DictationController {
         return await finish(transcript: transcript, audio: nil, showsProgress: false)
     }
 
-    private func advanceCleanupProgress(to value: Double) {
-        // Reports arrive out of order across tasks; the bar only moves forward.
-        guard state == .cleaning, let current = cleanupProgress, value > current else { return }
-        cleanupProgress = value
+    /// Moves the bar by the time since `start` over the usual duration, until cancelled.
+    private func trackCleanupProgress(since start: Date, expected: Duration) -> Task<Void, Never> {
+        Task { [weak self] in
+            while !Task.isCancelled {
+                guard let self, self.state == .cleaning else { return }
+                let elapsed = Duration.seconds(self.now().timeIntervalSince(start))
+                self.cleanupProgress = CleanupProgress.value(elapsed: elapsed, expected: expected)
+                try? await Task.sleep(for: .milliseconds(100))
+            }
+        }
     }
 
     /// Returns to the idle state after a result or a failure was shown.
@@ -182,24 +197,31 @@ public final class DictationController {
         state = .idle
     }
 
-    private func finish(transcript: String, audio: [Float]?, showsProgress: Bool) async
+    /// Internal for the tests, which have no recording to stop.
+    func finish(transcript: String, audio: [Float]?, showsProgress: Bool) async
         -> DictationOutcome
     {
         var outcome = DictationOutcome(transcript: transcript)
-        if settings.cleanupEnabled, let cleaner = cleaner() {
+        let prepared = preparedCleaner
+        preparedCleaner = nil
+        if settings.cleanupEnabled, let cleaner = prepared ?? cleaner() {
             state = .cleaning
+            let start = now()
             cleanupProgress = showsProgress ? 0 : nil
-            var progress: (@Sendable (Double) -> Void)?
-            if showsProgress {
-                progress = { [weak self] value in
-                    Task { @MainActor in self?.advanceCleanupProgress(to: value) }
-                }
-            }
+            let ticking =
+                showsProgress
+                ? trackCleanupProgress(since: start, expected: timings.expectedDuration) : nil
             outcome =
                 (try? await DictationPipeline(
                     transcriber: Passthrough(text: transcript), cleaner: cleaner
-                ).run(text: transcript, progress: progress)) ?? outcome
+                ).run(text: transcript)) ?? outcome
+            ticking?.cancel()
             cleanupProgress = nil
+            // Only a cleanup that produced text: a timeout or a refusal says nothing about how
+            // long one usually takes.
+            if showsProgress, outcome.cleaned != nil {
+                timings.record(.seconds(now().timeIntervalSince(start)))
+            }
         }
         do {
             let entry = try await history.add(
