@@ -28,42 +28,66 @@ struct CleanupTimingsTests {
         try #require(UserDefaults(suiteName: "CleanupTimingsTests-\(UUID())"))
     }
 
+    private func seconds(_ duration: Duration) -> Double {
+        Double(duration.components.seconds) + Double(duration.components.attoseconds) / 1e18
+    }
+
     @Test func guessesBeforeAnythingWasMeasured() throws {
         let timings = CleanupTimings(defaults: try defaults(), prompt: "a")
-        #expect(timings.expectedDuration == CleanupTimings.initialDuration)
+        #expect(timings.expectedDuration(tokens: nil) == CleanupTimings.initialDuration)
+        let guess = CleanupTimings.initialStart + 100 * CleanupTimings.initialSecondsPerToken
+        #expect(abs(seconds(timings.expectedDuration(tokens: 100)) - guess) < 0.001)
     }
 
-    @Test func takesTheMedianSoThatASlowCleanupDoesNotMoveIt() throws {
+    @Test func learnsTheStartAndTheTimePerToken() throws {
         let timings = CleanupTimings(defaults: try defaults(), prompt: "a")
-        timings.record(.seconds(2))
-        #expect(timings.expectedDuration == .seconds(2))
-        timings.record(.seconds(1))
-        #expect(timings.expectedDuration == .seconds(1.5))
-        for seconds in [1.2, 1.3, 5.0] { timings.record(.seconds(seconds)) }
-        #expect(timings.expectedDuration == .seconds(1.3))
+        for tokens in [20, 50, 80, 120, 200] {
+            timings.record(.seconds(0.5 + 0.01 * Double(tokens)), tokens: tokens)
+        }
+        #expect(abs(seconds(timings.expectedDuration(tokens: 300)) - 3.5) < 0.001)
+        #expect(abs(seconds(timings.expectedDuration(tokens: 30)) - 0.8) < 0.001)
     }
 
-    @Test func forgetsDurationsBeyondTheWindow() throws {
+    @Test func barelyMovesForOneSlowCleanup() throws {
         let timings = CleanupTimings(defaults: try defaults(), prompt: "a")
-        for _ in 0..<CleanupTimings.window { timings.record(.seconds(4)) }
-        for _ in 0..<(CleanupTimings.window / 2 + 1) { timings.record(.seconds(1)) }
-        #expect(timings.expectedDuration == .seconds(1))
+        for tokens in [20, 50, 80, 120, 200] {
+            timings.record(.seconds(0.5 + 0.01 * Double(tokens)), tokens: tokens)
+        }
+        timings.record(.seconds(6), tokens: 60)
+        #expect(abs(seconds(timings.expectedDuration(tokens: 60)) - 1.1) < 0.15)
     }
 
-    @Test func dropsTheMovingAverageOfTheFirstRelease() throws {
-        let store = try defaults()
-        store.set(1.97, forKey: "cleanupSeconds")
-        CleanupTimings(defaults: store, prompt: "a").record(.seconds(1))
-        #expect(store.object(forKey: "cleanupSeconds") == nil)
+    @Test func takesTheTimePerTokenWhileOnlyOneLengthWasMeasured() throws {
+        let timings = CleanupTimings(defaults: try defaults(), prompt: "a")
+        timings.record(.seconds(1), tokens: 50)
+        timings.record(.seconds(1.2), tokens: 50)
+        #expect(abs(seconds(timings.expectedDuration(tokens: 100)) - 2.2) < 0.001)
+        #expect(abs(seconds(timings.expectedDuration(tokens: nil)) - 1.1) < 0.001)
+    }
+
+    @Test func forgetsCleanupsBeyondTheWindow() throws {
+        let timings = CleanupTimings(defaults: try defaults(), prompt: "a")
+        for _ in 0..<CleanupTimings.window { timings.record(.seconds(4), tokens: 50) }
+        for _ in 0..<(CleanupTimings.window / 2 + 1) { timings.record(.seconds(1), tokens: 50) }
+        #expect(timings.expectedDuration(tokens: nil) == .seconds(1))
     }
 
     @Test func startsAnewWhenThePromptChanged() throws {
         let store = try defaults()
-        CleanupTimings(defaults: store, prompt: "old").record(.seconds(4))
+        CleanupTimings(defaults: store, prompt: "old").record(.seconds(4), tokens: 50)
         let timings = CleanupTimings(defaults: store, prompt: "new")
-        #expect(timings.expectedDuration == CleanupTimings.initialDuration)
-        timings.record(.seconds(1))
-        #expect(timings.expectedDuration == .seconds(1))
+        #expect(timings.expectedDuration(tokens: nil) == CleanupTimings.initialDuration)
+        timings.record(.seconds(1), tokens: 50)
+        #expect(timings.expectedDuration(tokens: nil) == .seconds(1))
+    }
+
+    @Test func dropsWhatEarlierReleasesKept() throws {
+        let store = try defaults()
+        store.set(1.97, forKey: "cleanupSeconds")
+        store.set([1.2, 1.3], forKey: "cleanupDurations")
+        CleanupTimings(defaults: store, prompt: "a").record(.seconds(1), tokens: 40)
+        #expect(store.object(forKey: "cleanupSeconds") == nil)
+        #expect(store.object(forKey: "cleanupDurations") == nil)
     }
 
     @Test func fingerprintsThePromptStably() {

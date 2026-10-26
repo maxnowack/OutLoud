@@ -190,8 +190,9 @@ Acceptance criteria:
 - The menu bar panel shows the state and the last result with a copy
   button.
 - While the cleanup runs, the overlay's bar moves evenly from its start,
-  by the time passed over the usual duration of a cleanup, learned on the
-  device, and is full only at the end.
+  by the time passed over the duration expected for this text — learned
+  on the device from earlier cleanups and the text's length in tokens —,
+  and is full only at the end.
 - Releasing the hotkey while the microphone dialog is open, then allowing
   the microphone, leaves no overlay and no recording.
 - After a restart with "Open at login" on, the hotkey works without

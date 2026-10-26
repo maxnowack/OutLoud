@@ -7,11 +7,14 @@ import Testing
 private struct StandInCleaner: Cleaning {
     var answer: Result<String, CleanerError>
     var delay: Duration = .zero
+    var tokens: Int?
 
     func clean(_ transcript: String) async throws -> String {
         if delay > .zero { try await Task.sleep(for: delay) }
         return try answer.get()
     }
+
+    func tokenCount(for transcript: String) async -> Int? { tokens }
 }
 
 @MainActor
@@ -40,7 +43,8 @@ struct DictationControllerTests {
         let timings = CleanupTimings(
             defaults: try #require(UserDefaults(suiteName: "\(UUID())")), prompt: "test")
         let controller = try controller(
-            cleaner: StandInCleaner(answer: .success("Hallo."), delay: .milliseconds(600)),
+            cleaner: StandInCleaner(
+                answer: .success("Hallo."), delay: .milliseconds(600), tokens: 40),
             timings: timings)
         let run = Task {
             await controller.finish(transcript: "äh hallo", audio: nil, showsProgress: true)
@@ -50,7 +54,7 @@ struct DictationControllerTests {
         #expect(halfway > 0 && halfway < CleanupProgress.onTime)
         _ = await run.value
         #expect(controller.cleanupProgress == nil)
-        let learned = timings.expectedDuration
+        let learned = timings.expectedDuration(tokens: 40)
         #expect(learned > .milliseconds(500) && learned < .seconds(2))
     }
 

@@ -54,6 +54,14 @@ public struct AppleCleaner: Cleaning {
         self.timeout = timeout
     }
 
+    /// Counts the tokens of the text as the model reads it — after the hesitation filter, framed
+    /// as user input. About 60 ms; the first count after launch takes a second, so a cleaner
+    /// starts one when it is made.
+    public func tokenCount(for transcript: String) async -> Int? {
+        let prompt = CleanupPrompt.userMessage(for: HesitationFilter.apply(to: transcript))
+        return try? await SystemLanguageModel.default.tokenCount(for: prompt)
+    }
+
     public func clean(_ transcript: String) async throws -> String {
         guard transcript.count <= Self.maximumCharacters else { throw CleanerError.tooLong }
         let session = prepared.take() ?? LanguageModelSession(transcript: Self.examples)
@@ -78,6 +86,7 @@ public struct AppleCleaner: Cleaning {
             let session = LanguageModelSession(transcript: AppleCleaner.examples)
             session.prewarm()
             self.session = session
+            Task { _ = try? await SystemLanguageModel.default.tokenCount(for: "") }
         }
 
         func take() -> LanguageModelSession? {

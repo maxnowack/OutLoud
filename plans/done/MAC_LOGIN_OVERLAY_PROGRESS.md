@@ -41,6 +41,14 @@ slow to follow with a weight of 0.3. The usual duration is now the median
 of the last ten durations, which one slow cleanup barely moves and which
 forgets old runs after ten.
 
+*Addendum 2026-10-26, the user's next point:* a cleanup's duration depends
+on the length of the text, so one usual duration fits neither a short nor
+a long dictation. The expected duration is now a start plus a time per
+token, fitted robustly (Theil–Sen) to the last 20 cleanups; the tokens are
+counted by Apple's model alongside the cleanup (about 60 ms, warmed at the
+recording's start, measured 2026-10-26). Tokens rather than characters: a
+German text came to 2.6 characters per token, an English one to 4.0.
+
 ## Problem
 
 The user's use of the Mac app on 2026-10-24 showed four things:

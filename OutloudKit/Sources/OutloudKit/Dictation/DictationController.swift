@@ -180,15 +180,25 @@ public final class DictationController {
     }
 
     /// Moves the bar by the time since `start` over the usual duration, until cancelled.
-    private func trackCleanupProgress(since start: Date, expected: Duration) -> Task<Void, Never> {
+    private func trackCleanupProgress(
+        since start: Date, expected: Expectation
+    ) -> Task<Void, Never> {
         Task { [weak self] in
             while !Task.isCancelled {
                 guard let self, self.state == .cleaning else { return }
                 let elapsed = Duration.seconds(self.now().timeIntervalSince(start))
-                self.cleanupProgress = CleanupProgress.value(elapsed: elapsed, expected: expected)
+                let value = CleanupProgress.value(elapsed: elapsed, expected: expected.duration)
+                // A longer expectation, once the tokens are counted, must not move the bar back.
+                self.cleanupProgress = max(self.cleanupProgress ?? 0, value)
                 try? await Task.sleep(for: .milliseconds(100))
             }
         }
+    }
+
+    /// The duration the bar runs towards; it changes once the tokens are counted.
+    @MainActor private final class Expectation {
+        var duration: Duration
+        init(_ duration: Duration) { self.duration = duration }
     }
 
     /// Returns to the idle state after a result or a failure was shown.
@@ -208,19 +218,30 @@ public final class DictationController {
             state = .cleaning
             let start = now()
             cleanupProgress = showsProgress ? 0 : nil
-            let ticking =
-                showsProgress
-                ? trackCleanupProgress(since: start, expected: timings.expectedDuration) : nil
+            var ticking: Task<Void, Never>?
+            var counting: Task<Int?, Never>?
+            if showsProgress {
+                // The bar starts with the usual duration and follows the text's length once its
+                // tokens are counted, alongside the cleanup (about 60 ms).
+                let expected = Expectation(timings.expectedDuration(tokens: nil))
+                ticking = trackCleanupProgress(since: start, expected: expected)
+                counting = Task { [timings] in
+                    let tokens = await cleaner.tokenCount(for: transcript)
+                    if let tokens { expected.duration = timings.expectedDuration(tokens: tokens) }
+                    return tokens
+                }
+            }
             outcome =
                 (try? await DictationPipeline(
                     transcriber: Passthrough(text: transcript), cleaner: cleaner
                 ).run(text: transcript)) ?? outcome
+            let duration = Duration.seconds(now().timeIntervalSince(start))
             ticking?.cancel()
             cleanupProgress = nil
             // Only a cleanup that produced text: a timeout or a refusal says nothing about how
             // long one usually takes.
-            if showsProgress, outcome.cleaned != nil {
-                timings.record(.seconds(now().timeIntervalSince(start)))
+            if outcome.cleaned != nil, let tokens = await counting?.value {
+                timings.record(duration, tokens: tokens)
             }
         }
         do {

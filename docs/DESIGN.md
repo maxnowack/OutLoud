@@ -120,7 +120,8 @@ recording (record circle, `recording`, pulsing), transcribing and
 cleaning (progress spinner, "Transcribing…", "Cleaning up…" — while
 cleaning, with a progress bar of `progressBarWidth` in `accent` where the
 progress is known; it moves evenly from the cleanup's start, by the time
-passed over the learned usual duration, and fills only at the end),
+passed over the duration learned for a text of this length in tokens, and
+fills only at the end),
 finished
 (checkmark, `success`), failed (exclamation, `failure`). Reads `heading`,
 `motion`. Accessibility: one combined element, its label is the state's
