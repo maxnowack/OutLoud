@@ -381,6 +381,16 @@
         }
       }
     },
+    "Music and podcasts pause while you dictate in Outloud and may play on afterwards. From the shortcut, iOS only lets Outloud turn music down and pause spoken audio.": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Musik und Podcasts pausieren, während du in Outloud diktierst, und können danach weiterspielen. Über den Kurzbefehl erlaubt iOS Outloud nur, Musik leiser zu stellen und gesprochene Inhalte zu pausieren."
+          }
+        }
+      }
+    },
     "No button needed; works on every iPhone.": {
       "localizations": {
         "de": {
@@ -497,6 +507,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Outloud"
+          }
+        }
+      }
+    },
+    "Pause playback while dictating": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wiedergabe beim Diktieren pausieren"
           }
         }
       }

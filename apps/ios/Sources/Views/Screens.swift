@@ -73,6 +73,16 @@ struct SettingsScreen: View {
                     }
                 }
 
+                Section {
+                    Toggle(
+                        "Pause playback while dictating",
+                        isOn: Bindable(app.settings).pausesPlayback)
+                } footer: {
+                    Text(
+                        "Music and podcasts pause while you dictate in Outloud and may play on afterwards. From the shortcut, iOS only lets Outloud turn music down and pause spoken audio."
+                    )
+                }
+
                 Section("Transcription model") {
                     ForEach(ModelCatalog.all) { model in
                         ModelRow(model: model, library: app.library, network: app.network)

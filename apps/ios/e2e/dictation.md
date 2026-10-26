@@ -27,6 +27,10 @@ Setup completed; microphone allowed (simulator: `xcrun simctl privacy booted gra
    `xcrun simctl launch booted dev.nowack.outloud -OutloudSampleAudio <container>/tmp/de.wav -OutloudAutoDictate YES -hasCompletedSetup YES`.
    The result card shows the German sample's text; the history (`history.md`) has a new entry
    with audio.
+8. Pausing playback: with "Pause playback while dictating" on, play music and dictate in the app:
+   the music pauses while recording and plays on afterwards (if the player resumes). Run the
+   shortcut from another app with music playing: the music turns down while recording; with a
+   podcast playing, it pauses. Turn the setting off: playback goes on unchanged in both.
 
 ## Assertions
 
