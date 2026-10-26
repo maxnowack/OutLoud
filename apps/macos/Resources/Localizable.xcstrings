@@ -283,6 +283,16 @@
         }
       }
     },
+    "Music or a video that plays pauses while you hold the shortcut and plays on afterwards. Uses the play/pause key and needs Accessibility access." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Musik oder ein Video, das gerade läuft, pausiert, solange du das Kürzel hältst, und spielt danach weiter. Nutzt die Wiedergabe-/Pause-Taste und braucht Zugriff für Bedienungshilfen."
+          }
+        }
+      }
+    },
     "Open at login" : {
       "localizations" : {
         "de" : {
@@ -349,6 +359,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Eingefügt"
+          }
+        }
+      }
+    },
+    "Pause playback while dictating" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wiedergabe beim Diktieren pausieren"
           }
         }
       }

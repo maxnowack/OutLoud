@@ -43,6 +43,7 @@ final class AppModel {
     /// Counts the presses, so that a press can tell whether a later one came while it waited.
     @ObservationIgnored private var presses = 0
     @ObservationIgnored let overlay = RecordingOverlay()
+    @ObservationIgnored private let pauser = PlaybackPauser()
     @ObservationIgnored private var trustPolling: Task<Void, Never>?
     /// A recording to process instead of the microphone, for testing (debug builds only).
     @ObservationIgnored private let sampleAudio: URL?
@@ -80,6 +81,7 @@ final class AppModel {
 
         library.onDelete = { [engines] model in engines.unload(model) }
         dictation.onHistoryChange = { [history] in Task { await history.refresh() } }
+        dictation.onRecordingEnded = { [pauser] in pauser.resume() }
         overlay.bind(to: dictation)
     }
 
@@ -145,7 +147,11 @@ final class AppModel {
             overlay.show()
             return
         }
+        // Before the recording starts, so that a headset whose microphone it opens does not count
+        // as playing (ADR 0024).
+        if settings.pausesPlayback { pauser.pauseIfPlaying() }
         let started = await dictation.startRecording()
+        if !started { pauser.resume() }
         // Released, or pressed again, while Outloud waited — for the microphone dialog, say:
         // this press no longer wants a recording, and its pill must not stay.
         guard press == presses, recordingStarted != nil else {

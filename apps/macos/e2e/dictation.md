@@ -36,6 +36,10 @@ is not. TextEdit is open with an empty document focused.
    `Outloud.app/Contents/MacOS/Outloud -OutloudSampleAudio OutloudKit/Samples/de.wav -OutloudAutoDictate YES -OutloudQuitAfterAutoDictate YES`.
    The process prints "OutloudAutoDictate: …", exits with status 0, and the clipboard holds the
    German sample's text.
+10. Pausing playback: with "Pause playback while dictating" on, play a song in Music and dictate:
+   the song pauses when the overlay appears and plays on after release. Play a video in Safari
+   and dictate: the same. With nothing playing, dictate: nothing starts. Turn the setting off:
+   the song keeps playing through a dictation.
 
 ## Assertions
 

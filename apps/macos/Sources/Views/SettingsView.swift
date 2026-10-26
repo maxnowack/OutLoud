@@ -103,6 +103,16 @@ private struct GeneralSettings: View {
             }
 
             Section {
+                Toggle(
+                    "Pause playback while dictating",
+                    isOn: Bindable(app.settings).pausesPlayback)
+            } footer: {
+                Text(
+                    "Music or a video that plays pauses while you hold the shortcut and plays on afterwards. Uses the play/pause key and needs Accessibility access."
+                )
+            }
+
+            Section {
                 Toggle("Paste into the active text field", isOn: $app.autoPasteEnabled)
                 if app.autoPasteEnabled {
                     LabeledContent("Accessibility access") {
