@@ -34,6 +34,13 @@ SwiftUI before it opens; it had opened at a guessed height, shrunk, and
 left its arrow below the icon. The user confirmed buttons, popover and
 menu in a local Developer ID build.
 
+*Addendum 2026-10-26, after the user's use of 0.2.0:* the bar ended at
+about half for most cleanups. The log showed 1.17, 1.33 and 2.19 s; the
+stored moving average was 1.97 s, pulled up by older and slower runs and
+slow to follow with a weight of 0.3. The usual duration is now the median
+of the last ten durations, which one slow cleanup barely moves and which
+forgets old runs after ten.
+
 ## Problem
 
 The user's use of the Mac app on 2026-10-24 showed four things:

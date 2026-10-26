@@ -33,12 +33,28 @@ struct CleanupTimingsTests {
         #expect(timings.expectedDuration == CleanupTimings.initialDuration)
     }
 
-    @Test func movesTheAverageTowardsEachMeasurement() throws {
+    @Test func takesTheMedianSoThatASlowCleanupDoesNotMoveIt() throws {
         let timings = CleanupTimings(defaults: try defaults(), prompt: "a")
         timings.record(.seconds(2))
         #expect(timings.expectedDuration == .seconds(2))
         timings.record(.seconds(1))
-        #expect(timings.expectedDuration == .seconds(1.7))
+        #expect(timings.expectedDuration == .seconds(1.5))
+        for seconds in [1.2, 1.3, 5.0] { timings.record(.seconds(seconds)) }
+        #expect(timings.expectedDuration == .seconds(1.3))
+    }
+
+    @Test func forgetsDurationsBeyondTheWindow() throws {
+        let timings = CleanupTimings(defaults: try defaults(), prompt: "a")
+        for _ in 0..<CleanupTimings.window { timings.record(.seconds(4)) }
+        for _ in 0..<(CleanupTimings.window / 2 + 1) { timings.record(.seconds(1)) }
+        #expect(timings.expectedDuration == .seconds(1))
+    }
+
+    @Test func dropsTheMovingAverageOfTheFirstRelease() throws {
+        let store = try defaults()
+        store.set(1.97, forKey: "cleanupSeconds")
+        CleanupTimings(defaults: store, prompt: "a").record(.seconds(1))
+        #expect(store.object(forKey: "cleanupSeconds") == nil)
     }
 
     @Test func startsAnewWhenThePromptChanged() throws {

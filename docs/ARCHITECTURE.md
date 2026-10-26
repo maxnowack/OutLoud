@@ -118,10 +118,12 @@ following Hugging Face's redirect to its CDN; nothing is uploaded.
   `transcriptionModel`, `hasCompletedSetup`, and on macOS `hotkey` and
   `autoPaste`. Opening at login is the system's login item
   (`SMAppService`), not a stored setting.
-- **Cleanup timing** — `UserDefaults` keys `cleanupSeconds`, the moving
-  average of a cleanup's duration after a recording, and `cleanupPrompt`,
-  the SHA-256 of the prompt and examples it was measured with; a different
-  prompt starts the average anew.
+- **Cleanup timing** — `UserDefaults` keys `cleanupDurations`, the last
+  ten durations of a cleanup after a recording in seconds, whose median is
+  the usual duration, and `cleanupPrompt`, the SHA-256 of the prompt and
+  examples they were measured with; a different prompt starts them anew.
+  0.2.0 kept a moving average in `cleanupSeconds`, removed at the next
+  cleanup.
 
 ## Trust boundaries
 
