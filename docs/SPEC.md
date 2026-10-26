@@ -93,6 +93,10 @@ to 6 follow.
 Rules:
 
 - Outloud cannot write into other apps; the user pastes the result.
+- With "Pause playback while dictating" on (the default), a recording in
+  the app interrupts other audio, which may play on afterwards; from the
+  shortcut in the background iOS allows only turning music down and
+  pausing spoken audio (ADR 0024).
 - Recording and the shortcut need the matching permissions. The lock
   screen and switching apps can require extra steps.
 - The shortcut and control "Dictate with Outloud" open Outloud and start
@@ -176,6 +180,10 @@ Rules:
   access; until it is allowed, ⌥ Space works instead, and the settings say
   so and offer to allow it. A press shorter than a quarter second records
   nothing. When another app holds the shortcut, Outloud says so.
+- With "Pause playback while dictating" on (the default) and
+  Accessibility allowed, a recording pauses what plays and plays it on
+  once the recording ends; with nothing playing, nothing starts. Outloud
+  presses the play/pause media key for it (ADR 0024).
 - Auto-paste can be switched off; then the result is always copied.
   Password fields never receive a paste. After a paste, the clipboard
   holds what it held before.

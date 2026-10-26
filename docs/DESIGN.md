@@ -301,7 +301,8 @@ design canvas outside the repository on 2026-10-23.
   note and "Open Login Items…" while macOS waits for the user's approval;
   cleanup with its
   CleanupAvailabilityNote; the shortcut, with a `warning` note and "Allow…"
-  while ⌥ ⌘ waits for Accessibility access; auto-paste), Models (ModelRow of the
+  while ⌥ ⌘ waits for Accessibility access; "Pause playback while
+  dictating"; auto-paste), Models (ModelRow of the
   transcription model), History (RetentionPicker), Privacy (PrivacyNotice,
   Acknowledgements).
 - **macOS history window** — HistoryList, HistoryEntryDetail.
@@ -318,5 +319,6 @@ design canvas outside the repository on 2026-10-23.
   drawbacks; and "Or open Outloud and record" for the Dictate control.
 - **iOS history tab** — HistoryList, HistoryEntryDetail.
 - **iOS settings tab** — cleanup toggle with its CleanupAvailabilityNote,
+  "Pause playback while dictating" with what iOS allows from the shortcut,
   ModelRow of the transcription model, RetentionPicker, the
   ways to start Outloud, PrivacyNotice, Acknowledgements.
