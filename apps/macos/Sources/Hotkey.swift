@@ -112,11 +112,11 @@ final class HotkeyMonitor {
             GetApplicationEventTarget(),
             { _, event, context in
                 guard let event, let context else { return OSStatus(eventNotHandledErr) }
-                let kind = GetEventKind(event)
+                let pressed = GetEventKind(event) == UInt32(kEventHotKeyPressed)
                 let monitor = Unmanaged<HotkeyMonitor>.fromOpaque(context).takeUnretainedValue()
-                MainActor.assumeIsolated {
-                    monitor.handle(pressed: kind == UInt32(kEventHotKeyPressed))
-                }
+                // Enqueued on the main actor rather than `MainActor.assumeIsolated`: its run-time
+                // check crashed in these callbacks (see `watchChord`).
+                Task { @MainActor in monitor.handle(pressed: pressed) }
                 return noErr
             }, types.count, &types, context, &handler)
     }
@@ -131,12 +131,19 @@ final class HotkeyMonitor {
     // MARK: Modifier chord
 
     /// Watches ⌥ ⌘ in every app (global monitors) and in Outloud's own windows (local ones).
+    ///
+    /// The handlers run on the main thread but enqueue their work on the main actor instead of
+    /// calling `MainActor.assumeIsolated`: on macOS 27.0.1 its run-time check crashed now and
+    /// then in these callbacks, reading an invalid executor (`EXC_BAD_ACCESS` in
+    /// `swift_task_isMainExecutorImpl`, 0.2.0 and 0.2.2, 2026-10-26). Jobs enqueued from the main
+    /// thread run in order, so a press is never handled after its release.
     private func watchChord() {
         let flags: (NSEvent) -> Void = { [weak self] event in
-            MainActor.assumeIsolated { self?.modifiersChanged(event.modifierFlags) }
+            let modifiers = event.modifierFlags
+            Task { @MainActor in self?.modifiersChanged(modifiers) }
         }
         let keys: (NSEvent) -> Void = { [weak self] _ in
-            MainActor.assumeIsolated { self?.otherKeyPressed() }
+            Task { @MainActor in self?.otherKeyPressed() }
         }
         eventMonitors = [
             NSEvent.addGlobalMonitorForEvents(matching: .flagsChanged, handler: flags),
