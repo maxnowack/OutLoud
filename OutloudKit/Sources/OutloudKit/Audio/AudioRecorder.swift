@@ -23,14 +23,26 @@ public final class AudioRecorder: @unchecked Sendable {
 
     public init() {}
 
+    /// What a recording does to other audio on iOS (ADR 0024); macOS has no audio session.
+    public enum OtherAudio: Sendable {
+        /// An exclusive session: other audio is interrupted and may resume afterwards.
+        case interrupt
+        /// A session that mixes, turning music down and pausing spoken audio; one that iOS allows
+        /// an app in the background, where it refuses an exclusive one
+        /// (`plans/BACKGROUND_DICTATION.md`, spike 2).
+        case quiet
+        /// A session that mixes and leaves other audio as it is.
+        case mix
+    }
+
     /// Starts recording.
     ///
     /// - Parameters:
-    ///   - mixable: iOS: opens the audio session so that it mixes with other audio instead of
-    ///     interrupting it, which iOS allows an app in the background; an exclusive session it
-    ///     refuses there (`plans/BACKGROUND_DICTATION.md`, spike 2).
+    ///   - otherAudio: iOS: what the session does to other audio.
     ///   - level: Receives the input level, 0 to 1, from the audio thread.
-    public func start(mixable: Bool = false, level: (@Sendable (Float) -> Void)? = nil) throws {
+    public func start(
+        otherAudio: OtherAudio = .interrupt, level: (@Sendable (Float) -> Void)? = nil
+    ) throws {
         try lock.withLock {
             guard !isRecording else { throw AudioRecorderError.alreadyRecording }
             isRecording = true
@@ -39,13 +51,28 @@ public final class AudioRecorder: @unchecked Sendable {
         do {
             #if os(iOS)
                 let session = AVAudioSession.sharedInstance()
-                if mixable {
+                switch otherAudio {
+                case .interrupt:
+                    try session.setCategory(.record, mode: .default)
+                    try session.setActive(true)
+                case .quiet:
+                    do {
+                        try session.setCategory(
+                            .playAndRecord, mode: .default,
+                            options: [.duckOthers, .interruptSpokenAudioAndMixWithOthers])
+                        try session.setActive(true)
+                    } catch {
+                        // Turning others down is a courtesy; a session that only mixes still
+                        // records.
+                        try session.setCategory(
+                            .playAndRecord, mode: .default, options: [.mixWithOthers])
+                        try session.setActive(true)
+                    }
+                case .mix:
                     try session.setCategory(
                         .playAndRecord, mode: .default, options: [.mixWithOthers])
-                } else {
-                    try session.setCategory(.record, mode: .default)
+                    try session.setActive(true)
                 }
-                try session.setActive(true)
             #endif
             let input = engine.inputNode
             let inputFormat = input.outputFormat(forBus: 0)

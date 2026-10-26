@@ -18,6 +18,9 @@ public final class OutloudSettings {
         transcriptionModelID =
             defaults.string(forKey: Key.transcriptionModel) ?? ModelCatalog.parakeetV3.id
         hasCompletedSetup = defaults.bool(forKey: Key.hasCompletedSetup)
+        pausesPlayback =
+            defaults.object(forKey: Key.pausesPlayback) == nil
+            ? true : defaults.bool(forKey: Key.pausesPlayback)
     }
 
     /// Whether the transcript is cleaned up; needs Apple's on-device model (ADR 0019).
@@ -34,6 +37,11 @@ public final class OutloudSettings {
         didSet { defaults.set(transcriptionModelID, forKey: Key.transcriptionModel) }
     }
 
+    /// Whether other audio pauses while a dictation records (ADR 0024).
+    public var pausesPlayback: Bool {
+        didSet { defaults.set(pausesPlayback, forKey: Key.pausesPlayback) }
+    }
+
     /// Whether the user has confirmed the models at first launch.
     public var hasCompletedSetup: Bool {
         didSet { defaults.set(hasCompletedSetup, forKey: Key.hasCompletedSetup) }
@@ -48,5 +56,6 @@ public final class OutloudSettings {
         static let retentionPeriod = "retentionPeriod"
         static let transcriptionModel = "transcriptionModel"
         static let hasCompletedSetup = "hasCompletedSetup"
+        static let pausesPlayback = "pausesPlayback"
     }
 }

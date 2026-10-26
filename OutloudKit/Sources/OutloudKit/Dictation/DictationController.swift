@@ -52,6 +52,9 @@ public final class DictationController {
     @ObservationIgnored private var preparedCleaner: (any Cleaning)?
     /// Called after a result was added to the history.
     @ObservationIgnored public var onHistoryChange: (() -> Void)?
+    /// Called once a recording has ended, whether it is processed or dropped; the Mac resumes
+    /// the playback it paused (ADR 0024).
+    @ObservationIgnored public var onRecordingEnded: (() -> Void)?
 
     public init(
         settings: OutloudSettings, library: ModelLibrary, engines: Engines, history: HistoryStore,
@@ -87,7 +90,8 @@ public final class DictationController {
 
     /// Starts a recording. Returns `false` and sets a failed state when it cannot start.
     ///
-    /// - Parameter mixable: Opens a session that mixes with other audio (`AudioRecorder`).
+    /// - Parameter mixable: Opens a session that mixes with other audio, as iOS requires in the
+    ///   background; with `pausesPlayback` it still turns others down (`AudioRecorder.OtherAudio`).
     @discardableResult
     public func startRecording(mixable: Bool = false) async -> Bool {
         guard !state.isBusy else { return false }
@@ -104,7 +108,9 @@ public final class DictationController {
             guard !state.isBusy else { return false }
         }
         do {
-            try recorder.start(mixable: mixable) { [weak self] level in
+            let otherAudio: AudioRecorder.OtherAudio =
+                settings.pausesPlayback ? (mixable ? .quiet : .interrupt) : .mix
+            try recorder.start(otherAudio: otherAudio) { [weak self] level in
                 Task { @MainActor [weak self] in self?.level = level }
             }
             state = .recording
@@ -122,6 +128,7 @@ public final class DictationController {
         guard state == .recording else { return nil }
         let samples = recorder.stop()
         level = 0
+        onRecordingEnded?()
         return await transcribe(samples, showsProgress: true)
     }
 
@@ -132,6 +139,7 @@ public final class DictationController {
         level = 0
         preparedCleaner = nil
         state = .idle
+        onRecordingEnded?()
     }
 
     /// Transcribes and cleans up samples recorded elsewhere — by a shortcut, say — and keeps the
