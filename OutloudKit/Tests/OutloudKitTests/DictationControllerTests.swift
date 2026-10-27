@@ -24,7 +24,7 @@ struct DictationControllerTests {
 
     private func controller(
         cleanupEnabled: Bool = true, cleaner: (any Cleaning)?,
-        timings: CleanupTimings? = nil
+        estimates: UserDefaults? = nil
     ) throws -> DictationController {
         let store = ModelStore(
             cache: HubCache(root: root.appending(path: "hub")),
@@ -35,26 +35,46 @@ struct DictationControllerTests {
         return DictationController(
             settings: settings, library: ModelLibrary(store: store), engines: Engines(store: store),
             history: HistoryStore(folder: root.appending(path: "history")), cleaner: { cleaner },
-            timings: try timings
-                ?? CleanupTimings(defaults: #require(UserDefaults(suiteName: "\(UUID())"))))
+            estimates: try estimates ?? #require(UserDefaults(suiteName: "\(UUID())")))
     }
 
     @Test func movesTheCleanupBarByTimeAndLearnsTheDuration() async throws {
-        let timings = CleanupTimings(
-            defaults: try #require(UserDefaults(suiteName: "\(UUID())")), prompt: "test")
+        let store = try #require(UserDefaults(suiteName: "\(UUID())"))
         let controller = try controller(
             cleaner: StandInCleaner(
                 answer: .success("Hallo."), delay: .milliseconds(600), tokens: 40),
-            timings: timings)
+            estimates: store)
         let run = Task {
             await controller.finish(transcript: "äh hallo", audio: nil, showsProgress: true)
         }
         try await Task.sleep(for: .milliseconds(400))
-        let halfway = try #require(controller.cleanupProgress)
-        #expect(halfway > 0 && halfway < CleanupProgress.onTime)
+        let halfway = try #require(controller.progress)
+        #expect(halfway > 0 && halfway < PhaseProgress.onTime)
         _ = await run.value
-        #expect(controller.cleanupProgress == nil)
-        let learned = timings.expectedDuration(tokens: 40)
+        #expect(controller.progress == nil)
+        let learned = DurationEstimate.cleanup(defaults: store).expectedDuration(units: 40)
+        #expect(learned > .milliseconds(500) && learned < .seconds(2))
+    }
+
+    @Test func movesTheTranscriptionBarByTimeAndLearnsTheDuration() async throws {
+        let store = try #require(UserDefaults(suiteName: "\(UUID())"))
+        let controller = try controller(cleaner: nil, estimates: store)
+        let estimate = DurationEstimate.transcription(modelID: "test", defaults: store)
+        let run = Task {
+            await controller.run(
+                .transcribing, estimate: estimate, units: { 10 },
+                work: { try? await Task.sleep(for: .milliseconds(600)) })
+        }
+        try await Task.sleep(for: .milliseconds(400))
+        #expect(controller.state == .transcribing)
+        let halfway = try #require(controller.progress)
+        #expect(halfway > 0 && halfway < PhaseProgress.onTime)
+        // 0.8 s expected for 10 s of audio before any run was measured.
+        #expect(controller.secondsLeft == 1)
+        await run.value
+        #expect(controller.progress == nil)
+        #expect(controller.secondsLeft == nil)
+        let learned = estimate.expectedDuration(units: 10)
         #expect(learned > .milliseconds(500) && learned < .seconds(2))
     }
 

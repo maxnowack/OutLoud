@@ -10,7 +10,7 @@ public protocol Transcribing: Sendable {
 public protocol Cleaning: Sendable {
     func clean(_ transcript: String) async throws -> String
     /// How many tokens the model reads for `transcript`, for the expected duration
-    /// (`CleanupTimings`); `nil` where nothing counts them.
+    /// (`DurationEstimate`); `nil` where nothing counts them.
     func tokenCount(for transcript: String) async -> Int?
 }
 

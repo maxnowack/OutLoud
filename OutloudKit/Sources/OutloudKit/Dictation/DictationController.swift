@@ -35,10 +35,15 @@ public enum DictationState: Equatable, Sendable {
 @Observable
 public final class DictationController {
     public private(set) var state: DictationState = .idle
-    /// The input level while recording, 0 to 1.
-    public private(set) var level: Float = 0
-    /// Roughly how far the cleanup is, 0 to 1, while it runs after a recording; `nil` otherwise.
-    public private(set) var cleanupProgress: Double?
+    /// The shape of the voice while recording: `VoiceShape.pointCount` points from -1 to 1,
+    /// scaled by the input level, so that they lie at 0 in silence; empty otherwise.
+    public private(set) var voice: [Float] = []
+    /// Roughly how far the transcription or the cleanup is, 0 to 1, while it runs after a
+    /// recording; `nil` otherwise.
+    public private(set) var progress: Double?
+    /// Roughly how many whole seconds the transcription or the cleanup still takes, while it
+    /// runs after a recording and until its usual duration passed; `nil` otherwise.
+    public private(set) var secondsLeft: Int?
 
     @ObservationIgnored private let settings: OutloudSettings
     @ObservationIgnored private let library: ModelLibrary
@@ -47,9 +52,14 @@ public final class DictationController {
     @ObservationIgnored private let recorder = AudioRecorder()
     @ObservationIgnored private let now: () -> Date
     @ObservationIgnored private let cleaner: @MainActor () -> (any Cleaning)?
-    @ObservationIgnored private let timings: CleanupTimings
+    /// Where the durations of the transcription and the cleanup are learned.
+    @ObservationIgnored private let estimates: UserDefaults
     /// The cleaner made when the recording started, so that it prepares while the user speaks.
     @ObservationIgnored private var preparedCleaner: (any Cleaning)?
+    /// Reads the input level while recording.
+    @ObservationIgnored private var levelReading: Task<Void, Never>?
+    /// The input level while recording, 0 to 1.
+    @ObservationIgnored private var level: Float = 0
     /// Called after a result was added to the history.
     @ObservationIgnored public var onHistoryChange: (() -> Void)?
     /// Called once a recording has ended, whether it is processed or dropped; the Mac resumes
@@ -60,7 +70,7 @@ public final class DictationController {
         settings: OutloudSettings, library: ModelLibrary, engines: Engines, history: HistoryStore,
         now: @escaping () -> Date = Date.init,
         cleaner: @escaping @MainActor () -> (any Cleaning)? = DictationController.appleCleaner,
-        timings: CleanupTimings = CleanupTimings()
+        estimates: UserDefaults = .standard
     ) {
         self.settings = settings
         self.library = library
@@ -68,7 +78,7 @@ public final class DictationController {
         self.history = history
         self.now = now
         self.cleaner = cleaner
-        self.timings = timings
+        self.estimates = estimates
     }
 
     /// Apple's on-device model where the system offers it; asked per dictation, since the user
@@ -110,10 +120,20 @@ public final class DictationController {
         do {
             let otherAudio: AudioRecorder.OtherAudio =
                 settings.pausesPlayback ? (mixable ? .quiet : .interrupt) : .mix
-            try recorder.start(otherAudio: otherAudio) { [weak self] level in
-                Task { @MainActor [weak self] in self?.level = level }
-            }
+            try recorder.start(otherAudio: otherAudio)
             state = .recording
+            levelReading = Task { [weak self] in
+                while !Task.isCancelled {
+                    try? await Task.sleep(for: InputLevel.tick)
+                    guard let self, self.state == .recording else { return }
+                    self.level = InputLevel.following(self.level, self.recorder.takeLevel())
+                    let recent = self.recorder.recentAudio()
+                    let shape = VoiceShape.points(
+                        of: recent.samples, sampleRate: recent.sampleRate, after: self.voice)
+                    self.voice = VoiceShape.moving(
+                        self.voice, towards: shape.map { $0 * self.level })
+                }
+            }
             preparedCleaner = settings.cleanupEnabled ? cleaner() : nil
             return true
         } catch {
@@ -127,7 +147,9 @@ public final class DictationController {
     public func stopRecording() async -> DictationOutcome? {
         guard state == .recording else { return nil }
         let samples = recorder.stop()
+        levelReading?.cancel()
         level = 0
+        voice = []
         onRecordingEnded?()
         return await transcribe(samples, showsProgress: true)
     }
@@ -136,7 +158,9 @@ public final class DictationController {
     public func cancelRecording() {
         guard state == .recording else { return }
         _ = recorder.stop()
+        levelReading?.cancel()
         level = 0
+        voice = []
         preparedCleaner = nil
         state = .idle
         onRecordingEnded?()
@@ -151,19 +175,27 @@ public final class DictationController {
         return await transcribe(samples, showsProgress: false)
     }
 
-    /// - Parameter showsProgress: Publishes `cleanupProgress` and takes the cleanup's duration
-    ///   into the learned average: after a recording, whose cleaner was prewarmed.
+    /// - Parameter showsProgress: Publishes `progress` and learns the durations of the
+    ///   transcription and the cleanup: after a recording, whose cleaner was prewarmed.
     private func transcribe(_ samples: [Float], showsProgress: Bool) async -> DictationOutcome? {
         guard hasRequiredModels else {
             state = .failed(.modelsMissing)
             return nil
         }
-        state = .transcribing
+        let model = settings.transcriptionModel
+        let seconds = Double(samples.count) / AudioRecorder.sampleRate
         let transcript: String
         do {
-            let transcriber = try await engines.transcriber(for: settings.transcriptionModel)
-            transcript = try await DictationPipeline(transcriber: transcriber, cleaner: nil)
-                .run(samples: samples).transcript
+            transcript = try await run(
+                .transcribing,
+                estimate: showsProgress
+                    ? .transcription(modelID: model.id, defaults: estimates) : nil,
+                units: { seconds },
+                work: {
+                    let transcriber = try await engines.transcriber(for: model)
+                    return try await DictationPipeline(transcriber: transcriber, cleaner: nil)
+                        .run(samples: samples).transcript
+                })
         } catch DictationError.nothingRecognised {
             state = .failed(.nothingRecognised)
             return nil
@@ -187,23 +219,55 @@ public final class DictationController {
         return await finish(transcript: transcript, audio: nil, showsProgress: false)
     }
 
-    /// Moves the bar by the time since `start` over the usual duration, until cancelled.
-    private func trackCleanupProgress(
-        since start: Date, expected: Expectation
-    ) -> Task<Void, Never> {
-        Task { [weak self] in
+    /// Runs `work` as `phase`. With an `estimate`, moves `progress` by the time passed over the
+    /// duration it expects for the `units` of work, which may be counted alongside — the
+    /// cleanup's tokens take about 60 ms —, and learns the duration when `learns` says the
+    /// result tells how long a run usually takes. Internal for the tests.
+    func run<Result>(
+        _ phase: DictationState, estimate: DurationEstimate?,
+        units: @escaping @MainActor () async -> Double?,
+        learns: (Result) -> Bool = { _ in true },
+        work: () async throws -> Result
+    ) async rethrows -> Result {
+        state = phase
+        guard let estimate else { return try await work() }
+        let start = now()
+        progress = 0
+        let expected = Expectation(estimate.expectedDuration(units: nil))
+        secondsLeft = PhaseProgress.secondsLeft(elapsed: .zero, expected: expected.duration)
+        let ticking = Task { [weak self] in
             while !Task.isCancelled {
-                guard let self, self.state == .cleaning else { return }
+                guard let self, self.state == phase else { return }
                 let elapsed = Duration.seconds(self.now().timeIntervalSince(start))
-                let value = CleanupProgress.value(elapsed: elapsed, expected: expected.duration)
-                // A longer expectation, once the tokens are counted, must not move the bar back.
-                self.cleanupProgress = max(self.cleanupProgress ?? 0, value)
+                let value = PhaseProgress.value(elapsed: elapsed, expected: expected.duration)
+                // A longer expectation, once the units are counted, must not move the bar back.
+                self.progress = max(self.progress ?? 0, value)
+                self.secondsLeft = PhaseProgress.countdown(
+                    after: self.secondsLeft,
+                    secondsLeft: PhaseProgress.secondsLeft(
+                        elapsed: elapsed, expected: expected.duration))
                 try? await Task.sleep(for: .milliseconds(100))
             }
         }
+        let counting = Task {
+            let units = await units()
+            if let units { expected.duration = estimate.expectedDuration(units: units) }
+            return units
+        }
+        defer {
+            ticking.cancel()
+            progress = nil
+            secondsLeft = nil
+        }
+        let result = try await work()
+        let duration = Duration.seconds(now().timeIntervalSince(start))
+        if learns(result), let units = await counting.value {
+            estimate.record(duration, units: units)
+        }
+        return result
     }
 
-    /// The duration the bar runs towards; it changes once the tokens are counted.
+    /// The duration the bar runs towards; it changes once the units are counted.
     @MainActor private final class Expectation {
         var duration: Duration
         init(_ duration: Duration) { self.duration = duration }
@@ -223,34 +287,18 @@ public final class DictationController {
         let prepared = preparedCleaner
         preparedCleaner = nil
         if settings.cleanupEnabled, let cleaner = prepared ?? cleaner() {
-            state = .cleaning
-            let start = now()
-            cleanupProgress = showsProgress ? 0 : nil
-            var ticking: Task<Void, Never>?
-            var counting: Task<Int?, Never>?
-            if showsProgress {
-                // The bar starts with the usual duration and follows the text's length once its
-                // tokens are counted, alongside the cleanup (about 60 ms).
-                let expected = Expectation(timings.expectedDuration(tokens: nil))
-                ticking = trackCleanupProgress(since: start, expected: expected)
-                counting = Task { [timings] in
-                    let tokens = await cleaner.tokenCount(for: transcript)
-                    if let tokens { expected.duration = timings.expectedDuration(tokens: tokens) }
-                    return tokens
-                }
-            }
-            outcome =
-                (try? await DictationPipeline(
-                    transcriber: Passthrough(text: transcript), cleaner: cleaner
-                ).run(text: transcript)) ?? outcome
-            let duration = Duration.seconds(now().timeIntervalSince(start))
-            ticking?.cancel()
-            cleanupProgress = nil
-            // Only a cleanup that produced text: a timeout or a refusal says nothing about how
-            // long one usually takes.
-            if outcome.cleaned != nil, let tokens = await counting?.value {
-                timings.record(duration, tokens: tokens)
-            }
+            let uncleaned = outcome
+            outcome = await run(
+                .cleaning, estimate: showsProgress ? .cleanup(defaults: estimates) : nil,
+                units: { await cleaner.tokenCount(for: transcript).map(Double.init) },
+                // Only a cleanup that produced text: a timeout or a refusal says nothing about
+                // how long one usually takes.
+                learns: { $0.cleaned != nil },
+                work: {
+                    (try? await DictationPipeline(
+                        transcriber: Passthrough(text: transcript), cleaner: cleaner
+                    ).run(text: transcript)) ?? uncleaned
+                })
         }
         do {
             let entry = try await history.add(

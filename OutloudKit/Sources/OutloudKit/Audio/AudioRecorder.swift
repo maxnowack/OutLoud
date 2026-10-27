@@ -1,5 +1,7 @@
 @preconcurrency import AVFoundation
 import Foundation
+import Synchronization
+import os
 
 public enum AudioRecorderError: Error, Equatable, Sendable {
     case noInput
@@ -16,6 +18,16 @@ public final class AudioRecorder: @unchecked Sendable {
     private var engine = AVAudioEngine()
     /// Whether the input node carries the tap; only `start` and `stopEngine` change it.
     private var tapInstalled = false
+    /// Measures the input for the level, attached only while recording.
+    private var meter: AVAudioSinkNode?
+    /// The loudest mean square of an IO buffer since `takeLevel`, as the bits of a `Float`. The
+    /// bits of non-negative floats order as their values, so `max` on them is lock-free, as the
+    /// audio thread needs.
+    private let loudest = Atomic<UInt32>(0)
+    /// The input's last tenth of a second, for the waveform. The audio thread writes only when
+    /// the lock is free, so that it never waits; a buffer missed while the waveform is read is
+    /// not missed by the recording, which the tap takes.
+    private let recent = OSAllocatedUnfairLock(initialState: RecentAudio())
     private let lock = NSLock()
     // Guarded by `lock`.
     private var samples: [Float] = []
@@ -38,11 +50,8 @@ public final class AudioRecorder: @unchecked Sendable {
     /// Starts recording.
     ///
     /// - Parameters:
-    ///   - otherAudio: iOS: what the session does to other audio.
-    ///   - level: Receives the input level, 0 to 1, from the audio thread.
-    public func start(
-        otherAudio: OtherAudio = .interrupt, level: (@Sendable (Float) -> Void)? = nil
-    ) throws {
+    /// - Parameter otherAudio: iOS: what the session does to other audio.
+    public func start(otherAudio: OtherAudio = .interrupt) throws {
         try lock.withLock {
             guard !isRecording else { throw AudioRecorderError.alreadyRecording }
             isRecording = true
@@ -90,9 +99,31 @@ public final class AudioRecorder: @unchecked Sendable {
                 guard let self, let converted = Self.convert(buffer, with: converter, to: target)
                 else { return }
                 self.lock.withLock { self.samples.append(contentsOf: converted) }
-                level?(Self.level(of: converted))
             }
             tapInstalled = true
+            let meter = AVAudioSinkNode { [unowned self] _, frameCount, buffers in
+                let channel = UnsafeMutableAudioBufferListPointer(
+                    UnsafeMutablePointer(mutating: buffers))[0]
+                guard frameCount > 0, let data = channel.mData?.assumingMemoryBound(to: Float.self)
+                else { return noErr }
+                var sum: Float = 0
+                for index in 0..<Int(frameCount) { sum += data[index] * data[index] }
+                self.loudest.max((sum / Float(frameCount)).bitPattern, ordering: .relaxed)
+                self.recent.withLockIfAvailableUnchecked { recent in
+                    for index in 0..<Int(frameCount) {
+                        recent.samples[recent.next] = data[index]
+                        recent.next = (recent.next + 1) % recent.samples.count
+                    }
+                }
+                return noErr
+            }
+            engine.attach(meter)
+            try engine.connectNode(input, to: meter, format: inputFormat)
+            self.meter = meter
+            loudest.store(0, ordering: .relaxed)
+            recent.withLock {
+                $0 = RecentAudio(sampleRate: inputFormat.sampleRate)
+            }
             engine.prepare()
             try engine.start()
         } catch {
@@ -102,6 +133,22 @@ public final class AudioRecorder: @unchecked Sendable {
             engine = AVAudioEngine()
             lock.withLock { isRecording = false }
             throw error
+        }
+    }
+
+    /// The level of the loudest moment since the last call, 0 to 1; the IO buffers it is
+    /// measured in come about every 10 ms.
+    public func takeLevel() -> Float {
+        InputLevel.of(meanSquare: Float(bitPattern: loudest.exchange(0, ordering: .relaxed)))
+    }
+
+    /// The input's last tenth of a second, oldest first, and its sample rate.
+    public func recentAudio() -> (samples: [Float], sampleRate: Double) {
+        recent.withLock { recent in
+            (
+                Array(recent.samples[recent.next...] + recent.samples[..<recent.next]),
+                recent.sampleRate
+            )
         }
     }
 
@@ -122,6 +169,10 @@ public final class AudioRecorder: @unchecked Sendable {
             tapInstalled = false
         }
         engine.stop()
+        if let meter {
+            engine.detach(meter)
+            self.meter = nil
+        }
         #if os(iOS)
             try? AVAudioSession.sharedInstance().setActive(
                 false, options: .notifyOthersOnDeactivation)
@@ -151,13 +202,6 @@ public final class AudioRecorder: @unchecked Sendable {
         return Array(UnsafeBufferPointer(start: channel, count: Int(output.frameLength)))
     }
 
-    private static func level(of samples: [Float]) -> Float {
-        guard !samples.isEmpty else { return 0 }
-        let meanSquare = samples.reduce(0) { $0 + $1 * $1 } / Float(samples.count)
-        // About -50 dB to 0 dB mapped to 0...1.
-        let decibels = 10 * log10(max(meanSquare, 1e-10))
-        return max(0, min(1, (decibels + 50) / 50))
-    }
 }
 
 /// The microphone permission.
@@ -190,3 +234,16 @@ private protocol TapInstalling {
 }
 
 extension AVAudioNode: TapInstalling {}
+
+/// A ring of the input's last tenth of a second, at the input's own rate.
+private struct RecentAudio {
+    var samples: [Float]
+    /// Where the next sample goes, and so where the oldest is.
+    var next = 0
+    let sampleRate: Double
+
+    init(sampleRate: Double = 48_000) {
+        self.sampleRate = sampleRate
+        samples = Array(repeating: 0, count: max(Int(sampleRate / 10), 1))
+    }
+}

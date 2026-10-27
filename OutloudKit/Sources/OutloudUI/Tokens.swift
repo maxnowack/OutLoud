@@ -55,8 +55,16 @@ public enum Tokens {
     public static let playButtonSize: CGFloat = 56
     public static let waveformHeight: CGFloat = 36
     public static let confirmationIconSize: CGFloat = 64
-    /// The cleanup's progress bar beside the status.
-    public static let progressBarWidth: CGFloat = 64
+    /// The StatusIndicator's icon, and its progress ring, which holds the seconds left of two
+    /// digits.
+    public static let statusIconSize: CGFloat = 20
+    public static let progressRingSize: CGFloat = 24
+    /// The LevelWave while recording: the overlay's on the Mac, larger on the iPhone's Dictate tab.
+    #if os(macOS)
+        public static let levelWaveSize = CGSize(width: 96, height: 24)
+    #else
+        public static let levelWaveSize = CGSize(width: 180, height: 44)
+    #endif
 
     // MARK: Elevation
 
@@ -73,11 +81,29 @@ public enum Tokens {
 
     public static let standard = Animation.easeInOut(duration: 0.2)
     public static let pulse = Animation.easeInOut(duration: 1).repeatForever(autoreverses: true)
-    /// The macOS recording overlay fading and rising in, and fading out.
-    public static let overlayAppear = Animation.spring(duration: 0.4, bounce: 0.25)
+    /// The macOS recording overlay growing and fading in, and fading out; without a bounce, which
+    /// made the glass wobble.
+    public static let overlayAppear = Animation.smooth(duration: 0.4)
     public static let overlayFadeDuration: Duration = .milliseconds(400)
-    /// The overlay's capsule following its content's size.
-    public static let overlayResize = Animation.smooth(duration: 0.3)
+    /// How long the overlay's capsule takes to grow or shrink by `distance` points to the size of
+    /// its next content, after the old one faded out and before the new one fades in: from
+    /// 0.15 s for a few points to 0.3 s for the width of a label, so that a small change does
+    /// not leave it empty for long.
+    public static func overlayResizeSeconds(distance: CGFloat) -> Double {
+        min(0.3, 0.15 + Double(distance) / 1000)
+    }
+    /// The overlay's content fading out before the capsule changes size, and in after.
+    public static let overlayContentFade = Animation.easeInOut(duration: 0.12)
+    public static let overlayContentFadeDuration: Duration = .milliseconds(120)
+    /// Up to this difference in width, the overlay swaps its content in a quick dip — out, and
+    /// in while the capsule follows — instead of resizing it empty.
+    public static let overlaySwapWidth: CGFloat = 12
+    public static let overlaySwap = Animation.easeInOut(duration: 0.08)
+    public static let overlaySwapDuration: Duration = .milliseconds(80)
+    /// How long a step of the pipeline must last before the overlay shows it: a transcription
+    /// on the Mac often takes less, and a step shown for less than its own transition is never
+    /// read.
+    public static let overlayStepHold: Duration = .milliseconds(250)
 }
 
 extension Color {

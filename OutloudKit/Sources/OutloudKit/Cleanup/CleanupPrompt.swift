@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 
 /// The instructions and the input framing for the cleanup model (`docs/SPEC.md` §"Cleanup").
@@ -107,4 +108,13 @@ public enum CleanupPrompt {
         }
         return text.trimmingCharacters(in: .whitespacesAndNewlines)
     }
+}
+
+extension CleanupPrompt {
+    /// Identifies the instructions and examples the model reads before a transcript.
+    static let fingerprint: String = {
+        let text = ([system] + examples.flatMap { [$0.transcript, $0.cleaned] })
+            .joined(separator: "\u{1F}")
+        return SHA256.hash(data: Data(text.utf8)).map { String(format: "%02x", $0) }.joined()
+    }()
 }
