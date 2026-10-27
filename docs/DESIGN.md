@@ -74,9 +74,9 @@ System font, Dynamic Type everywhere; no fixed point sizes.
 `radiusSmall` 6, `radiusMedium` 10, `radiusLarge` 16 points. The record
 button is a circle of `recordButtonSize` 104 points, the play button one
 of `playButtonSize` 56; a waveform is `waveformHeight` 36 points high; the
-copied confirmation's check mark is `confirmationIconSize` 64 points. The cleanup's
-progress bar is `progressBarWidth` 64 points wide; the overlay's text wraps
-at `overlayTextWidth` 320 points.
+copied confirmation's check mark is `confirmationIconSize` 64 points. The
+LevelWave is `levelWaveSize` 96 × 24 points on macOS and 180 × 44 on iOS;
+the overlay's text wraps at `overlayTextWidth` 320 points.
 
 ### Elevation
 
@@ -86,11 +86,17 @@ which brings its own depth and shadow.
 ### Motion
 
 `standard`: 0.2 s ease-in-out for state changes. `pulse`: 1 s repeating
-scale of the recording icon. `overlayAppear`: a 0.4 s spring with a little
-bounce, for the macOS overlay rising and fading in and settling and fading
-out. `overlayResize`: 0.3 s smooth, for the overlay's capsule following its
-content's size. With Reduce Motion on, nothing pulses or rises, and state
-changes and the overlay only cross-fade.
+scale of the recording icon. `overlayAppear`: 0.4 s smooth, without a
+bounce, for the macOS overlay growing and fading in and fading out.
+`overlayContentFade`: 0.12 s ease-in-out, for the overlay's content fading
+out before the capsule changes size and in after; in between, the capsule
+takes the next content's size with a smooth curve of 0.15 s for a few points
+up to 0.3 s for the width of a label (`overlayResizeSeconds`). `overlaySwap`:
+0.08 s out and 0.08 s in, for a content about as wide as the one before
+(within `overlaySwapWidth`, 12 pt). `overlayStepHold`: 0.25 s, how long a
+step of the pipeline must last before the overlay shows it. With
+Reduce Motion on, nothing pulses or grows, and state changes and the overlay
+only cross-fade.
 
 ## Components
 
@@ -116,22 +122,37 @@ and rejected: they lacked a button's spacing, hit area and states.
 ### StatusIndicator
 
 The dictation state as icon and label: idle (waveform, `accent`),
-recording (record circle, `recording`, pulsing), transcribing and
-cleaning (progress spinner, "Transcribing…", "Cleaning up…" — while
-cleaning, with a progress bar of `progressBarWidth` in `accent` where the
-progress is known; it moves evenly from the cleanup's start, by the time
-passed over the duration learned for a text of this length in tokens, and
-fills only at the end),
-finished
-(checkmark, `success`), failed (exclamation, `failure`). Reads `heading`,
-`motion`. Accessibility: one combined element, its label is the state's
-words; a state change is announced.
+recording (record circle, `recording`, pulsing — or, where the input level
+is given, "Recording…" above the LevelWave, without the icon: the
+overlay and the dictate tab), transcribing and cleaning ("Transcribing…", "Cleaning up…"
+beside a ring of 24 points (`progressRingSize`; the other icons take
+`statusIconSize`, 20) that fills clockwise in `accent` over a
+`textSecondary` track where the progress is known, and a spinner where it
+is not; the ring moves evenly from the step's start, by the time passed
+over the duration learned for a recording of this length in seconds or a
+text of this length in tokens, fills only at the end, and starts anew for
+the cleanup — the same ring as the Live Activity's; inside it, the whole
+seconds left until the learned duration, rounded up, in 10-point
+semibold digits — they never count up when the expectation grows, vanish
+once it has passed, and are left out above 99), finished (checkmark,
+`success`), failed (exclamation, `failure`). Reads `heading`, `motion`.
+Accessibility: one combined element, its label is the state's words, its value "About N seconds left" while
+the seconds count down, else the ring's percentage; a state
+change is announced.
 
-### LevelMeter
+### LevelWave
 
-The input level while recording, as five bars filled from `textSecondary`
-to `recording`. Hidden from accessibility (the StatusIndicator says
-"Recording").
+The voice while recording, as one smooth line in `recording`, tapered to
+the ends: the shape of the input's last 30 ms, redrawn about once a frame,
+starting where the signal rises through zero so that a held vowel stands
+still, as on an oscilloscope. Its height is the level — mapped from -55 dB
+to -15 dB, the range of speech at the microphone, rising at once and
+falling back within about a tenth of a second. So a vowel shows as a
+steady wave, a hiss as a fine tremble, and silence as a flat line: the
+user sees that the microphone hears them and that the line is their voice,
+not an animation. With Reduce Motion it shows a calm sine of three periods
+that only grows and shrinks with the level. Hidden from accessibility (the
+StatusIndicator says "Recording").
 
 ### RecordButton
 
@@ -155,8 +176,9 @@ as is; the copy button has its own label.
 iOS: a dictation started from another app (ADR 0022), in the Dynamic Island
 and on the Lock Screen, one phase at a time: recording (red record circle,
 "Recording" and its running time, a Stop button), transcribing (waveform
-and spinner, "Transcribing…"), cleaning up (sparkles, "Cleaning up…" with a
-progress bar; a progress ring in the compact island), then copied (green
+and "Transcribing…"), cleaning up (sparkles, "Cleaning up…"), each with a
+progress bar and the seconds left beside it ("2s"), and a progress ring
+with the seconds inside in the compact island, then copied (green
 check mark, "Copied", "Paste it anywhere."), saved (ended from its Stop
 button: "Saved in Outloud", not copied), nothing recognised or failed
 (warning sign and what to do), and gone after four seconds. Progress moves
@@ -288,13 +310,30 @@ design canvas outside the repository on 2026-10-23.
   "History…". A right-click (or ⌃-click) on the icon opens a menu instead:
   "Settings…" (⌘,), "Check for Updates…", "Quit Outloud" (⌘Q); the settings
   open in a window of their own.
-- **macOS recording overlay** — a Liquid Glass capsule (`glassEffect` in a
-  `GlassEffectContainer`, drawn in its active look although the panel never
-  becomes key) as wide as its content: StatusIndicator (with the cleanup's
-  progress), LevelMeter, or the delivery message, which wraps at
-  `overlayTextWidth`. It rises and fades in, follows its content's size
-  smoothly, and fades out; centred at the bottom of the screen, inside a
-  fixed transparent area of `overlayAreaSize`.
+- **macOS recording overlay** — a Liquid Glass capsule (AppKit's
+  `NSGlassEffectView` in its clear style, which lets what lies behind show
+  through and shines at the edge; the regular style turns into an even fill
+  over a calm background and looked like a plain pill)
+  as wide as its content: the LevelWave and "Recording…" while recording, the
+  StatusIndicator with its ring while processing, or the delivery message,
+  which wraps at
+  `overlayTextWidth`. It grows out of a smaller capsule while fading in, and
+  fades out. A change of content goes in three steps — the old content fades
+  out, the capsule takes the new one's size, the new content fades in — and
+  the content is clipped to the capsule, so that it never reaches past the
+  edge and the capsule never shows space its content does not fill. A
+  content about as wide as the one before swaps in a quick dip instead, the
+  capsule following as it fades in, so that it is not empty for a change
+  that cannot be seen. A narrower content, which already fits, fades in
+  after the old one's quick fade while the capsule shrinks around it, so
+  that "Pasted" comes with the pasted text. Transcribing and cleaning up appear only once they
+  lasted a quarter second; one that ends sooner — a transcription on the Mac
+  often does — is skipped, and the line stays until the next one. "Done" is
+  never shown: the delivery message follows it as soon as the result is
+  pasted or copied, and the step before stays until then, its ring full.
+  Centred
+  at the bottom of the screen, inside a fixed transparent area of
+  `overlayAreaSize`, it grows and shrinks about its middle.
 - **macOS setup window** — ModelSetup, PrivacyNotice, and the switch
   "Open Outloud at login", preselected.
 - **macOS settings window** — General ("Open at login", with a `warning`
@@ -308,8 +347,8 @@ design canvas outside the repository on 2026-10-23.
 - **macOS history window** — HistoryList, HistoryEntryDetail.
 - **iOS setup** — ModelSetup.
 - **iOS dictate tab** — a dismissible card pointing to dictating from any
-  app, with even margins around its icon, text and ×; StatusIndicator and
-  LevelMeter in the middle, DeliveryConfirmation or FailureNotice after a dictation, RecordButton
+  app, with even margins around its icon, text and ×; the LevelWave and
+  "Recording…" while recording, the StatusIndicator otherwise, in the middle, DeliveryConfirmation or FailureNotice after a dictation, RecordButton
   and "Type text instead" (a sheet with a text field for system
   dictation) at the bottom.
 - **iOS dictate from any app** — a sheet in three parts: "1. Set up the

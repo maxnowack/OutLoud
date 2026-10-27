@@ -190,17 +190,18 @@ Rules:
 
 Acceptance criteria:
 
-- Holding the hotkey shows "Recording…" without taking the focus from the
-  app the user types in; releasing it pastes the result there when
+- Holding the hotkey shows a wave that follows the voice, without taking
+  the focus from the app the user types in; releasing it pastes the result there when
   Accessibility is allowed and a text field is focused.
 - Without Accessibility, or without a text field, the result is on the
   clipboard and the overlay says so.
 - The menu bar panel shows the state and the last result with a copy
   button.
-- While the cleanup runs, the overlay's bar moves evenly from its start,
-  by the time passed over the duration expected for this text — learned
-  on the device from earlier cleanups and the text's length in tokens —,
-  and is full only at the end.
+- While the transcription and the cleanup run, the overlay's ring moves
+  evenly from the start of each, by the time passed over the duration
+  expected for this recording or text — learned on the device from
+  earlier runs and the recording's length in seconds or the text's in
+  tokens —, and is full only at the end.
 - Releasing the hotkey while the microphone dialog is open, then allowing
   the microphone, leaves no overlay and no recording.
 - After a restart with "Open at login" on, the hotkey works without
@@ -231,10 +232,15 @@ Verified by: `apps/macos/e2e/dictation.md`, `apps/macos/e2e/settings.md`.
   app is in the background. It is available where the device supports
   Apple Intelligence and the user switched it on; elsewhere the cleanup
   setting is off and disabled, says why, and the result is the transcript.
-- While the cleanup runs after a dictation in the app — the macOS hotkey,
-  the iOS record button —, a bar shows roughly how far it is, estimated
-  from the length of the answer so far; it stays short of full until the
-  answer is complete. Dictations through a shortcut show none.
+- While the transcription and then the cleanup run after a recording —
+  the macOS hotkey, the iOS record button or shortcut —, a ring shows
+  roughly how far each is, by the time passed over the duration learned
+  on the device for a recording of this length (per transcription model)
+  or a text of this many tokens (per prompt); it stays short of full until
+  the step is done. Inside it, a countdown shows the whole seconds the
+  step should still take; it never counts up and disappears once the
+  expected duration has passed. On iOS the Live Activity shows both too. Text from
+  system dictation and the debug seams show none.
 - When cleanup fails — the model times out after 20 s, answers instead
   of cleaning up, refuses (in the background, Apple limits how often an
   app may use it, above all on battery; a language it does not support),
@@ -336,8 +342,9 @@ Verified by: `apps/macos/e2e/first-launch.md`, `apps/macos/e2e/models.md`,
 
 Acceptance criteria:
 
-- The states read "Recording…", "Transcribing…", "Cleaning up…", "Done"
-  and, on a failure, a sentence with a way out ("Open Settings",
+- The states read "Transcribing…", "Cleaning up…", "Done" — a recording
+  shows the wave, and the menu bar panel and the screen reader say
+  "Recording…" — and, on a failure, a sentence with a way out ("Open Settings",
   "Download models") where one exists.
 - A recording too short or too quiet to hold speech ends in "Nothing was
   recognised".

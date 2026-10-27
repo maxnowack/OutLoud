@@ -127,6 +127,10 @@ following Hugging Face's redirect to its CDN; nothing is uploaded.
   different prompt starts them anew. 0.2.0 kept a moving average in
   `cleanupSeconds`, 0.2.1 the last durations in `cleanupDurations`; both
   are removed at the next cleanup.
+- **Transcription timing** — `UserDefaults` keys `transcriptionSamples`,
+  the last 20 transcriptions after a recording as `[audio seconds,
+  seconds]` pairs, fitted the same way, and `transcriptionModel`, the id
+  of the model they were measured with; another model starts them anew.
 
 ## Trust boundaries
 
