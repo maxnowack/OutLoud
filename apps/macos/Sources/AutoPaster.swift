@@ -28,7 +28,9 @@ enum AutoPaster {
         _ = AXIsProcessTrustedWithOptions(options)
     }
 
-    static func deliver(_ text: String, autoPaste: Bool) async -> Delivery {
+    /// Reports `.pasted` as soon as the ⌘V is posted, when the text appears in the target; the
+    /// clipboard is restored after that, in the background.
+    static func deliver(_ text: String, autoPaste: Bool) -> Delivery {
         guard autoPaste else { return copy(text, .autoPasteOff) }
         guard isTrusted else { return copy(text, .noPermission) }
         guard focusedElementAcceptsText() else { return copy(text, .noTextField) }
@@ -41,10 +43,13 @@ enum AutoPaster {
         postCommandV()
         // The target reads the clipboard asynchronously; restore it only after it had time, and
         // only if nothing else wrote to it meanwhile.
-        try? await Task.sleep(for: .milliseconds(600))
-        if pasteboard.changeCount == changeCount, !saved.isEmpty {
-            pasteboard.clearContents()
-            pasteboard.writeObjects(saved)
+        Task {
+            try? await Task.sleep(for: .milliseconds(600))
+            let pasteboard = NSPasteboard.general
+            if pasteboard.changeCount == changeCount, !saved.isEmpty {
+                pasteboard.clearContents()
+                pasteboard.writeObjects(saved)
+            }
         }
         return .pasted
     }

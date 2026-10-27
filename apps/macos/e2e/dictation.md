@@ -14,12 +14,19 @@ is not. TextEdit is open with an empty document focused.
 
 1. Hold the shortcut (⌥ ⌘; ⌥ Space without Accessibility access). The overlay — a glass
    capsule just as wide as its content — appears at the bottom of the screen with "Recording…"
-   and a level meter; the menu bar icon turns into a record circle. TextEdit keeps the focus.
+   above a red line that takes the shape of the voice — a steady wave on a held vowel, a tremble on an "s" — and lies flat in silence; the background shows through the capsule; the menu bar icon turns into a record circle. TextEdit keeps the focus.
 2. Say "Also ähm ich komme heute so gegen acht vorbei" and release.
-   The overlay shows "Transcribing…", then "Cleaning up…" with a progress bar that moves from
-   the start and fills only at the end, without standing at zero and jumping, then
-   "Pasted" (paste branch) or "Copied — press ⌘V. Allow Accessibility to paste automatically."
-   (fallback branch).
+   The line lies flat; the overlay shows "Transcribing…" — skipped when it takes less than a
+   quarter second, as for a short sentence on most Macs —, then "Cleaning up…", each with a
+   ring that fills from the start and only at the end, without standing at zero and jumping,
+   with the seconds left inside it counting down — never up, and gone once the step takes
+   longer than expected —,
+   then "Pasted" (paste branch), as the text appears in TextEdit, or "Copied — press ⌘V. Allow Accessibility to paste
+   automatically." (fallback branch). Each change fades the content out, resizes the capsule
+   about its middle and fades the new content in, with nothing reaching past the edge; between two
+   contents about as wide — within 12 pt — it swaps them in a quick dip without an empty
+   capsule, and a narrower content — "Pasted" after "Cleaning up…" — fades in while the
+   capsule shrinks, without an empty capsule.
 3. Paste branch: the cleaned text appears in TextEdit at the cursor; the clipboard holds what it
    held before step 1. Fallback branch: press ⌘V in TextEdit; the cleaned text appears.
 4. Tap ⌥ Space for less than a quarter second. Nothing is recorded; the overlay disappears.

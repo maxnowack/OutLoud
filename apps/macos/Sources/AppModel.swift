@@ -195,7 +195,7 @@ final class AppModel {
             return
         }
         lastOutcome = outcome
-        let delivery = await AutoPaster.deliver(outcome.result, autoPaste: autoPasteEnabled)
+        let delivery = AutoPaster.deliver(outcome.result, autoPaste: autoPasteEnabled)
         lastDelivery = delivery
         overlay.showDelivery(delivery)
     }
