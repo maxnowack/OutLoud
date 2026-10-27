@@ -57,14 +57,15 @@ struct DictateScreen: View {
     @ViewBuilder private var state: some View {
         if app.isRecording {
             VStack(spacing: Tokens.Spacing.m) {
-                StatusIndicator(state: .recording)
-                LevelMeter(level: app.dictation.level)
+                StatusIndicator(state: .recording, voice: app.dictation.voice)
                 hint("Tap to stop. The text is copied to the clipboard.")
             }
         } else {
             switch app.dictation.state {
             case .transcribing, .cleaning:
-                StatusIndicator(state: app.dictation.state, progress: app.dictation.cleanupProgress)
+                StatusIndicator(
+                    state: app.dictation.state, progress: app.dictation.progress,
+                    secondsLeft: app.dictation.secondsLeft)
             case .finished(let outcome):
                 DeliveryConfirmation(outcome: outcome)
             case .failed(let failure):

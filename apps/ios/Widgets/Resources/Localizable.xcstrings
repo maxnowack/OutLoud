@@ -17,7 +17,6 @@
     "Stop dictation" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Diktat beenden" } } } },
     "Transcribing…" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Wird erkannt…" } } } },
     "Try speaking a little longer." : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Sprich etwas länger." } } } },
-    "Turning your words into text" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Deine Worte werden zu Text" } } } },
     "Start or Stop Dictation with Outloud" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Diktat mit Outloud starten oder beenden" } } } },
     "Starts recording without opening Outloud, or ends the recording and returns the cleaned text, e.g. for Copy to Clipboard." : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Startet die Aufnahme, ohne Outloud zu öffnen, oder beendet sie und gibt den bereinigten Text zurück, z. B. für „In Zwischenablage kopieren“." } } } },
     "Stop Dictation" : { "localizations" : { "de" : { "stringUnit" : { "state" : "translated", "value" : "Diktat beenden" } } } }

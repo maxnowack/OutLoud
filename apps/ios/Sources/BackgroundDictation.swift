@@ -81,18 +81,20 @@ final class BackgroundDictation {
         return outcome.result
     }
 
-    /// The Live Activity's state for the dictation's, while it is processed; the cleanup's
-    /// progress in steps of 5 %, since iOS limits how often an activity may change.
+    /// The Live Activity's state for the dictation's, while it is processed; the progress in
+    /// steps of 5 %, since iOS limits how often an activity may change, and the seconds left,
+    /// which change less often.
     private func activityState() -> DictationActivityAttributes.ContentState? {
+        let phase: DictationActivityAttributes.ContentState.Phase
         switch app.dictation.state {
-        case .transcribing:
-            return .init(phase: .transcribing, since: recordingSince)
-        case .cleaning:
-            let progress = ((app.dictation.cleanupProgress ?? 0) * 20).rounded() / 20
-            return .init(phase: .cleaning, since: recordingSince, progress: progress)
-        default:
-            return nil
+        case .transcribing: phase = .transcribing
+        case .cleaning: phase = .cleaning
+        default: return nil
         }
+        let progress = ((app.dictation.progress ?? 0) * 20).rounded() / 20
+        return .init(
+            phase: phase, since: recordingSince, progress: progress,
+            secondsLeft: app.dictation.secondsLeft)
     }
 
     private func show(_ state: DictationActivityAttributes.ContentState) async {

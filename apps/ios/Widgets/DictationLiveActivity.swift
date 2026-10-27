@@ -64,9 +64,15 @@ private struct PhaseText: View {
             switch state.phase {
             case .recording:
                 Text(state.since, style: .timer).monospacedDigit().foregroundStyle(.secondary)
-            case .cleaning:
-                ProgressView(value: state.progress ?? 0).tint(.teal)
-            case .transcribing, .copied, .saved, .nothingRecognised, .failed:
+            case .transcribing, .cleaning:
+                HStack(spacing: 8) {
+                    ProgressView(value: state.progress ?? 0).tint(.teal)
+                    if let secondsLeft = state.secondsLeft {
+                        Text(Duration.seconds(secondsLeft), format: .units(width: .narrow))
+                            .font(.caption).monospacedDigit().foregroundStyle(.secondary)
+                    }
+                }
+            case .copied, .saved, .nothingRecognised, .failed:
                 if let detail { Text(detail).font(.caption).foregroundStyle(.secondary) }
             }
         }
@@ -86,12 +92,11 @@ private struct PhaseText: View {
 
     private var detail: LocalizedStringKey? {
         switch state.phase {
-        case .transcribing: "Turning your words into text"
         case .copied: "Paste it anywhere."
         case .saved: "Not copied: run the shortcut again to end a dictation."
         case .nothingRecognised: "Try speaking a little longer."
         case .failed: "Open Outloud to see what happened."
-        case .recording, .cleaning: nil
+        case .recording, .transcribing, .cleaning: nil
         }
     }
 }
@@ -103,10 +108,15 @@ private struct CompactDetail: View {
         switch state.phase {
         case .recording:
             Text(state.since, style: .timer).monospacedDigit().frame(maxWidth: 44)
-        case .cleaning:
+        case .transcribing, .cleaning:
             ProgressView(value: state.progress ?? 0).progressViewStyle(.circular).tint(.teal)
-        case .transcribing:
-            ProgressView().progressViewStyle(.circular).tint(.teal)
+                .overlay {
+                    // Inside the ring, as in the app (`docs/DESIGN.md` §"StatusIndicator").
+                    if let secondsLeft = state.secondsLeft, secondsLeft < 100 {
+                        Text(secondsLeft, format: .number)
+                            .font(.system(size: 9, weight: .semibold).monospacedDigit())
+                    }
+                }
         case .copied, .saved, .nothingRecognised, .failed:
             EmptyView()
         }

@@ -17,7 +17,7 @@ knows its control and shortcuts).
    record" with the Dictate control.
 2. Open "Outloud's Dictate control" and follow it: under Action Button › Controls, Outloud ›
    "Dictate" is offered; choose it. Lock the iPhone and press the Action Button: Outloud opens on
-   the dictate tab and records ("Recording…", level meter). Tap stop: "Copied" appears.
+   the dictate tab and records (the red wave). Tap stop: "Copied" appears.
 3. Add the control to the Control Center; tap it from another app: same as step 2.
 4. Open "AssistiveTouch" and follow it with the shortcut of step 6; with the Accessibility
    Shortcut, a triple-click on the side button shows and hides the button.
@@ -26,8 +26,9 @@ knows its control and shortcuts).
    Run it from AssistiveTouch, the Action Button (Shortcut) or Back Tap. Copy a word, open Notes,
    run the shortcut: Outloud does not come to the front, Notes stays in view, and the Dynamic
    Island shows a red dot with a running time. Speak, run it again: the Live Activity shows
-   "Transcribing…", then "Cleaning up…" with a filling bar, then "Copied", and disappears. Paste:
-   the cleaned text appears. In Outloud, the history holds the dictation with its recording.
+   "Transcribing…", then "Cleaning up…", each with a filling bar and the seconds left beside it (a
+   filling ring with the seconds inside in the compact island), counting down, then "Copied",
+   and disappears. Paste: the cleaned text appears. In Outloud, the history holds the dictation with its recording.
 7. Start again from Notes, then tap Stop in the expanded Dynamic Island: it shows "Saved in
    Outloud" and the clipboard is unchanged; the dictation is in the history. Start once more, open
    Outloud and tap the record button to stop: the text is copied and the Live Activity ends.

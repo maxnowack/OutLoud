@@ -38,8 +38,10 @@ struct DictationActivityAttributes: ActivityAttributes {
         var phase: Phase
         /// When the recording started, for its timer.
         var since: Date
-        /// How far the cleanup is, 0 to 1, while cleaning.
+        /// How far the transcription or the cleanup is, 0 to 1, while it runs.
         var progress: Double?
+        /// Roughly how many seconds it still takes, until its usual duration passed.
+        var secondsLeft: Int?
     }
 }
 

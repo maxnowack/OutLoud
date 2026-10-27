@@ -1,6 +1,6 @@
 # The user dictates with the record button or the Action Button and pastes the text in another app
 
-- Covers: Dictate tab (RecordButton, StatusIndicator, LevelMeter, ResultCard, FailureNotice), the "Dictate with Outloud" App Intent.
+- Covers: Dictate tab (RecordButton, StatusIndicator, LevelWave, ResultCard, FailureNotice), the "Dictate with Outloud" App Intent.
 - Build: Debug. The microphone-free branch uses
   `-OutloudSampleAudio <wav> -OutloudAutoDictate YES` (`apps/ios/Sources/AppModel.swift`); the
   WAV file has to be inside the app's container (e.g. its `tmp/`).
@@ -12,10 +12,11 @@ Setup completed; microphone allowed (simulator: `xcrun simctl privacy booted gra
 ## Steps
 
 1. On the Dictate tab, tap the record button at the bottom ("Start dictation"). It turns red
-   with a stop square; the status in the middle reads "Recording…" with a level meter.
+   with a stop square; in the middle "Recording…" stands above a red line that takes the shape of the voice — a steady wave on a held vowel, a tremble on an "s" — and lies flat in silence.
 2. Say "Also ähm ich komme heute so gegen acht vorbei" and tap the button ("Stop dictation").
-   The status reads "Transcribing…", then "Cleaning up…" with a filling progress bar, then
-   "Done".
+   The status reads "Transcribing…", then "Cleaning up…", each with a ring that fills from the
+   start, with the seconds left inside it counting down — never up, and gone once the step
+   takes longer than expected —, then "Done".
 3. A large check mark, "Copied" and a sentence on pasting appear; the text is not shown. Tap
    "Show text": the result card with the cleaned text and "Copy" appears. Switch to Notes and
    paste: the cleaned text appears.
