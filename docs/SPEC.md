@@ -183,7 +183,14 @@ Rules:
 - With "Pause playback while dictating" on (the default) and
   Accessibility allowed, a recording pauses what plays and plays it on
   once the recording ends; with nothing playing, nothing starts. Outloud
-  presses the play/pause media key for it (ADR 0024).
+  listens to the apps that put out sound, pauses with macOS's pause
+  command when they sound, and plays on with the play/pause media key
+  only when they fell silent after it. When something still sounds — a
+  call, a video that does not pause —, nothing plays on and the overlay
+  says "Something is playing in the background". Listening needs the
+  permission to record system audio, asked for the first time; without
+  it, Outloud pauses but does not play on, and the settings offer to
+  allow it (ADR 0025).
 - Auto-paste can be switched off; then the result is always copied.
   Password fields never receive a paste. After a paste, the clipboard
   holds what it held before.

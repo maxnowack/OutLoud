@@ -2,12 +2,22 @@
 
 ## Status
 
-Phase 1 built (2026-10-26); phase 2, the run with the user, is open. The user asked for it on
+Phases 1 and 3 built (2026-10-26, 2026-10-28), and the user confirmed phase 3 on the Mac on
+2026-10-28: music in the browser pauses and plays on; phase 2, the run with the user on the
+iPhone, is open. The user asked for it on
 2026-10-26 and chose the approach of ADR 0024, with the iPhone included. `./scripts/precommit`
 passes in all three units; the setting's default has its test. The user confirmed the Mac on
 2026-10-26 in a local Developer ID build: music and a video pause and play on, nothing starts
 when nothing plays, and the setting switches it. The iPhone run is open. It ships together with the hotkey
 crash fix as macOS 0.2.3.
+
+Addendum 2026-10-28: the user saw the media key start Music with nothing playing. A running
+output device turned out to say only that a process uses it — the system sounds and the browser
+hold it without a player playing —, and the user chose Ghost Pepper's way of pausing, MediaRemote's
+pause command, with the media key to play on only after a player stopped (ADR 0025, phase 3).
+The browser then paused but did not play on: it kept its output running, silent. The user chose
+to listen to the apps' sound through a Core Audio tap, and a hint in the pill when something
+still sounds.
 
 ## Problem
 
@@ -47,10 +57,21 @@ strings; `docs/SPEC.md`, `docs/DESIGN.md`, `docs/ARCHITECTURE.md` and the e2e pl
 DoD: the user checks on the Mac — music in Music, a video in a browser, nothing playing — and on
 the iPhone — in the app and from the shortcut with music and with a podcast.
 
+### 3. Pause with MediaRemote
+
+DoD: `PlaybackPauser` listens to the apps that put out sound, sends MediaRemote's pause command
+when they sound, and presses the media key after the recording only when they fell silent
+(`PauseCheck`, with tests); when they still sound, the pill shows "Something is playing in the
+background"; without the permission to record system audio, it pauses without playing on and
+Settings offer "Allow…"; German strings, the usage description included; nothing starts with
+nothing playing; ADR 0025 written, ADR 0024 marked superseded for macOS; `docs/SPEC.md`,
+`docs/DESIGN.md` and the e2e plan updated; `./scripts/precommit` passes in `OutloudKit` and
+`apps/macos`; the user checks it on the Mac.
+
 ## Risks
 
-- Audio that is not a player can make the media key start the last player (ADR 0024
-  §"Consequences").
+- A notification that ends within the second after the pause command, with nothing playing, can
+  still make the media key start the last player (ADR 0025 §"Consequences").
 - iOS may refuse the ducking options in the background; then the session falls back to plain
   mixing, as today, and the recording still starts.
 

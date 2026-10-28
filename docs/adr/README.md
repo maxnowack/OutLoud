@@ -70,4 +70,5 @@ able to tell what was decided without opening the file.
 - [0021 – Holding ⌥ ⌘ is cancelled by another modifier at any time and by another key only within its first second; later keys are typed and the recording goes on](0021-option-command-cancels-on-modifiers-and-early-keys-only.md)
 - [0022 – On iOS, a shortcut starts and stops a recording in the background, with an audio session that mixes with other audio and a Live Activity, and copies the text Outloud returns](0022-ios-background-dictation-with-a-mixable-session-and-a-live-activity.md)
 - [0023 – The iOS app is distributed through TestFlight first; the App Store is decided later](0023-ios-is-distributed-through-testflight-first.md)
-- [0024 – Other audio pauses while dictating: the media key on macOS when audio plays, the audio session on iOS](0024-other-audio-pauses-while-dictating.md)
+- [0024 – Other audio pauses while dictating: the media key on macOS when audio plays, the audio session on iOS](0024-other-audio-pauses-while-dictating.md) *(macOS superseded by 0025)*
+- [0025 – macOS pauses with MediaRemote's pause command and plays on with the media key only after the apps it heard fell silent](0025-macos-pauses-with-mediaremote-and-plays-on-with-the-media-key.md)

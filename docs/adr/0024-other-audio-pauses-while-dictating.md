@@ -1,6 +1,6 @@
 # 0024 – Other audio pauses while dictating: the media key on macOS when audio plays, the audio session on iOS
 
-- Status: accepted
+- Status: accepted; its decision for macOS superseded by [0025](0025-macos-pauses-with-mediaremote-and-plays-on-with-the-media-key.md)
 - Date: 2026-10-26
 
 ## Context

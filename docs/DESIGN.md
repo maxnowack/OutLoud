@@ -314,7 +314,10 @@ design canvas outside the repository on 2026-10-23.
   `NSGlassEffectView` in its clear style, which lets what lies behind show
   through and shines at the edge; the regular style turns into an even fill
   over a calm background and looked like a plain pill)
-  as wide as its content: the LevelWave and "Recording…" while recording, the
+  as wide as its content: the LevelWave and "Recording…" while recording —
+  below them, in `caption` and `warning` with a speaker icon, "Something is
+  playing in the background" when an app still sounds after the pause
+  command (ADR 0025) —, the
   StatusIndicator with its ring while processing, or the delivery message,
   which wraps at
   `overlayTextWidth`. It grows out of a smaller capsule while fading in, and
@@ -341,7 +344,8 @@ design canvas outside the repository on 2026-10-23.
   cleanup with its
   CleanupAvailabilityNote; the shortcut, with a `warning` note and "Allow…"
   while ⌥ ⌘ waits for Accessibility access; "Pause playback while
-  dictating"; auto-paste), Models (ModelRow of the
+  dictating", with "Recording system audio" and "Allow…" while that
+  permission is declined; auto-paste), Models (ModelRow of the
   transcription model), History (RetentionPicker), Privacy (PrivacyNotice,
   Acknowledgements).
 - **macOS history window** — HistoryList, HistoryEntryDetail.
