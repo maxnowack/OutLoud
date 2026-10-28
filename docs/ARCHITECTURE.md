@@ -26,9 +26,10 @@ Three targets (ADR 0013):
   `DictationPipeline` turns samples or text
   into a `DictationOutcome`; `DictationController` runs one dictation from
   the recording to the history, the one the user sees, and processes the
-  dictations ended in the background (ADR 0026) one after another with it;
-  `OptionCommandChord` decides the ⌥ ⌘ chord from the modifier flags, and
-  `ReturnPaste` when a dictation pasted on return is pasted, the platform
+  dictations ended in or handed to the background (ADR 0027) one after
+  another with it; `OptionCommandChord` decides the ⌥ ⌘ chord from the
+  modifier flags, and `ReturnPaste` where and when a dictation that follows
+  its field is pasted, the platform
   reading the keys and the focused field; `AudioRecorder` captures the microphone as
   16 kHz mono samples; `HistoryStore` is the one owner of the history's
   files and `HistoryModel` presents them; `OutloudSettings` keeps the
@@ -158,17 +159,20 @@ field never receives it. The clipboard's previous content is restored
 afterwards. Without the access, the result stays on the clipboard
 (ADR 0004).
 
-A dictation pasted on return (ADR 0026) is pasted later: the app keeps the
-field focused when the recording started — the Accessibility element, its
-process, and an identity of the window's title, the element's identifiers
-and, inside web content, the page's title and address, since an Electron
-app keeps one element across its conversations. While such a result is
-processed or waits, the app reads the focused element of that process
-every 0.3 s, and only while the process is in front; the result is pasted
-with the same ⌘V only when element and identity equal the remembered ones
-(`ReturnPaste` in `OutloudKit` decides). Outloud never activates an app
-and posts no other key. Writing into an app in the background through
-Accessibility was measured and rejected (ADR 0026).
+Every dictation that starts in a text field, with auto-paste on, follows
+that field (ADR 0026, ADR 0027): the app keeps the field focused when the
+recording started — the Accessibility element, its process, and an
+identity of the window's title, the element's identifiers and, inside web
+content, the page's title and address, since an Electron app keeps one
+element across its conversations. While such a result is processed or
+waits, the app reads the focused element of the app in front every 0.3 s,
+not while a recording is held; the result is pasted with the same ⌘V only
+when element and identity equal the remembered ones. A dictation started
+in a field that already has one follows the next other field focused, and
+is copied when none was by its end (`ReturnPaste` in `OutloudKit`
+decides). Outloud never activates an app and posts no other key. Writing
+into an app in the background through Accessibility was measured and
+rejected (ADR 0026).
 
 ### Model downloads
 

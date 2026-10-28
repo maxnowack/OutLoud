@@ -9,7 +9,7 @@ Executed as `apps/macos/AGENTS.md` §"End-to-end test plans" says.
 | Menu bar icon's right-click menu | `settings.md` | |
 | Recording overlay | `dictation.md` | |
 | Auto-paste and clipboard fallback | `dictation.md` | |
-| Paste on return (second ⌘ or ⌥) | `paste-on-return.md` | Needs ⌘ and ⌥ on both sides |
+| Paste on return (leaving the field while a dictation is processed) | `paste-on-return.md` | Needs Messages, Claude and TextEdit |
 | Settings › General | `settings.md` | |
 | Open at login | `first-launch.md`, `settings.md` | Log out and in once |
 | Settings › Models | `models.md` | |

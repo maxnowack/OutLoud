@@ -71,11 +71,12 @@ describe this area — read them before making changes here.
   that takes text and is not a password field (ADR 0004). The app holds
   the microphone and Accessibility access outside a sandbox; any other
   use of them acts in the user's name without their action.
-- **(MUST)** Paste a dictation pasted on return only into the field it was
-  recorded in, while its app is in front and that field — element and
-  identity — has the focus; never activate an app and post no key but ⌘V
-  (ADR 0026). A paste on a looser match lands the user's words in another
-  conversation.
+- **(MUST)** Paste a dictation that follows its field only into the field
+  it was recorded in — or, for one started in a field that already had
+  one, the next other field focused —, while its app is in front and that
+  field — element and identity — has the focus; never activate an app and
+  post no key but ⌘V (ADR 0026, ADR 0027). A paste on a looser match lands
+  the user's words in another conversation.
 
 ## Coding rules
 

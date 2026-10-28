@@ -194,21 +194,25 @@ Rules:
 - Auto-paste can be switched off; then the result is always copied.
   Password fields never receive a paste. After a paste, the clipboard
   holds what it held before.
-- **Paste on return** (ADR 0026): pressing the second ⌘ or ⌥ — the one on
-  the other side of the keyboard — while ⌥ ⌘ is held marks the dictation;
-  the overlay says "Pastes when you are back". After the release the pill
-  goes away at once and the next dictation can start; the dictation is
-  transcribed and cleaned up out of sight, after the ones before it. Its
-  result is pasted with ⌘V when the field the recording started in is
-  focused again — at once if the user stayed — and the overlay says
-  "Pasted". Another field, the same field showing another conversation
-  (another chat or session), or another app keep it waiting. When the
-  user leaves the field, the overlay says once "Pastes into <app> when you
-  are back in the text field." and goes. No Enter is pressed, and Outloud
-  never brings an app to the front. A newer dictation in this mode
-  replaces one that still waits; every result stays in the history.
-  Without Accessibility access or a text field at the start, or with
-  auto-paste off, the result is copied. The mode exists for ⌥ ⌘ only.
+- **Paste on return** (ADR 0026, ADR 0027): a dictation started in a text
+  field follows that field. While the user stays in it, the overlay shows
+  the progress and the result is pasted. When the user leaves it while the
+  dictation is processed — another field, the same field showing another
+  conversation (another chat or session), another app —, the overlay says
+  once "Pastes into <app> when you are back in the text field." and goes;
+  the dictation is transcribed and cleaned up out of sight, after the ones
+  before it, the next dictation can start at once, and the result is
+  pasted with ⌘V when that field is focused again, and the overlay says
+  "Pasted". Pressing the hotkey while a dictation is processed in sight
+  sends that one out of sight the same way. A dictation started in a field
+  for which an earlier one is still processed or waits goes into the next
+  other text field the user focuses; when it is done before the user
+  focused one, it is copied. Dictations of different fields wait side by
+  side. No Enter is pressed, and Outloud never brings an app to the front;
+  every result stays in the history. Without Accessibility access or a
+  text field at the start, or with auto-paste off, the result is delivered
+  at its end as above, and copied when a new recording sent it out of
+  sight.
 
 Acceptance criteria:
 
@@ -228,11 +232,10 @@ Acceptance criteria:
   the microphone, leaves no overlay and no recording.
 - After a restart with "Open at login" on, the hotkey works without
   opening Outloud.
-- A dictation marked with the second ⌘ or ⌥ in a chat, followed by a
-  switch to another app, is pasted into that chat on the return to it, and
-  not into another chat of the same app; a second dictation can start
-  while the first is still processed (confirmed by the user in Messages
-  and Claude, 2026-10-28).
+- A dictation in a chat, followed by a switch to another app while it is
+  processed, is pasted into that chat on the return to it, and not into
+  another chat of the same app; a second dictation can start while the
+  first is still processed, without a further key (ADR 0027).
 
 Acceptance criteria are proposals written on 2026-10-23 from the rules
 above, while the user was away (`plans/FIRST_VERSION.md` §"Decisions for
