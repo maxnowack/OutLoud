@@ -46,7 +46,6 @@ enum HotkeyPreset: String, CaseIterable, Identifiable {
 /// because another key joined it.
 @MainActor
 final class HotkeyMonitor {
-    /// `pasteOnReturn` comes from the ⌥ ⌘ chord only (`plans/done/PASTE_ON_RETURN.md`).
     typealias Event = OptionCommandChord.Event
 
     private var hotKey: EventHotKeyRef?
@@ -142,7 +141,8 @@ final class HotkeyMonitor {
             let modifiers = event.modifierFlags.rawValue
             Task { @MainActor in
                 guard let self else { return }
-                self.chord.modifiersChanged(modifiers, at: .now).forEach(self.onEvent)
+                guard let event = self.chord.modifiersChanged(modifiers, at: .now) else { return }
+                self.onEvent(event)
             }
         }
         let keys: (NSEvent) -> Void = { [weak self] _ in

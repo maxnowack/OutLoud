@@ -21,7 +21,7 @@ enum AutoPaster {
         }
     }
 
-    /// A focused text field, for a dictation pasted on return (`ReturnPaste`); equal when it is
+    /// A focused text field, for the dictation that follows it (`ReturnPaste`); equal when it is
     /// the same field showing the same content.
     struct Target: Equatable {
         let element: AXUIElement
@@ -70,6 +70,12 @@ enum AutoPaster {
         return .pasted
     }
 
+    /// Copies a result that is not pasted into the field in front, with the reason `deliver`
+    /// would give.
+    static func copy(_ text: String, autoPaste: Bool) -> Delivery {
+        copy(text, !autoPaste ? .autoPasteOff : !isTrusted ? .noPermission : .noTextField)
+    }
+
     /// The focused text field, when it takes text and is not a password field.
     static func focusedTarget() -> Target? {
         guard isTrusted, let element = focusedElement(), acceptsText(element) else { return nil }
@@ -80,7 +86,7 @@ enum AutoPaster {
 
     /// The text field focused in the app `pid` while that app is in front — `nil` when another
     /// app is in front, or the focused element takes no text or is a password field, so that a
-    /// paste on return never lands elsewhere (ADR 0026).
+    /// paste on return never lands elsewhere (ADR 0026, ADR 0027).
     static func focusedTarget(in pid: pid_t) -> Target? {
         guard isTrusted, NSWorkspace.shared.frontmostApplication?.processIdentifier == pid
         else { return nil }

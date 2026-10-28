@@ -37,13 +37,6 @@ final class RecordingOverlay {
         model.pauser = pauser
     }
 
-    /// Whether the dictation is pasted when the user returns to its field
-    /// (`plans/done/PASTE_ON_RETURN.md`).
-    var pastesOnReturn: Bool {
-        get { model.pastesOnReturn }
-        set { model.pastesOnReturn = newValue }
-    }
-
     func show() {
         model.delivery = nil
         present()
@@ -97,7 +90,6 @@ final class OverlayModel {
     var dictation: DictationController?
     var pauser: PlaybackPauser?
     var delivery: AutoPaster.Delivery?
-    var pastesOnReturn = false
     var isVisible = false
 }
 
@@ -272,12 +264,6 @@ private struct OverlayView: View {
                         .font(Tokens.caption)
                         .foregroundStyle(Tokens.warning)
                         .transition(.opacity)
-                    }
-                    if model.pastesOnReturn, state.isBusy {
-                        Label("Pastes when you are back", systemImage: "clock.fill")
-                            .font(Tokens.caption)
-                            .foregroundStyle(Tokens.accent)
-                            .transition(.opacity)
                     }
                 }
                 if case .failed(let failure) = state {
