@@ -52,6 +52,11 @@ is not. TextEdit is open with an empty document focused.
    after release. With recording system audio declined, the song pauses and stays paused, and
    Settings show "Recording system audio" with "Allow…". Turn the setting off:
    the song keeps playing through a dictation.
+11. Another microphone: dictate once, then connect AirPods (or choose another input under
+   System Settings › Sound › Input) and dictate again; disconnect them and dictate once more.
+   Each dictation records and is transcribed, the log of `dev.nowack.outloud` holds no
+   "Format mismatch" from AVFAudio, and clicking the menu bar icon afterwards opens the panel —
+   the app does not crash.
 
 ## Assertions
 

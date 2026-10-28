@@ -15,7 +15,12 @@ public enum AudioRecorderError: Error, Equatable, Sendable {
 public final class AudioRecorder: @unchecked Sendable {
     public static let sampleRate = 16_000.0
 
-    private var engine = AVAudioEngine()
+    /// The engine of the recording in progress; each recording makes its own. An engine keeps
+    /// the input's format from the moment its input node was first asked for, and once another
+    /// microphone was chosen — AirPods record at 24 kHz, the Mac's own at 48 kHz — installing
+    /// the tap raises an Objective-C exception that Swift cannot catch, and that leaves the
+    /// main actor's bookkeeping dangling until the next isolation check crashes the app.
+    private var engine: AVAudioEngine?
     /// Whether the input node carries the tap; only `start` and `stopEngine` change it.
     private var tapInstalled = false
     /// Measures the input for the level, attached only while recording.
@@ -83,6 +88,9 @@ public final class AudioRecorder: @unchecked Sendable {
                     try session.setActive(true)
                 }
             #endif
+            // Made after the session is active, so its input node takes the session's format.
+            let engine = AVAudioEngine()
+            self.engine = engine
             let input = engine.inputNode
             let inputFormat = input.outputFormat(forBus: 0)
             guard inputFormat.sampleRate > 0, inputFormat.channelCount > 0,
@@ -128,9 +136,6 @@ public final class AudioRecorder: @unchecked Sendable {
             try engine.start()
         } catch {
             stopEngine()
-            // An engine whose input node was created while the session was inactive keeps a
-            // format of 0 Hz, and every later start fails with `noInput`; a fresh one does not.
-            engine = AVAudioEngine()
             lock.withLock { isRecording = false }
             throw error
         }
@@ -163,16 +168,14 @@ public final class AudioRecorder: @unchecked Sendable {
     }
 
     private func stopEngine() {
-        // Asking for the input node creates it, with the session's format at that moment.
-        if tapInstalled {
-            engine.inputNode.removeTap(onBus: 0)
-            tapInstalled = false
+        if let engine {
+            if tapInstalled { engine.inputNode.removeTap(onBus: 0) }
+            engine.stop()
+            if let meter { engine.detach(meter) }
         }
-        engine.stop()
-        if let meter {
-            engine.detach(meter)
-            self.meter = nil
-        }
+        engine = nil
+        tapInstalled = false
+        meter = nil
         #if os(iOS)
             try? AVAudioSession.sharedInstance().setActive(
                 false, options: .notifyOthersOnDeactivation)
