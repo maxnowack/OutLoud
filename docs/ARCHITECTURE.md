@@ -25,7 +25,11 @@ Three targets (ADR 0013):
   (Foundation Models), and `CleanupAvailability` says whether it can;
   `DictationPipeline` turns samples or text
   into a `DictationOutcome`; `DictationController` runs one dictation from
-  the recording to the history; `AudioRecorder` captures the microphone as
+  the recording to the history, the one the user sees, and processes the
+  dictations ended in the background (ADR 0026) one after another with it;
+  `OptionCommandChord` decides the ⌥ ⌘ chord from the modifier flags, and
+  `ReturnPaste` when a dictation pasted on return is pasted, the platform
+  reading the keys and the focused field; `AudioRecorder` captures the microphone as
   16 kHz mono samples; `HistoryStore` is the one owner of the history's
   files and `HistoryModel` presents them; `OutloudSettings` keeps the
   shared settings in `UserDefaults`.
@@ -149,6 +153,18 @@ released and only when the focused element takes text; a secure (password)
 field never receives it. The clipboard's previous content is restored
 afterwards. Without the access, the result stays on the clipboard
 (ADR 0004).
+
+A dictation pasted on return (ADR 0026) is pasted later: the app keeps the
+field focused when the recording started — the Accessibility element, its
+process, and an identity of the window's title, the element's identifiers
+and, inside web content, the page's title and address, since an Electron
+app keeps one element across its conversations. While such a result is
+processed or waits, the app reads the focused element of that process
+every 0.3 s, and only while the process is in front; the result is pasted
+with the same ⌘V only when element and identity equal the remembered ones
+(`ReturnPaste` in `OutloudKit` decides). Outloud never activates an app
+and posts no other key. Writing into an app in the background through
+Accessibility was measured and rejected (ADR 0026).
 
 ### Model downloads
 

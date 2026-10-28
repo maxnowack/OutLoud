@@ -317,7 +317,9 @@ design canvas outside the repository on 2026-10-23.
   as wide as its content: the LevelWave and "Recording…" while recording —
   below them, in `caption` and `warning` with a speaker icon, "Something is
   playing in the background" when an app still sounds after the pause
-  command (ADR 0025) —, the
+  command (ADR 0025), and, in `caption` and `accent` with a clock icon,
+  "Pastes when you are back" once the second ⌘ or ⌥ marked the dictation
+  (ADR 0026) —, the
   StatusIndicator with its ring while processing, or the delivery message,
   which wraps at
   `overlayTextWidth`. It grows out of a smaller capsule while fading in, and
@@ -334,6 +336,10 @@ design canvas outside the repository on 2026-10-23.
   often does — is skipped, and the line stays until the next one. "Done" is
   never shown: the delivery message follows it as soon as the result is
   pasted or copied, and the step before stays until then, its ring full.
+  A dictation pasted on return leaves the capsule at its release; when the
+  user leaves its field, the capsule shows for three seconds, with a clock
+  icon in `accent`, "Pastes into <app> when you are back in the text
+  field.", and "Pasted" when the result lands on the return.
   Centred
   at the bottom of the screen, inside a fixed transparent area of
   `overlayAreaSize`, it grows and shrinks about its middle.

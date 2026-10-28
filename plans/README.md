@@ -25,6 +25,7 @@ change; the authoritative status description always lives in the plan's own
 | --- | --- | --- |
 | `CONCEPT.md` | Shaping the product concept until nothing has to be guessed | 2026-10-22; the remaining questions moved to `FIRST_VERSION.md` |
 | `MAC_LOGIN_OVERLAY_PROGRESS.md` | Open the Mac app at login, no hanging pill, the microphone at launch, a truthful cleanup progress | 2026-10-24; the prewarming on the iPhone not checked |
+| `PASTE_ON_RETURN.md` | The second ⌘ or ⌥ lets a dictation finish in the background and pastes it on return to its field (ADR 0026) | 2026-10-28; writing into an app in the background refuted |
 
 ## The shape of a plan
 
