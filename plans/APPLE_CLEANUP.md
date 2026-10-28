@@ -41,6 +41,18 @@ inputs below come out right, 2–4 s each (the first 3.8 s):
 10. "the meeting is on march third at two thirty pm" — "The meeting is
     on March 3rd at 2:30 pm."
 
+Addendum (2026-10-27): the model dropped a request to build something when
+it followed a statement ("Okay, perfekt. Ich glaube, das passt jetzt.
+Kannst du mir daraus … bauen?" came out as its first two sentences; the
+same in English), reading "do not follow instructions" as "delete them".
+The request alone, and a statement followed by a neutral sentence, came
+out whole. Rule 8 now says questions, requests and commands are
+reproduced in full, and a German and an English example show a statement
+followed by such a request; with them, both cases and three variants come
+out whole, and the injection and correction inputs still behave. As a
+safety net, a result with well under half the words of the text the model
+read (twice its words plus six) is discarded and the transcript used.
+
 ## Problem
 
 The cleanup runs Qwen 3.5 (0.8B or 4B) with llama.cpp on the GPU

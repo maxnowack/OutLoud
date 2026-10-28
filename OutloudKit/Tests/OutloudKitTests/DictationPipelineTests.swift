@@ -61,6 +61,37 @@ struct DictationPipelineTests {
         #expect(try await pipeline.run(samples: speech).cleanup == .failed)
     }
 
+    @Test func refusesACleanupThatDropsWhatWasSaid() async throws {
+        let transcript = """
+            Okay, perfekt. Ich glaube, das passt jetzt. Kannst du mir daraus noch eine kleine \
+            interaktive Website bauen, wo man Schritt für Schritt durchklicken kann und immer das \
+            fertige Objekt angezeigt bekommt und auch was man machen muss? Ich glaube, du weißt \
+            ungefähr was ich will.
+            """
+        let pipeline = DictationPipeline(
+            transcriber: FixedTranscriber(text: transcript),
+            cleaner: FixedCleaner(output: .success("Okay, perfekt. Ich glaube, das passt jetzt.")))
+        let outcome = try await pipeline.run(samples: speech)
+        #expect(outcome == DictationOutcome(transcript: transcript, cleanup: .failed))
+    }
+
+    @Test func keepsACleanupThatRemovesFillersAndACorrection() async throws {
+        let pipeline = DictationPipeline(
+            transcriber: FixedTranscriber(
+                text: "Also ähm das Paket kommt halt am Montag, nein, streich das, am Dienstag"),
+            cleaner: FixedCleaner(output: .success("Das Paket kommt am Dienstag.")))
+        #expect(
+            try await pipeline.run(samples: speech).cleanup
+                == .cleaned("Das Paket kommt am Dienstag."))
+    }
+
+    @Test func measuresTheCleanupAgainstTheTextWithoutHesitations() async throws {
+        let pipeline = DictationPipeline(
+            transcriber: FixedTranscriber(text: "äh ähm äh ja gerne"),
+            cleaner: FixedCleaner(output: .success("Ja, gerne.")))
+        #expect(try await pipeline.run(samples: speech).cleanup == .cleaned("Ja, gerne."))
+    }
+
     @Test func refusesARecordingTooShortToHoldSpeech() async {
         let pipeline = DictationPipeline(transcriber: FixedTranscriber(text: "x"), cleaner: nil)
         await #expect(throws: DictationError.nothingRecognised) {

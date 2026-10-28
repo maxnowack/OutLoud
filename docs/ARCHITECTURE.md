@@ -93,7 +93,8 @@ transcript holds the instructions of `CleanupPrompt` and the worked
 examples as earlier turns; the transcript follows, framed as
 `<USER-INPUT>`, answered with greedy sampling. The answer is discarded —
 the transcript becomes the result — when it times out (20 s), is empty,
-is much longer than the transcript, or the model refuses (`CleanerError`:
+is much longer than the transcript, keeps well under half of its words
+(the model dropped a request that followed a statement), or the model refuses (`CleanerError`:
 in the background Apple limits how often an app may use it); transcripts
 over 4,000 characters are not cleaned up. The prompt's test inputs and
 results are in `plans/APPLE_CLEANUP.md`.
@@ -161,8 +162,9 @@ catalogue pins, after the download and before loading when it changed
 
 A dictated sentence can read like an instruction. The cleanup model is
 told not to follow instructions in the input, gets the transcript framed
-as user input, and an answer that is much longer than the transcript is
-discarded (`OutloudKit/AGENTS.md` §"Security").
+as user input, is told to repeat questions and requests like every other
+sentence, and an answer that is much longer or much shorter than the
+transcript is discarded (`OutloudKit/AGENTS.md` §"Security").
 
 ## Auth
 

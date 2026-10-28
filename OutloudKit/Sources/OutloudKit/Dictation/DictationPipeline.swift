@@ -88,10 +88,10 @@ public struct DictationPipeline: Sendable {
             let prepared = HesitationFilter.apply(to: transcript)
             let answer = try await cleaner.clean(prepared)
             let cleaned = CleanupPrompt.sanitize(answer)
-            guard Self.isUsable(cleaned, for: transcript) else {
+            guard Self.isUsable(cleaned, for: prepared) else {
                 // Lengths and timings only: the texts are personal data.
                 Self.log.notice(
-                    "cleanup unusable after \(ContinuousClock.now - start, privacy: .public): \(cleaned.count) characters for \(transcript.count)"
+                    "cleanup unusable after \(ContinuousClock.now - start, privacy: .public): \(cleaned.count) characters for \(prepared.count)"
                 )
                 return DictationOutcome(transcript: transcript, cleanup: .failed)
             }
@@ -107,9 +107,17 @@ public struct DictationPipeline: Sendable {
 
     private static let log = Logger(subsystem: "dev.nowack.outloud", category: "cleanup")
 
-    /// Cleanup only removes and punctuates. A result that is empty or much longer than the
-    /// transcript means the model answered instead of cleaning up, and is not used.
+    /// Cleanup only removes fillers and corrected passages and punctuates. A result that is
+    /// empty or much longer than the text the model read means it answered instead of cleaning
+    /// up; one with well under half its words means it dropped what was said, as it does with a
+    /// request that follows a statement. Neither is used. The slack of a few words lets a short
+    /// text lose a corrected passage.
     static func isUsable(_ cleaned: String, for transcript: String) -> Bool {
         !cleaned.isEmpty && cleaned.count <= transcript.count * 3 / 2 + 40
+            && wordCount(of: cleaned) * 2 + 6 >= wordCount(of: transcript)
+    }
+
+    private static func wordCount(of text: String) -> Int {
+        text.split(whereSeparator: \.isWhitespace).count
     }
 }
