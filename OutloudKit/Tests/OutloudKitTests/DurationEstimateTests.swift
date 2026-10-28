@@ -28,13 +28,6 @@ struct PhaseProgressTests {
         }
         #expect(left == [2, 2, 1, 1, nil, nil])
     }
-
-    @Test func neverCountsBackUp() {
-        #expect(PhaseProgress.countdown(after: 1, secondsLeft: 3) == 1)
-        #expect(PhaseProgress.countdown(after: 3, secondsLeft: 2) == 2)
-        #expect(PhaseProgress.countdown(after: nil, secondsLeft: 3) == nil)
-        #expect(PhaseProgress.countdown(after: 1, secondsLeft: nil) == nil)
-    }
 }
 
 @MainActor
@@ -51,20 +44,19 @@ struct DurationEstimateTests {
         Double(duration.components.seconds) + Double(duration.components.attoseconds) / 1e18
     }
 
+    private let guess =
+        DurationEstimate.Step.cleanup.initialStart + 100
+        * DurationEstimate.Step.cleanup.initialPerUnit
+
     @Test func guessesBeforeAnythingWasMeasured() throws {
         let estimate = cleanup(try defaults(), "a")
-        #expect(
-            estimate.expectedDuration(units: nil) == DurationEstimate.Step.cleanup.initialDuration)
-        let guess =
-            DurationEstimate.Step.cleanup.initialStart + 100
-            * DurationEstimate.Step.cleanup.initialPerUnit
         #expect(abs(seconds(estimate.expectedDuration(units: 100)) - guess) < 0.001)
     }
 
-    @Test func learnsTheStartAndTheTimePerToken() throws {
+    @Test func learnsTheStartAndTheTimePerCharacter() throws {
         let estimate = cleanup(try defaults(), "a")
-        for tokens in [20, 50, 80, 120, 200] {
-            estimate.record(.seconds(0.5 + 0.01 * Double(tokens)), units: Double(tokens))
+        for characters in [20, 50, 80, 120, 200] {
+            estimate.record(.seconds(0.5 + 0.01 * Double(characters)), units: Double(characters))
         }
         #expect(abs(seconds(estimate.expectedDuration(units: 300)) - 3.5) < 0.001)
         #expect(abs(seconds(estimate.expectedDuration(units: 30)) - 0.8) < 0.001)
@@ -72,19 +64,32 @@ struct DurationEstimateTests {
 
     @Test func barelyMovesForOneSlowCleanup() throws {
         let estimate = cleanup(try defaults(), "a")
-        for tokens in [20, 50, 80, 120, 200] {
-            estimate.record(.seconds(0.5 + 0.01 * Double(tokens)), units: Double(tokens))
+        for characters in [20, 50, 80, 120, 200] {
+            estimate.record(.seconds(0.5 + 0.01 * Double(characters)), units: Double(characters))
         }
         estimate.record(.seconds(6), units: Double(60))
         #expect(abs(seconds(estimate.expectedDuration(units: 60)) - 1.1) < 0.15)
     }
 
-    @Test func takesTheTimePerTokenWhileOnlyOneLengthWasMeasured() throws {
+    @Test func learnsOnlyTheStartWhileOneLengthWasMeasured() throws {
         let estimate = cleanup(try defaults(), "a")
         estimate.record(.seconds(1), units: Double(50))
         estimate.record(.seconds(1.2), units: Double(50))
-        #expect(abs(seconds(estimate.expectedDuration(units: 100)) - 2.2) < 0.001)
-        #expect(abs(seconds(estimate.expectedDuration(units: nil)) - 1.1) < 0.001)
+        let perUnit = DurationEstimate.Step.cleanup.initialPerUnit
+        #expect(abs(seconds(estimate.expectedDuration(units: 100)) - (1.1 + 50 * perUnit)) < 0.001)
+    }
+
+    @Test func doesNotScaleAShortTextsDurationUpToALongOne() throws {
+        let estimate = cleanup(try defaults(), "a")
+        estimate.record(.seconds(2.2), units: Double(7))
+        #expect(estimate.expectedDuration(units: 228) < .seconds(5))
+    }
+
+    @Test func takesNoTimePerCharacterFromTwoLengthsCloseTogether() throws {
+        let estimate = cleanup(try defaults(), "a")
+        estimate.record(.seconds(2), units: Double(30))
+        estimate.record(.seconds(2.8), units: Double(40))
+        #expect(estimate.expectedDuration(units: 300) < .seconds(6))
     }
 
     @Test func forgetsCleanupsBeyondTheWindow() throws {
@@ -93,26 +98,29 @@ struct DurationEstimateTests {
         for _ in 0..<(DurationEstimate.window / 2 + 1) {
             estimate.record(.seconds(1), units: Double(50))
         }
-        #expect(estimate.expectedDuration(units: nil) == .seconds(1))
+        #expect(abs(seconds(estimate.expectedDuration(units: 50)) - 1) < 0.001)
     }
 
     @Test func startsAnewWhenThePromptChanged() throws {
         let store = try defaults()
-        cleanup(store, "old").record(.seconds(4), units: Double(50))
+        cleanup(store, "old").record(.seconds(4), units: Double(100))
         let estimate = cleanup(store, "new")
-        #expect(
-            estimate.expectedDuration(units: nil) == DurationEstimate.Step.cleanup.initialDuration)
-        estimate.record(.seconds(1), units: Double(50))
-        #expect(estimate.expectedDuration(units: nil) == .seconds(1))
+        #expect(abs(seconds(estimate.expectedDuration(units: 100)) - guess) < 0.001)
+        estimate.record(.seconds(1), units: Double(100))
+        #expect(abs(seconds(estimate.expectedDuration(units: 100)) - 1) < 0.001)
     }
 
     @Test func dropsWhatEarlierReleasesKept() throws {
         let store = try defaults()
         store.set(1.97, forKey: "cleanupSeconds")
         store.set([1.2, 1.3], forKey: "cleanupDurations")
-        cleanup(store, "a").record(.seconds(1), units: Double(40))
-        #expect(store.object(forKey: "cleanupSeconds") == nil)
-        #expect(store.object(forKey: "cleanupDurations") == nil)
+        store.set([[19.0, 4.0]], forKey: "cleanupSamples")
+        let estimate = cleanup(store, "a")
+        #expect(abs(seconds(estimate.expectedDuration(units: 100)) - guess) < 0.001)
+        estimate.record(.seconds(1), units: Double(40))
+        for key in ["cleanupSeconds", "cleanupDurations", "cleanupSamples"] {
+            #expect(store.object(forKey: key) == nil)
+        }
     }
 
     @Test func learnsTheTranscriptionPerModelApartFromTheCleanup() throws {
@@ -120,14 +128,12 @@ struct DurationEstimateTests {
         let parakeet = DurationEstimate.transcription(modelID: "parakeet", defaults: store)
         for audio in [2.0, 5, 10] { parakeet.record(.seconds(0.2 + 0.03 * audio), units: audio) }
         #expect(abs(seconds(parakeet.expectedDuration(units: 20)) - 0.8) < 0.001)
-        let guess =
-            DurationEstimate.Step.cleanup.initialStart + 100
-            * DurationEstimate.Step.cleanup.initialPerUnit
         #expect(abs(seconds(cleanup(store, "a").expectedDuration(units: 100)) - guess) < 0.001)
         let other = DurationEstimate.transcription(modelID: "other", defaults: store)
-        #expect(
-            other.expectedDuration(units: nil)
-                == DurationEstimate.Step.transcription.initialDuration)
+        let transcriptionGuess =
+            DurationEstimate.Step.transcription.initialStart + 20
+            * DurationEstimate.Step.transcription.initialPerUnit
+        #expect(abs(seconds(other.expectedDuration(units: 20)) - transcriptionGuess) < 0.001)
     }
 
     @Test func fingerprintsThePromptStably() {

@@ -9,13 +9,6 @@ public protocol Transcribing: Sendable {
 /// Cleans up a transcript (`docs/SPEC.md` §"Cleanup").
 public protocol Cleaning: Sendable {
     func clean(_ transcript: String) async throws -> String
-    /// How many tokens the model reads for `transcript`, for the expected duration
-    /// (`DurationEstimate`); `nil` where nothing counts them.
-    func tokenCount(for transcript: String) async -> Int?
-}
-
-extension Cleaning {
-    public func tokenCount(for transcript: String) async -> Int? { nil }
 }
 
 /// What one dictation produced.

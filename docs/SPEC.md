@@ -223,7 +223,7 @@ Acceptance criteria:
   evenly from the start of each, by the time passed over the duration
   expected for this recording or text — learned on the device from
   earlier runs and the recording's length in seconds or the text's in
-  tokens —, and is full only at the end.
+  characters —, and is full only at the end.
 - Releasing the hotkey while the microphone dialog is open, then allowing
   the microphone, leaves no overlay and no recording.
 - After a restart with "Open at login" on, the hotkey works without

@@ -233,7 +233,7 @@ public final class DictationController {
                 estimate: showsProgress
                     ? .transcription(modelID: model.id, defaults: estimates) : nil,
                 publishes: publishes,
-                units: { seconds },
+                units: seconds,
                 work: {
                     let transcriber = try await engines.transcriber(for: model)
                     return try await DictationPipeline(transcriber: transcriber, cleaner: nil)
@@ -283,7 +283,7 @@ public final class DictationController {
     /// Internal for the tests.
     func run<Result>(
         _ phase: DictationState, estimate: DurationEstimate?, publishes: Bool = true,
-        units: @escaping @MainActor () async -> Double?,
+        units: Double,
         learns: (Result) -> Bool = { _ in true },
         work: () async throws -> Result
     ) async rethrows -> Result {
@@ -292,26 +292,16 @@ public final class DictationController {
         guard let estimate else { return try await work() }
         let start = now()
         progress = 0
-        let expected = Expectation(estimate.expectedDuration(units: nil))
-        secondsLeft = PhaseProgress.secondsLeft(elapsed: .zero, expected: expected.duration)
+        let expected = estimate.expectedDuration(units: units)
+        secondsLeft = PhaseProgress.secondsLeft(elapsed: .zero, expected: expected)
         let ticking = Task { [weak self] in
             while !Task.isCancelled {
                 guard let self, self.state == phase else { return }
                 let elapsed = Duration.seconds(self.now().timeIntervalSince(start))
-                let value = PhaseProgress.value(elapsed: elapsed, expected: expected.duration)
-                // A longer expectation, once the units are counted, must not move the bar back.
-                self.progress = max(self.progress ?? 0, value)
-                self.secondsLeft = PhaseProgress.countdown(
-                    after: self.secondsLeft,
-                    secondsLeft: PhaseProgress.secondsLeft(
-                        elapsed: elapsed, expected: expected.duration))
+                self.progress = PhaseProgress.value(elapsed: elapsed, expected: expected)
+                self.secondsLeft = PhaseProgress.secondsLeft(elapsed: elapsed, expected: expected)
                 try? await Task.sleep(for: .milliseconds(100))
             }
-        }
-        let counting = Task {
-            let units = await units()
-            if let units { expected.duration = estimate.expectedDuration(units: units) }
-            return units
         }
         defer {
             ticking.cancel()
@@ -320,16 +310,8 @@ public final class DictationController {
         }
         let result = try await work()
         let duration = Duration.seconds(now().timeIntervalSince(start))
-        if learns(result), let units = await counting.value {
-            estimate.record(duration, units: units)
-        }
+        if learns(result) { estimate.record(duration, units: units) }
         return result
-    }
-
-    /// The duration the bar runs towards; it changes once the units are counted.
-    @MainActor private final class Expectation {
-        var duration: Duration
-        init(_ duration: Duration) { self.duration = duration }
     }
 
     /// Returns to the idle state after a result or a failure was shown.
@@ -349,7 +331,7 @@ public final class DictationController {
             outcome = await run(
                 .cleaning, estimate: showsProgress ? .cleanup(defaults: estimates) : nil,
                 publishes: publishes,
-                units: { await cleaner.tokenCount(for: transcript).map(Double.init) },
+                units: Double(transcript.count),
                 // Only a cleanup that produced text: a timeout or a refusal says nothing about
                 // how long one usually takes.
                 learns: { $0.cleaned != nil },

@@ -7,14 +7,11 @@ import Testing
 private struct StandInCleaner: Cleaning {
     var answer: Result<String, CleanerError>
     var delay: Duration = .zero
-    var tokens: Int?
 
     func clean(_ transcript: String) async throws -> String {
         if delay > .zero { try await Task.sleep(for: delay) }
         return try answer.get()
     }
-
-    func tokenCount(for transcript: String) async -> Int? { tokens }
 }
 
 @MainActor
@@ -41,8 +38,7 @@ struct DictationControllerTests {
     @Test func movesTheCleanupBarByTimeAndLearnsTheDuration() async throws {
         let store = try #require(UserDefaults(suiteName: "\(UUID())"))
         let controller = try controller(
-            cleaner: StandInCleaner(
-                answer: .success("Hallo."), delay: .milliseconds(600), tokens: 40),
+            cleaner: StandInCleaner(answer: .success("Hallo."), delay: .milliseconds(600)),
             estimates: store)
         let run = Task {
             await controller.finish(transcript: "äh hallo", audio: nil, showsProgress: true)
@@ -50,9 +46,11 @@ struct DictationControllerTests {
         try await Task.sleep(for: .milliseconds(400))
         let halfway = try #require(controller.progress)
         #expect(halfway > 0 && halfway < PhaseProgress.onTime)
+        // 1.1 s expected for the 8 characters before any run was measured.
+        #expect(controller.secondsLeft == 1)
         _ = await run.value
         #expect(controller.progress == nil)
-        let learned = DurationEstimate.cleanup(defaults: store).expectedDuration(units: 40)
+        let learned = DurationEstimate.cleanup(defaults: store).expectedDuration(units: 8)
         #expect(learned > .milliseconds(500) && learned < .seconds(2))
     }
 
@@ -62,7 +60,7 @@ struct DictationControllerTests {
         let estimate = DurationEstimate.transcription(modelID: "test", defaults: store)
         let run = Task {
             await controller.run(
-                .transcribing, estimate: estimate, units: { 10 },
+                .transcribing, estimate: estimate, units: 10,
                 work: { try? await Task.sleep(for: .milliseconds(600)) })
         }
         try await Task.sleep(for: .milliseconds(400))

@@ -50,6 +50,22 @@ After the sixth look "Pasted" still came late: the three steps of the change let
 after about 0.3 s. A narrower content now fades in while the capsule shrinks, after 0.08 s; and
 on the user's wish a recording shows "Recording…" above the line again, on both platforms.
 
+Addendum 2026-10-28: the user saw the cleanup count down from 4 s for every text, and a short one
+take long. The Mac's 16 stored cleanups took 2.7–4.0 s for 18–24 tokens and 8.7 s for 202: a
+start of about 3 s. Measured in a scratch program on the M1 Pro, a sentence of 45 characters,
+four to five runs each: a prewarmed session cleans up in 1.3 s, but 2.6 s when Apple's model
+counts the text's tokens before or alongside — the count discards the prewarmed prompt; without
+the worked examples it takes 0.9 s, with a two-line prompt 0.7 s; a session prewarmed only 1 s
+before takes 1.5 s, 0.5 s before 2.1 s. The countdown also began from the median of all runs
+before the tokens were counted and never rose, so a long text showed the short ones' 4 s. The
+cleanup is now estimated by the transcript's characters, known at once, and nothing counts
+tokens; the countdown starts from the estimate for this text. The runs by tokens start anew.
+The prompt stays as it is: the examples make the small model reliable (`plans/APPLE_CLEANUP.md`).
+In the test build the cleanup took 2.2 s for 7 characters, 2.6 s for 228 and 2.8 s for 313; the
+second showed 70 s left: with one length measured, the fit took the time per character from no
+start, 2.2 s / 7 × 228. The slope now comes only from pairs at least 100 characters (5 s of
+audio) apart; until then the guess's time per unit stands and only the start is learned.
+
 ## Problem
 
 While a dictation is transcribed, the apps and the Live Activity show only a spinner; the

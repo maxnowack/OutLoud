@@ -124,17 +124,21 @@ following Hugging Face's redirect to its CDN; nothing is uploaded.
   macOS `hotkey` and
   `autoPaste`. Opening at login is the system's login item
   (`SMAppService`), not a stored setting.
-- **Cleanup timing** — `UserDefaults` keys `cleanupSamples`, the last 20
-  cleanups after a recording as `[tokens, seconds]` pairs — the tokens
-  counted by Apple's model for the text it reads —, to which a line of a
-  start plus a time per token is fitted (Theil–Sen), and `cleanupPrompt`,
-  the SHA-256 of the prompt and examples they were measured with; a
-  different prompt starts them anew. 0.2.0 kept a moving average in
-  `cleanupSeconds`, 0.2.1 the last durations in `cleanupDurations`; both
-  are removed at the next cleanup.
+- **Cleanup timing** — `UserDefaults` keys `cleanupCharacterSamples`, the
+  last 20 cleanups after a recording as `[characters, seconds]` pairs —
+  the characters of the transcript —, to which a line of a start plus a
+  time per character is fitted (Theil–Sen, the slope only from pairs at
+  least 100 characters apart, else the guessed 0.008 s), and `cleanupPrompt`, the
+  SHA-256 of the prompt and examples they were measured with; a different
+  prompt starts them anew. Nothing asks Apple's model for the tokens: the
+  count discards the prewarmed session and doubles the cleanup. 0.2.0
+  kept a moving average in `cleanupSeconds`, 0.2.1 the last durations in
+  `cleanupDurations`, 0.2.2 to 0.3.0 `[tokens, seconds]` pairs in
+  `cleanupSamples`; all are removed at the next cleanup.
 - **Transcription timing** — `UserDefaults` keys `transcriptionSamples`,
   the last 20 transcriptions after a recording as `[audio seconds,
-  seconds]` pairs, fitted the same way, and `transcriptionModel`, the id
+  seconds]` pairs, fitted the same way with pairs at least 5 s apart, and
+  `transcriptionModel`, the id
   of the model they were measured with; another model starts them anew.
 
 ## Trust boundaries

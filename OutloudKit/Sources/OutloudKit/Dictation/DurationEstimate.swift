@@ -23,20 +23,14 @@ enum PhaseProgress {
         guard left > .zero else { return nil }
         return Int((left / .seconds(1)).rounded(.up))
     }
-
-    /// The countdown after `shown`, with `secondsLeft` now: like the bar, it never goes back —
-    /// it holds when the expectation grows once the units are counted, and does not return once
-    /// it ran out.
-    static func countdown(after shown: Int?, secondsLeft: Int?) -> Int? {
-        guard let shown, let secondsLeft else { return nil }
-        return min(shown, secondsLeft)
-    }
 }
 
 /// The usual duration of a step of the processing, learned on this device from the last `window`
-/// runs: a fixed start plus a time per unit of work — a token of the text for the cleanup, as the
-/// model reads the text and writes about as much back; a second of audio for the transcription,
-/// as the model reads the whole recording (`plans/TRANSCRIPTION_PROGRESS.md`). The line is
+/// runs: a fixed start plus a time per unit of work — a character of the transcript for the
+/// cleanup, as the model reads the text and writes about as much back; a second of audio for the
+/// transcription, as the model reads the whole recording (`plans/TRANSCRIPTION_PROGRESS.md`).
+/// Both are known before the step starts: asking Apple's model for the tokens of the text doubled
+/// the cleanup (`plans/TRANSCRIPTION_PROGRESS.md` §"Status"). The line is
 /// fitted robustly — Theil–Sen: the median of the slopes between all pairs, then the median
 /// start —, because most runs take about the expected time and a few far longer, the first after
 /// a pause while the model loads; an average pulled up by those ended the bar at half
@@ -50,21 +44,22 @@ public final class DurationEstimate {
         let fingerprintKey: String
         let initialStart: Double
         let initialPerUnit: Double
-        /// Where the units are unknown and nothing was measured.
-        let initialDuration: Duration
+        /// How far apart two runs must be for their difference to tell the time per unit.
+        let minimumSpread: Double
         /// What earlier releases kept, removed with the first run recorded.
         var formerKeys: [String] = []
 
-        /// By tokens; the guess from cleanups in the Mac app on an M1 Pro.
+        /// By characters; the guess from cleanups on an M1 Pro Mac, 1.3 s for a sentence of 45.
+        /// The runs by tokens of earlier releases count another unit.
         static let cleanup = Step(
-            samplesKey: "cleanupSamples", fingerprintKey: "cleanupPrompt", initialStart: 0.6,
-            initialPerUnit: 0.012, initialDuration: .milliseconds(1500),
-            formerKeys: ["cleanupSeconds", "cleanupDurations"])
+            samplesKey: "cleanupCharacterSamples", fingerprintKey: "cleanupPrompt",
+            initialStart: 1, initialPerUnit: 0.008, minimumSpread: 100,
+            formerKeys: ["cleanupSeconds", "cleanupDurations", "cleanupSamples"])
         /// By seconds of audio; the Mac transcribes 10 s in 0.2 s, the guess leaves room for an
         /// iPhone.
         static let transcription = Step(
             samplesKey: "transcriptionSamples", fingerprintKey: "transcriptionModel",
-            initialStart: 0.3, initialPerUnit: 0.05, initialDuration: .milliseconds(800))
+            initialStart: 0.3, initialPerUnit: 0.05, minimumSpread: 5)
     }
 
     /// How many recent runs the line is fitted to.
@@ -93,14 +88,8 @@ public final class DurationEstimate {
         DurationEstimate(.transcription, fingerprint: modelID, defaults: defaults)
     }
 
-    /// The duration to expect for `units` of work, or for a usual run when they are not known
-    /// (yet).
-    public func expectedDuration(units: Double?) -> Duration {
-        let samples = self.samples
-        guard let units, units > 0 else {
-            guard !samples.isEmpty else { return step.initialDuration }
-            return .seconds(Self.median(samples.map(\.seconds)))
-        }
+    /// The duration to expect for `units` of work.
+    public func expectedDuration(units: Double) -> Duration {
         let (start, perUnit) = fit(samples)
         return .seconds(max(start + perUnit * units, 0.1))
     }
@@ -116,20 +105,20 @@ public final class DurationEstimate {
         for key in step.formerKeys { defaults.removeObject(forKey: key) }
     }
 
-    /// Start and seconds per unit. With fewer than two different amounts there is no slope to
-    /// see; the median time per unit stands in, from no start.
+    /// Start and seconds per unit. The slope comes only from pairs at least `minimumSpread` apart:
+    /// runs of one length vary by more than a few units take, and two short texts 10 characters
+    /// apart that differ by 0.8 s by chance made a long one 26 s. Without such a pair, the guess's
+    /// time per unit stands, and only the start is learned — a cleanup is mostly its start, and
+    /// the time per unit from no start turned 2.2 s for 7 characters into 72 s for 228.
     func fit(_ samples: [(units: Double, seconds: Double)]) -> (Double, Double) {
         guard !samples.isEmpty else { return (step.initialStart, step.initialPerUnit) }
         var slopes: [Double] = []
         for (i, a) in samples.enumerated() {
-            for b in samples[(i + 1)...] where b.units != a.units {
+            for b in samples[(i + 1)...] where abs(b.units - a.units) >= step.minimumSpread {
                 slopes.append((b.seconds - a.seconds) / (b.units - a.units))
             }
         }
-        guard !slopes.isEmpty else {
-            return (0, Self.median(samples.map { $0.seconds / $0.units }))
-        }
-        let perUnit = max(Self.median(slopes), 0)
+        let perUnit = slopes.isEmpty ? step.initialPerUnit : max(Self.median(slopes), 0)
         let start = max(Self.median(samples.map { $0.seconds - perUnit * $0.units }), 0)
         return (start, perUnit)
     }
