@@ -131,6 +131,23 @@ struct DictationControllerTests {
         #expect(controller.state == .finished(foreground))
     }
 
+    @Test func handsTheDictationInSightToTheBackgroundMidway() async throws {
+        let cleaner = StandInCleaner(answer: .success("Erste."), delay: .milliseconds(300))
+        let controller = try controller(cleaner: cleaner)
+        let first = Task { await controller.process(text: "erste") }
+        let deadline = ContinuousClock.now + .seconds(5)
+        while controller.state != .cleaning, ContinuousClock.now < deadline {
+            try await Task.sleep(for: .milliseconds(5))
+        }
+        controller.continueInBackground()
+        #expect(controller.state == .idle)
+        #expect(controller.progress == nil)
+        // The next dictation starts at once and is the one the state follows.
+        let second = try #require(await controller.process(text: "zweite"))
+        #expect(await first.value?.cleaned == "Erste.")
+        #expect(controller.state == .finished(second))
+    }
+
     @Test func leavesTheTranscriptAloneWhenCleanupIsOff() async throws {
         let cleaner = StandInCleaner(answer: .success("Hallo."))
         let outcome = try #require(

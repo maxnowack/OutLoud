@@ -33,9 +33,9 @@ public enum DictationState: Equatable, Sendable {
 /// record button on iOS — and what happens with the result.
 ///
 /// `state`, `progress` and `voice` describe the dictation the user sees. A recording ended with
-/// `stopRecordingInBackground()` is processed out of sight, and the next recording may start at
-/// once (`plans/done/PASTE_ON_RETURN.md`); the transcriptions and cleanups of all dictations run one
-/// after another, in the order their recordings ended.
+/// `stopRecordingInBackground()`, or handed there by `continueInBackground()`, is processed out of
+/// sight, and the next recording may start at once (ADR 0027); the transcriptions and cleanups of
+/// all dictations run one after another, in the order their recordings ended.
 @MainActor
 @Observable
 public final class DictationController {
@@ -67,6 +67,8 @@ public final class DictationController {
     @ObservationIgnored private var level: Float = 0
     /// The processing of the dictations, one after another.
     @ObservationIgnored private let queue = SerialQueue()
+    /// Counts the dictations processed in sight; one publishes while its number is the last.
+    @ObservationIgnored private var sighted = 0
     /// Called after a result was added to the history.
     @ObservationIgnored public var onHistoryChange: (() -> Void)?
     /// Called once a recording has ended, whether it is processed or dropped; the Mac resumes
@@ -156,10 +158,30 @@ public final class DictationController {
         let samples = endRecording()
         let prepared = takePreparedCleaner()
         state = .transcribing
+        let publishes = inSight()
         return await queue.run {
             await self.transcribe(
-                samples, prepared: prepared, showsProgress: true, publishes: true)
+                samples, prepared: prepared, showsProgress: true, publishes: publishes)
         }
+    }
+
+    /// Hands the dictation processed in sight to the background, as if its recording had been
+    /// ended with `stopRecordingInBackground()`: `state` returns to idle at once, so that the next
+    /// recording can start, and its result still comes (ADR 0027).
+    public func continueInBackground() {
+        guard state == .transcribing || state == .cleaning else { return }
+        sighted += 1
+        progress = nil
+        secondsLeft = nil
+        state = .idle
+    }
+
+    /// Marks the dictation about to be processed as the one in sight; the closure tells whether
+    /// it still is.
+    private func inSight() -> @MainActor () -> Bool {
+        sighted += 1
+        let number = sighted
+        return { [weak self] in self?.sighted == number }
     }
 
     /// Ends the recording and processes it out of sight: `state` returns to idle at once, so
@@ -173,7 +195,7 @@ public final class DictationController {
         state = .idle
         return await queue.run {
             await self.transcribe(
-                samples, prepared: prepared, showsProgress: false, publishes: false)
+                samples, prepared: prepared, showsProgress: false, publishes: { false })
         }
     }
 
@@ -206,8 +228,10 @@ public final class DictationController {
     public func process(samples: [Float]) async -> DictationOutcome? {
         guard !state.isBusy else { return nil }
         state = .transcribing
+        let publishes = inSight()
         return await queue.run {
-            await self.transcribe(samples, prepared: nil, showsProgress: false, publishes: true)
+            await self.transcribe(
+                samples, prepared: nil, showsProgress: false, publishes: publishes)
         }
     }
 
@@ -215,13 +239,14 @@ public final class DictationController {
     ///   - prepared: The cleaner made when the recording started.
     ///   - showsProgress: Publishes `progress` and learns the durations of the transcription and
     ///     the cleanup: after a recording, whose cleaner was prewarmed.
-    ///   - publishes: Moves `state` through the phases; a dictation processed in the background
-    ///     leaves it to the one the user sees.
+    ///   - publishes: Whether it moves `state` through the phases, asked at each: a dictation
+    ///     processed in the background leaves it to the one the user sees.
     private func transcribe(
-        _ samples: [Float], prepared: (any Cleaning)?, showsProgress: Bool, publishes: Bool
+        _ samples: [Float], prepared: (any Cleaning)?, showsProgress: Bool,
+        publishes: @escaping @MainActor () -> Bool
     ) async -> DictationOutcome? {
         guard hasRequiredModels else {
-            if publishes { state = .failed(.modelsMissing) }
+            if publishes() { state = .failed(.modelsMissing) }
             return nil
         }
         let model = settings.transcriptionModel
@@ -240,10 +265,10 @@ public final class DictationController {
                         .run(samples: samples).transcript
                 })
         } catch DictationError.nothingRecognised {
-            if publishes { state = .failed(.nothingRecognised) }
+            if publishes() { state = .failed(.nothingRecognised) }
             return nil
         } catch {
-            if publishes { state = .failed(.transcriptionFailed(error.localizedDescription)) }
+            if publishes() { state = .failed(.transcriptionFailed(error.localizedDescription)) }
             return nil
         }
         return await finish(
@@ -262,8 +287,10 @@ public final class DictationController {
             return nil
         }
         state = .cleaning
+        let publishes = inSight()
         return await queue.run {
-            await self.finish(transcript: transcript, audio: nil, showsProgress: false)
+            await self.finish(
+                transcript: transcript, audio: nil, showsProgress: false, publishes: publishes)
         }
     }
 
@@ -272,22 +299,23 @@ public final class DictationController {
     func processInBackground(text: String) async -> DictationOutcome? {
         await queue.run {
             await self.finish(
-                transcript: text, audio: nil, showsProgress: false, publishes: false)
+                transcript: text, audio: nil, showsProgress: false, publishes: { false })
         }
     }
 
     /// Runs `work` as `phase`. With an `estimate`, moves `progress` by the time passed over the
-    /// duration it expects for the `units` of work, which may be counted alongside — the
-    /// cleanup's tokens take about 60 ms —, and learns the duration when `learns` says the
-    /// result tells how long a run usually takes. Without `publishes`, only runs `work`.
+    /// duration it expects for the `units` of work, and learns the duration when `learns` says
+    /// the result tells how long a run usually takes. Without `publishes`, only runs `work`; the
+    /// progress stops once it no longer publishes.
     /// Internal for the tests.
     func run<Result>(
-        _ phase: DictationState, estimate: DurationEstimate?, publishes: Bool = true,
+        _ phase: DictationState, estimate: DurationEstimate?,
+        publishes: @escaping @MainActor () -> Bool = { true },
         units: Double,
         learns: (Result) -> Bool = { _ in true },
         work: () async throws -> Result
     ) async rethrows -> Result {
-        guard publishes else { return try await work() }
+        guard publishes() else { return try await work() }
         state = phase
         guard let estimate else { return try await work() }
         let start = now()
@@ -296,7 +324,7 @@ public final class DictationController {
         secondsLeft = PhaseProgress.secondsLeft(elapsed: .zero, expected: expected)
         let ticking = Task { [weak self] in
             while !Task.isCancelled {
-                guard let self, self.state == phase else { return }
+                guard let self, self.state == phase, publishes() else { return }
                 let elapsed = Duration.seconds(self.now().timeIntervalSince(start))
                 self.progress = PhaseProgress.value(elapsed: elapsed, expected: expected)
                 self.secondsLeft = PhaseProgress.secondsLeft(elapsed: elapsed, expected: expected)
@@ -323,7 +351,7 @@ public final class DictationController {
     /// Internal for the tests, which have no recording to stop.
     func finish(
         transcript: String, audio: [Float]?, showsProgress: Bool, prepared: (any Cleaning)? = nil,
-        publishes: Bool = true
+        publishes: @escaping @MainActor () -> Bool = { true }
     ) async -> DictationOutcome {
         var outcome = DictationOutcome(transcript: transcript)
         if settings.cleanupEnabled, let cleaner = prepared ?? cleaner() {
@@ -349,7 +377,7 @@ public final class DictationController {
         } catch {
             // A result that could not be kept is still handed over.
         }
-        if publishes { state = .finished(outcome) }
+        if publishes() { state = .finished(outcome) }
         return outcome
     }
 }

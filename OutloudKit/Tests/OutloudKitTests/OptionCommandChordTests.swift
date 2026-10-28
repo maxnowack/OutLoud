@@ -13,44 +13,31 @@ struct OptionCommandChordTests {
 
     @Test func optionCommandHeldAloneRecordsUntilReleased() {
         var chord = OptionCommandChord()
-        #expect(chord.modifiersChanged(leftOption, at: at(0)) == [])
-        #expect(chord.modifiersChanged(leftOption | leftCommand, at: at(10)) == [.pressed])
-        #expect(chord.modifiersChanged(leftCommand, at: at(900)) == [.released])
+        #expect(chord.modifiersChanged(leftOption, at: at(0)) == nil)
+        #expect(chord.modifiersChanged(leftOption | leftCommand, at: at(10)) == .pressed)
+        #expect(chord.modifiersChanged(leftCommand, at: at(900)) == .released)
     }
 
     @Test(arguments: [0x10 as UInt, 0x40])
-    func theSecondKeyOfAKindPastesOnReturn(second: UInt) {
+    func theSecondKeyOfAKindChangesNothing(second: UInt) {
         var chord = OptionCommandChord()
         _ = chord.modifiersChanged(leftOption | leftCommand, at: at(0))
-        #expect(
-            chord.modifiersChanged(leftOption | leftCommand | second, at: at(300)) == [
-                .pasteOnReturn
-            ])
-        // Reported once, also when the key goes up and down again.
-        #expect(chord.modifiersChanged(leftOption | leftCommand, at: at(400)) == [])
-        #expect(chord.modifiersChanged(leftOption | leftCommand | second, at: at(500)) == [])
-        #expect(chord.modifiersChanged(0, at: at(600)) == [.released])
+        #expect(chord.modifiersChanged(leftOption | leftCommand | second, at: at(300)) == nil)
+        #expect(chord.modifiersChanged(leftOption | leftCommand, at: at(400)) == nil)
+        #expect(chord.isPressed)
+        #expect(chord.modifiersChanged(0, at: at(600)) == .released)
     }
 
-    @Test func bothSidesFromTheStartPressAndPasteOnReturn() {
+    @Test func bothSidesFromTheStartPress() {
         var chord = OptionCommandChord()
         #expect(
-            chord.modifiersChanged(rightOption | leftCommand | rightCommand, at: at(0)) == [
-                .pressed, .pasteOnReturn,
-            ])
-    }
-
-    @Test func aNewPressStartsWithoutPasteOnReturn() {
-        var chord = OptionCommandChord()
-        _ = chord.modifiersChanged(leftOption | leftCommand | rightCommand, at: at(0))
-        _ = chord.modifiersChanged(0, at: at(500))
-        #expect(chord.modifiersChanged(leftOption | leftCommand, at: at(900)) == [.pressed])
+            chord.modifiersChanged(rightOption | leftCommand | rightCommand, at: at(0)) == .pressed)
     }
 
     @Test func releasingOneOfTwoCommandKeysKeepsRecording() {
         var chord = OptionCommandChord()
         _ = chord.modifiersChanged(leftOption | leftCommand | rightCommand, at: at(0))
-        #expect(chord.modifiersChanged(leftOption | rightCommand, at: at(300)) == [])
+        #expect(chord.modifiersChanged(leftOption | rightCommand, at: at(300)) == nil)
         #expect(chord.isPressed)
     }
 
@@ -59,13 +46,11 @@ struct OptionCommandChordTests {
         var chord = OptionCommandChord()
         _ = chord.modifiersChanged(leftOption | leftCommand, at: at(0))
         #expect(
-            chord.modifiersChanged(leftOption | leftCommand | modifier, at: at(5000)) == [
-                .cancelled
-            ])
+            chord.modifiersChanged(leftOption | leftCommand | modifier, at: at(5000)) == .cancelled)
         // Spoiled until ⌥ or ⌘ is released.
-        #expect(chord.modifiersChanged(leftOption | leftCommand, at: at(5100)) == [])
-        #expect(chord.modifiersChanged(leftOption, at: at(5200)) == [])
-        #expect(chord.modifiersChanged(leftOption | leftCommand, at: at(5300)) == [.pressed])
+        #expect(chord.modifiersChanged(leftOption | leftCommand, at: at(5100)) == nil)
+        #expect(chord.modifiersChanged(leftOption, at: at(5200)) == nil)
+        #expect(chord.modifiersChanged(leftOption | leftCommand, at: at(5300)) == .pressed)
     }
 
     @Test func aKeyCancelsOnlyWithinTheShortcutWindow() {
