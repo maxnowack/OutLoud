@@ -111,6 +111,28 @@ struct DictationControllerTests {
         #expect(await first.value?.cleaned == "Erste.")
     }
 
+    @Test func processesABackgroundDictationWithoutTouchingTheState() async throws {
+        let controller = try controller(cleaner: StandInCleaner(answer: .success("Hallo.")))
+        let outcome = await controller.processInBackground(text: "äh hallo")
+        #expect(outcome?.cleaned == "Hallo.")
+        #expect(controller.state == .idle)
+        #expect(controller.progress == nil)
+    }
+
+    @Test func letsTheNextDictationStartWhileOneIsProcessedInTheBackground() async throws {
+        let cleaner = StandInCleaner(answer: .success("Fertig."), delay: .milliseconds(300))
+        let controller = try controller(cleaner: cleaner)
+        let start = ContinuousClock.now
+        let background = Task { await controller.processInBackground(text: "erste") }
+        try await Task.sleep(for: .milliseconds(50))
+        #expect(controller.state == .idle)
+        let foreground = try #require(await controller.process(text: "zweite"))
+        // One after another, not side by side.
+        #expect(ContinuousClock.now - start >= .milliseconds(600))
+        #expect(await background.value?.cleaned == "Fertig.")
+        #expect(controller.state == .finished(foreground))
+    }
+
     @Test func leavesTheTranscriptAloneWhenCleanupIsOff() async throws {
         let cleaner = StandInCleaner(answer: .success("Hallo."))
         let outcome = try #require(

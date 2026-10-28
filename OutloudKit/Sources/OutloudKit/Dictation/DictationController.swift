@@ -31,6 +31,11 @@ public enum DictationState: Equatable, Sendable {
 ///
 /// The apps decide when a recording starts and ends — the hotkey on macOS, the shortcut or the
 /// record button on iOS — and what happens with the result.
+///
+/// `state`, `progress` and `voice` describe the dictation the user sees. A recording ended with
+/// `stopRecordingInBackground()` is processed out of sight, and the next recording may start at
+/// once (`plans/done/PASTE_ON_RETURN.md`); the transcriptions and cleanups of all dictations run one
+/// after another, in the order their recordings ended.
 @MainActor
 @Observable
 public final class DictationController {
@@ -60,6 +65,8 @@ public final class DictationController {
     @ObservationIgnored private var levelReading: Task<Void, Never>?
     /// The input level while recording, 0 to 1.
     @ObservationIgnored private var level: Float = 0
+    /// The processing of the dictations, one after another.
+    @ObservationIgnored private let queue = SerialQueue()
     /// Called after a result was added to the history.
     @ObservationIgnored public var onHistoryChange: (() -> Void)?
     /// Called once a recording has ended, whether it is processed or dropped; the Mac resumes
@@ -142,28 +149,54 @@ public final class DictationController {
         }
     }
 
-    /// Ends the recording and processes it.
+    /// Ends the recording and processes it, after the dictations whose recordings ended before.
     @discardableResult
     public func stopRecording() async -> DictationOutcome? {
         guard state == .recording else { return nil }
-        let samples = recorder.stop()
-        levelReading?.cancel()
-        level = 0
-        voice = []
-        onRecordingEnded?()
-        return await transcribe(samples, showsProgress: true)
+        let samples = endRecording()
+        let prepared = takePreparedCleaner()
+        state = .transcribing
+        return await queue.run {
+            await self.transcribe(
+                samples, prepared: prepared, showsProgress: true, publishes: true)
+        }
+    }
+
+    /// Ends the recording and processes it out of sight: `state` returns to idle at once, so
+    /// that the next recording can start, and the result comes when the dictations before it
+    /// are done. Returns `nil` when nothing was recognised or the processing failed.
+    @discardableResult
+    public func stopRecordingInBackground() async -> DictationOutcome? {
+        guard state == .recording else { return nil }
+        let samples = endRecording()
+        let prepared = takePreparedCleaner()
+        state = .idle
+        return await queue.run {
+            await self.transcribe(
+                samples, prepared: prepared, showsProgress: false, publishes: false)
+        }
     }
 
     /// Ends the recording and drops it.
     public func cancelRecording() {
         guard state == .recording else { return }
-        _ = recorder.stop()
+        _ = endRecording()
+        preparedCleaner = nil
+        state = .idle
+    }
+
+    private func endRecording() -> [Float] {
+        let samples = recorder.stop()
         levelReading?.cancel()
         level = 0
         voice = []
-        preparedCleaner = nil
-        state = .idle
         onRecordingEnded?()
+        return samples
+    }
+
+    private func takePreparedCleaner() -> (any Cleaning)? {
+        defer { preparedCleaner = nil }
+        return preparedCleaner
     }
 
     /// Transcribes and cleans up samples recorded elsewhere — by a shortcut, say — and keeps the
@@ -172,14 +205,23 @@ public final class DictationController {
     @discardableResult
     public func process(samples: [Float]) async -> DictationOutcome? {
         guard !state.isBusy else { return nil }
-        return await transcribe(samples, showsProgress: false)
+        state = .transcribing
+        return await queue.run {
+            await self.transcribe(samples, prepared: nil, showsProgress: false, publishes: true)
+        }
     }
 
-    /// - Parameter showsProgress: Publishes `progress` and learns the durations of the
-    ///   transcription and the cleanup: after a recording, whose cleaner was prewarmed.
-    private func transcribe(_ samples: [Float], showsProgress: Bool) async -> DictationOutcome? {
+    /// - Parameters:
+    ///   - prepared: The cleaner made when the recording started.
+    ///   - showsProgress: Publishes `progress` and learns the durations of the transcription and
+    ///     the cleanup: after a recording, whose cleaner was prewarmed.
+    ///   - publishes: Moves `state` through the phases; a dictation processed in the background
+    ///     leaves it to the one the user sees.
+    private func transcribe(
+        _ samples: [Float], prepared: (any Cleaning)?, showsProgress: Bool, publishes: Bool
+    ) async -> DictationOutcome? {
         guard hasRequiredModels else {
-            state = .failed(.modelsMissing)
+            if publishes { state = .failed(.modelsMissing) }
             return nil
         }
         let model = settings.transcriptionModel
@@ -190,6 +232,7 @@ public final class DictationController {
                 .transcribing,
                 estimate: showsProgress
                     ? .transcription(modelID: model.id, defaults: estimates) : nil,
+                publishes: publishes,
                 units: { seconds },
                 work: {
                     let transcriber = try await engines.transcriber(for: model)
@@ -197,13 +240,15 @@ public final class DictationController {
                         .run(samples: samples).transcript
                 })
         } catch DictationError.nothingRecognised {
-            state = .failed(.nothingRecognised)
+            if publishes { state = .failed(.nothingRecognised) }
             return nil
         } catch {
-            state = .failed(.transcriptionFailed(error.localizedDescription))
+            if publishes { state = .failed(.transcriptionFailed(error.localizedDescription)) }
             return nil
         }
-        return await finish(transcript: transcript, audio: samples, showsProgress: showsProgress)
+        return await finish(
+            transcript: transcript, audio: samples, showsProgress: showsProgress,
+            prepared: prepared, publishes: publishes)
     }
 
     /// Cleans up text that system dictation supplied, and keeps the result in the history. Returns
@@ -216,19 +261,33 @@ public final class DictationController {
             state = .failed(.nothingRecognised)
             return nil
         }
-        return await finish(transcript: transcript, audio: nil, showsProgress: false)
+        state = .cleaning
+        return await queue.run {
+            await self.finish(transcript: transcript, audio: nil, showsProgress: false)
+        }
+    }
+
+    /// Cleans up text out of sight, as `stopRecordingInBackground()` does with a recording.
+    /// Internal for the tests, which have no recording to stop.
+    func processInBackground(text: String) async -> DictationOutcome? {
+        await queue.run {
+            await self.finish(
+                transcript: text, audio: nil, showsProgress: false, publishes: false)
+        }
     }
 
     /// Runs `work` as `phase`. With an `estimate`, moves `progress` by the time passed over the
     /// duration it expects for the `units` of work, which may be counted alongside — the
     /// cleanup's tokens take about 60 ms —, and learns the duration when `learns` says the
-    /// result tells how long a run usually takes. Internal for the tests.
+    /// result tells how long a run usually takes. Without `publishes`, only runs `work`.
+    /// Internal for the tests.
     func run<Result>(
-        _ phase: DictationState, estimate: DurationEstimate?,
+        _ phase: DictationState, estimate: DurationEstimate?, publishes: Bool = true,
         units: @escaping @MainActor () async -> Double?,
         learns: (Result) -> Bool = { _ in true },
         work: () async throws -> Result
     ) async rethrows -> Result {
+        guard publishes else { return try await work() }
         state = phase
         guard let estimate else { return try await work() }
         let start = now()
@@ -280,16 +339,16 @@ public final class DictationController {
     }
 
     /// Internal for the tests, which have no recording to stop.
-    func finish(transcript: String, audio: [Float]?, showsProgress: Bool) async
-        -> DictationOutcome
-    {
+    func finish(
+        transcript: String, audio: [Float]?, showsProgress: Bool, prepared: (any Cleaning)? = nil,
+        publishes: Bool = true
+    ) async -> DictationOutcome {
         var outcome = DictationOutcome(transcript: transcript)
-        let prepared = preparedCleaner
-        preparedCleaner = nil
         if settings.cleanupEnabled, let cleaner = prepared ?? cleaner() {
             let uncleaned = outcome
             outcome = await run(
                 .cleaning, estimate: showsProgress ? .cleanup(defaults: estimates) : nil,
+                publishes: publishes,
                 units: { await cleaner.tokenCount(for: transcript).map(Double.init) },
                 // Only a cleanup that produced text: a timeout or a refusal says nothing about
                 // how long one usually takes.
@@ -308,8 +367,24 @@ public final class DictationController {
         } catch {
             // A result that could not be kept is still handed over.
         }
-        state = .finished(outcome)
+        if publishes { state = .finished(outcome) }
         return outcome
+    }
+}
+
+/// Runs work one job after another, in the order it was handed in.
+@MainActor
+private final class SerialQueue {
+    private var last: Task<Void, Never>?
+
+    func run<Result: Sendable>(_ work: @escaping @MainActor () async -> Result) async -> Result {
+        let previous = last
+        let job = Task { @MainActor in
+            await previous?.value
+            return await work()
+        }
+        last = Task { @MainActor in _ = await job.value }
+        return await job.value
     }
 }
 
