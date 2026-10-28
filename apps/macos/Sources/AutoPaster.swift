@@ -10,12 +10,28 @@ import ApplicationServices
 enum AutoPaster {
     enum Delivery: Equatable {
         case pasted
+        /// Waits until the user returns to the remembered field in the named app.
+        case waiting(app: String)
         case copied(Reason)
 
         enum Reason: Equatable {
             case autoPasteOff
             case noPermission
             case noTextField
+        }
+    }
+
+    /// A focused text field, for a dictation pasted on return (`ReturnPaste`); equal when it is
+    /// the same field showing the same content.
+    struct Target: Equatable {
+        let element: AXUIElement
+        let pid: pid_t
+        /// What tells this field from the same element showing other content: Electron apps
+        /// keep one input across their sessions (`AutoPaster.identity(of:)`).
+        let identity: [String]
+
+        static func == (lhs: Target, rhs: Target) -> Bool {
+            lhs.pid == rhs.pid && CFEqual(lhs.element, rhs.element) && lhs.identity == rhs.identity
         }
     }
 
@@ -54,6 +70,73 @@ enum AutoPaster {
         return .pasted
     }
 
+    /// The focused text field, when it takes text and is not a password field.
+    static func focusedTarget() -> Target? {
+        guard isTrusted, let element = focusedElement(), acceptsText(element) else { return nil }
+        var pid: pid_t = 0
+        guard AXUIElementGetPid(element, &pid) == .success else { return nil }
+        return Target(element: element, pid: pid, identity: identity(of: element))
+    }
+
+    /// The text field focused in the app `pid` while that app is in front — `nil` when another
+    /// app is in front, or the focused element takes no text or is a password field, so that a
+    /// paste on return never lands elsewhere (ADR 0026).
+    static func focusedTarget(in pid: pid_t) -> Target? {
+        guard isTrusted, NSWorkspace.shared.frontmostApplication?.processIdentifier == pid
+        else { return nil }
+        var focused: CFTypeRef?
+        guard
+            AXUIElementCopyAttributeValue(
+                AXUIElementCreateApplication(pid), kAXFocusedUIElementAttribute as CFString,
+                &focused) == .success,
+            let focused, CFGetTypeID(focused) == AXUIElementGetTypeID()
+        else { return nil }
+        let element = focused as! AXUIElement
+        guard acceptsText(element) else { return nil }
+        return Target(element: element, pid: pid, identity: identity(of: element))
+    }
+
+    /// The window's title, the element's identifiers and, inside web content, the page's title
+    /// and address — what changes when an app shows another conversation in the same field.
+    private static func identity(of element: AXUIElement) -> [String] {
+        var window: CFTypeRef?
+        AXUIElementCopyAttributeValue(element, kAXWindowAttribute as CFString, &window)
+        let windowTitle =
+            (window.flatMap { CFGetTypeID($0) == AXUIElementGetTypeID() ? $0 : nil })
+            .map { attribute(kAXTitleAttribute, of: $0 as! AXUIElement) ?? "" } ?? ""
+        var parts = [
+            windowTitle,
+            attribute(kAXIdentifierAttribute, of: element) ?? "",
+            attribute("AXDOMIdentifier", of: element) ?? "",
+        ]
+        // The nearest web area above the field: its page.
+        var current = element
+        for _ in 0..<40 {
+            var parent: CFTypeRef?
+            guard
+                AXUIElementCopyAttributeValue(current, kAXParentAttribute as CFString, &parent)
+                    == .success, let parent, CFGetTypeID(parent) == AXUIElementGetTypeID()
+            else { break }
+            current = parent as! AXUIElement
+            if attribute(kAXRoleAttribute, of: current) == "AXWebArea" {
+                var url: CFTypeRef?
+                AXUIElementCopyAttributeValue(current, kAXURLAttribute as CFString, &url)
+                parts += [
+                    attribute(kAXTitleAttribute, of: current) ?? "",
+                    (url as? URL)?.absoluteString ?? "",
+                ]
+                break
+            }
+        }
+        return parts
+    }
+
+    private static func attribute(_ name: String, of element: AXUIElement) -> String? {
+        var value: CFTypeRef?
+        AXUIElementCopyAttributeValue(element, name as CFString, &value)
+        return value as? String
+    }
+
     private static func copy(_ text: String, _ reason: Delivery.Reason) -> Delivery {
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(text, forType: .string)
@@ -83,14 +166,21 @@ enum AutoPaster {
 
     /// Whether the focused element takes typed text. Protected (password) fields do not count.
     static func focusedElementAcceptsText() -> Bool {
+        focusedElement().map(acceptsText) ?? false
+    }
+
+    private static func focusedElement() -> AXUIElement? {
         let system = AXUIElementCreateSystemWide()
         var focused: CFTypeRef?
         guard
             AXUIElementCopyAttributeValue(
                 system, kAXFocusedUIElementAttribute as CFString, &focused)
                 == .success, let focused, CFGetTypeID(focused) == AXUIElementGetTypeID()
-        else { return false }
-        let element = focused as! AXUIElement
+        else { return nil }
+        return (focused as! AXUIElement)
+    }
+
+    private static func acceptsText(_ element: AXUIElement) -> Bool {
         var role: CFTypeRef?
         AXUIElementCopyAttributeValue(element, kAXRoleAttribute as CFString, &role)
         var subrole: CFTypeRef?

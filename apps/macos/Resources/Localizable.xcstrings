@@ -373,6 +373,26 @@
         }
       }
     },
+    "Pastes when you are back" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird eingefügt, wenn du zurück bist"
+          }
+        }
+      }
+    },
+    "Pastes into %@ when you are back in the text field." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird in %@ eingefügt, sobald du wieder im Textfeld bist."
+          }
+        }
+      }
+    },
     "Pause playback while dictating" : {
       "localizations" : {
         "de" : {

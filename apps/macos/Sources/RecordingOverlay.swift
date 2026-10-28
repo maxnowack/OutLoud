@@ -37,6 +37,13 @@ final class RecordingOverlay {
         model.pauser = pauser
     }
 
+    /// Whether the dictation is pasted when the user returns to its field
+    /// (`plans/done/PASTE_ON_RETURN.md`).
+    var pastesOnReturn: Bool {
+        get { model.pastesOnReturn }
+        set { model.pastesOnReturn = newValue }
+    }
+
     func show() {
         model.delivery = nil
         present()
@@ -90,6 +97,7 @@ final class OverlayModel {
     var dictation: DictationController?
     var pauser: PlaybackPauser?
     var delivery: AutoPaster.Delivery?
+    var pastesOnReturn = false
     var isVisible = false
 }
 
@@ -237,10 +245,9 @@ private struct OverlayView: View {
         HStack(spacing: Tokens.Spacing.m) {
             switch content {
             case .delivery(let delivery):
-                Image(
-                    systemName: delivery == .pasted ? "checkmark.circle.fill" : "doc.on.clipboard"
-                )
-                .foregroundStyle(delivery == .pasted ? Tokens.success : Tokens.accent)
+                let succeeded = delivery == .pasted
+                Image(systemName: Self.symbol(for: delivery))
+                    .foregroundStyle(succeeded ? Tokens.success : Tokens.accent)
                 Text(Self.message(for: delivery))
                     .font(Tokens.detail)
                     .lineLimit(2)
@@ -266,6 +273,12 @@ private struct OverlayView: View {
                         .foregroundStyle(Tokens.warning)
                         .transition(.opacity)
                     }
+                    if model.pastesOnReturn, state.isBusy {
+                        Label("Pastes when you are back", systemImage: "clock.fill")
+                            .font(Tokens.caption)
+                            .foregroundStyle(Tokens.accent)
+                            .transition(.opacity)
+                    }
                 }
                 if case .failed(let failure) = state {
                     Text(FailureNotice.message(for: failure))
@@ -288,9 +301,19 @@ private struct OverlayView: View {
                 removal: .scale(scale: 0.85).combined(with: .opacity))
     }
 
+    private static func symbol(for delivery: AutoPaster.Delivery) -> String {
+        switch delivery {
+        case .pasted: "checkmark.circle.fill"
+        case .waiting: "clock.fill"
+        case .copied: "doc.on.clipboard"
+        }
+    }
+
     static func message(for delivery: AutoPaster.Delivery) -> String {
         switch delivery {
         case .pasted: String(localized: "Pasted")
+        case .waiting(let app):
+            String(localized: "Pastes into \(app) when you are back in the text field.")
         case .copied(.noPermission):
             String(localized: "Copied — press ⌘V. Allow Accessibility to paste automatically.")
         case .copied(.noTextField): String(localized: "Copied — press ⌘V where you want the text.")

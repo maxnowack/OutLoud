@@ -42,6 +42,12 @@ final class AppModel {
     @ObservationIgnored private var recordingStarted: ContinuousClock.Instant?
     /// Counts the presses, so that a press can tell whether a later one came while it waited.
     @ObservationIgnored private var presses = 0
+    /// The field focused when the recording started, and whether the second ⌘ or ⌥ asked to
+    /// paste the result there when the user returns to it (`plans/done/PASTE_ON_RETURN.md`).
+    @ObservationIgnored private var target: AutoPaster.Target?
+    @ObservationIgnored private var pastesOnReturn = false
+    @ObservationIgnored private var returnPaste = ReturnPaste<AutoPaster.Target>()
+    @ObservationIgnored private var focusPolling: Task<Void, Never>?
     @ObservationIgnored let overlay = RecordingOverlay()
     @ObservationIgnored private let pauser = PlaybackPauser()
     @ObservationIgnored private var trustPolling: Task<Void, Never>?
@@ -93,6 +99,8 @@ final class AppModel {
             case .pressed: Task { await self.hotkeyPressed() }
             case .released: Task { await self.hotkeyReleased() }
             case .cancelled: self.hotkeyCancelled()
+            // Enqueued like the press, so that it is handled after it.
+            case .pasteOnReturn: Task { self.hotkeyPastesOnReturn() }
             }
         }
         registerHotkey()
@@ -143,6 +151,9 @@ final class AppModel {
         presses += 1
         let press = presses
         recordingStarted = .now
+        target = AutoPaster.focusedTarget()
+        pastesOnReturn = false
+        overlay.pastesOnReturn = false
         if sampleAudio != nil {
             overlay.show()
             return
@@ -174,9 +185,21 @@ final class AppModel {
         overlay.hide()
     }
 
+    /// The second ⌘ or ⌥ joined the held ⌥ ⌘: the result goes into the field the recording
+    /// started in once the user is back in it (`plans/done/PASTE_ON_RETURN.md`).
+    func hotkeyPastesOnReturn() {
+        guard recordingStarted != nil else { return }
+        pastesOnReturn = true
+        overlay.pastesOnReturn = true
+    }
+
     func hotkeyReleased() async {
         guard let started = recordingStarted else { return }
         recordingStarted = nil
+        // Taken now: a press while this one is processed starts over with its own.
+        let inThisMode = pastesOnReturn
+        let returnTarget = inThisMode && autoPasteEnabled ? target : nil
+        var ticket: ReturnPaste<AutoPaster.Target>.Ticket?
         let outcome: DictationOutcome?
         if let sampleAudio, let samples = try? AudioFile.samples(of: sampleAudio) {
             outcome = await dictation.process(samples: samples)
@@ -188,16 +211,79 @@ final class AppModel {
                 overlay.hide()
                 return
             }
-            outcome = await dictation.stopRecording()
+            if let returnTarget {
+                // Processed out of sight: the pill makes room for the next dictation, which
+                // can start at once; the result is pasted on return (ADR 0026).
+                ticket = watch(returnTarget)
+                overlay.hide()
+                outcome = await dictation.stopRecordingInBackground()
+            } else {
+                outcome = await dictation.stopRecording()
+            }
+        }
+        if let ticket, let returnTarget {
+            // Out of sight: a failure shows no pill, which could cover the next recording's.
+            guard let outcome else { return returnPaste.fail(ticket) }
+            lastOutcome = outcome
+            let focused = AutoPaster.focusedTarget(in: returnTarget.pid)
+            perform(returnPaste.finish(ticket, outcome.result, focused: focused), for: returnTarget)
+            return
         }
         guard let outcome else {
             overlay.showBriefly()
             return
         }
         lastOutcome = outcome
-        let delivery = AutoPaster.deliver(outcome.result, autoPaste: autoPasteEnabled)
+        // Without a field to return to, a dictation in this mode is only copied.
+        show(AutoPaster.deliver(outcome.result, autoPaste: autoPasteEnabled && !inThisMode))
+    }
+
+    private func show(_ delivery: AutoPaster.Delivery) {
         lastDelivery = delivery
         overlay.showDelivery(delivery)
+    }
+
+    /// Watches the field of a dictation pasted on return from its release on: its pill goes
+    /// away once the user leaves the field, and its result is pasted once the field has the
+    /// focus again (`plans/done/PASTE_ON_RETURN.md`).
+    ///
+    /// Polled rather than observed: an Electron app that shows another conversation keeps the
+    /// same focused element, so no focus notification marks the user's return to the right one
+    /// (measured in Claude, 2026-10-28). A check is a few Accessibility reads, and runs only while
+    /// a result is processed or waits.
+    private func watch(_ target: AutoPaster.Target) -> ReturnPaste<AutoPaster.Target>.Ticket {
+        let ticket = returnPaste.start(in: target)
+        defer { pollFocus() }
+        return ticket
+    }
+
+    private func pollFocus() {
+        guard focusPolling == nil else { return }
+        focusPolling = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .milliseconds(300))
+                guard let self,
+                    let field = self.returnPaste.waiting?.field ?? self.returnPaste.processed
+                else { break }
+                let focused = AutoPaster.focusedTarget(in: field.pid)
+                self.perform(self.returnPaste.check(focused: focused), for: field)
+            }
+            self?.focusPolling = nil
+        }
+    }
+
+    private func perform(
+        _ action: ReturnPaste<AutoPaster.Target>.Action?, for field: AutoPaster.Target
+    ) {
+        switch action {
+        case .paste(let text): show(AutoPaster.deliver(text, autoPaste: true))
+        case .showWaitingNotice:
+            let app = NSRunningApplication(processIdentifier: field.pid)?.localizedName ?? ""
+            lastDelivery = .waiting(app: app)
+            // Not over the pill of a recording that started meanwhile.
+            if recordingStarted == nil { overlay.showDelivery(.waiting(app: app)) }
+        case nil: break
+        }
     }
 
     // MARK: Accessibility
