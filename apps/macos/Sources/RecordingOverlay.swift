@@ -32,8 +32,9 @@ final class RecordingOverlay {
         panel.contentView = NSHostingView(rootView: OverlayView(model: model))
     }
 
-    func bind(to dictation: DictationController) {
+    func bind(to dictation: DictationController, pauser: PlaybackPauser) {
         model.dictation = dictation
+        model.pauser = pauser
     }
 
     func show() {
@@ -87,6 +88,7 @@ final class RecordingOverlay {
 @Observable
 final class OverlayModel {
     var dictation: DictationController?
+    var pauser: PlaybackPauser?
     var delivery: AutoPaster.Delivery?
     var isVisible = false
 }
@@ -248,10 +250,23 @@ private struct OverlayView: View {
                 // A step still shown after the dictation moved on is complete: its ring full, the
                 // line flat, rather than the next step's values.
                 let isLive = state == model.dictation?.state
-                StatusIndicator(
-                    state: state, progress: isLive ? model.dictation?.progress : 1,
-                    secondsLeft: isLive ? model.dictation?.secondsLeft : nil,
-                    voice: model.dictation?.voice)
+                VStack(spacing: Tokens.Spacing.xs) {
+                    StatusIndicator(
+                        state: state, progress: isLive ? model.dictation?.progress : 1,
+                        secondsLeft: isLive ? model.dictation?.secondsLeft : nil,
+                        voice: model.dictation?.voice)
+                    // What still sounds after the pause command, which the microphone may pick
+                    // up (ADR 0025).
+                    if state == .recording, model.pauser?.hearsBackgroundAudio == true {
+                        Label(
+                            "Something is playing in the background",
+                            systemImage: "speaker.wave.2.fill"
+                        )
+                        .font(Tokens.caption)
+                        .foregroundStyle(Tokens.warning)
+                        .transition(.opacity)
+                    }
+                }
                 if case .failed(let failure) = state {
                     Text(FailureNotice.message(for: failure))
                         .font(Tokens.caption)

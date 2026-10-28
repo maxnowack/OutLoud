@@ -25,6 +25,24 @@
         }
       }
     },
+    "NSAudioCaptureUsageDescription" : {
+      "comment" : "Privacy - Audio Capture Usage Description",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outloud hört, ob Musik oder ein Video beim Diktieren pausiert hat, damit danach nur weiterspielt, was es pausiert hat. Dabei wird nichts aufgenommen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outloud listens whether music or a video paused while you dictate, so that it plays on afterwards only what it paused. Nothing is recorded."
+          }
+        }
+      }
+    },
     "NSMicrophoneUsageDescription" : {
       "comment" : "Privacy - Microphone Usage Description",
       "extractionState" : "manual",

@@ -49,6 +49,7 @@ targets:
         LSUIElement: true
         LSApplicationCategoryType: public.app-category.productivity
         NSMicrophoneUsageDescription: Outloud records your voice while you hold the shortcut, to turn it into text on this Mac.
+        NSAudioCaptureUsageDescription: Outloud listens whether music or a video paused while you dictate, so that it plays on afterwards only what it paused. Nothing is recorded.
         # Sparkle reads the appcast from the latest GitHub release (ADR 0016) and accepts only
         # updates signed with the private key of this public one, kept in the login keychain
         # under the account "outloud" (docs/RELEASE.md).

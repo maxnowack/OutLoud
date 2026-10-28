@@ -44,8 +44,13 @@ is not. TextEdit is open with an empty document focused.
    The process prints "OutloudAutoDictate: …", exits with status 0, and the clipboard holds the
    German sample's text.
 10. Pausing playback: with "Pause playback while dictating" on, play a song in Music and dictate:
-   the song pauses when the overlay appears and plays on after release. Play a video in Safari
-   and dictate: the same. With nothing playing, dictate: nothing starts. Turn the setting off:
+   the song pauses when the overlay appears and plays on after release; the first time, macOS
+   asks to allow recording system audio. Play a video in Helium or Safari and dictate: the
+   same. With nothing playing, dictate: nothing starts — also with a browser tab open that
+   played a sound shortly before. With a call or a video that does not pause, dictate: it keeps
+   sounding, the overlay says "Something is playing in the background", and nothing starts
+   after release. With recording system audio declined, the song pauses and stays paused, and
+   Settings show "Recording system audio" with "Allow…". Turn the setting off:
    the song keeps playing through a dictation.
 
 ## Assertions

@@ -27,6 +27,7 @@ struct SettingsView: View {
 private struct GeneralSettings: View {
     @Bindable var app: AppModel
     @State private var cleanup = CleanupAvailability.current
+    @State private var systemAudioDenied = false
 
     var body: some View {
         Form {
@@ -106,10 +107,27 @@ private struct GeneralSettings: View {
                 Toggle(
                     "Pause playback while dictating",
                     isOn: Bindable(app.settings).pausesPlayback)
+                if app.settings.pausesPlayback, systemAudioDenied {
+                    LabeledContent("Recording system audio") {
+                        Button("Allow…") {
+                            NSWorkspace.shared.open(
+                                URL(
+                                    string:
+                                        "x-apple.systempreferences:com.apple.preference.security?Privacy_AudioCapture"
+                                )!)
+                        }
+                    }
+                }
             } footer: {
-                Text(
-                    "Music or a video that plays pauses while you hold the shortcut and plays on afterwards. Uses the play/pause key and needs Accessibility access."
-                )
+                if systemAudioDenied {
+                    Text(
+                        "Music or a video that plays pauses while you hold the shortcut. To play it on afterwards, Outloud needs to hear whether it paused: allow it to record system audio."
+                    )
+                } else {
+                    Text(
+                        "Music or a video that plays pauses while you hold the shortcut and plays on afterwards. Outloud listens to the sound of other apps to tell, and needs Accessibility access."
+                    )
+                }
             }
 
             Section {
@@ -133,6 +151,7 @@ private struct GeneralSettings: View {
         .formStyle(.grouped)
         .trackingCleanupAvailability($cleanup)
         .onAppear {
+            systemAudioDenied = PlaybackPauser.systemAudioDenied
             app.refreshAccessibility()
             app.loginItem.refresh()
         }

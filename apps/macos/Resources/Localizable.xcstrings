@@ -283,12 +283,22 @@
         }
       }
     },
-    "Music or a video that plays pauses while you hold the shortcut and plays on afterwards. Uses the play/pause key and needs Accessibility access." : {
+    "Music or a video that plays pauses while you hold the shortcut and plays on afterwards. Outloud listens to the sound of other apps to tell, and needs Accessibility access." : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Musik oder ein Video, das gerade läuft, pausiert, solange du das Kürzel hältst, und spielt danach weiter. Nutzt die Wiedergabe-/Pause-Taste und braucht Zugriff für Bedienungshilfen."
+            "value" : "Musik oder ein Video, das gerade läuft, pausiert, solange du das Kürzel hältst, und spielt danach weiter. Outloud hört dafür in den Ton anderer Apps hinein und braucht Zugriff für Bedienungshilfen."
+          }
+        }
+      }
+    },
+    "Music or a video that plays pauses while you hold the shortcut. To play it on afterwards, Outloud needs to hear whether it paused: allow it to record system audio." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Musik oder ein Video, das gerade läuft, pausiert, solange du das Kürzel hältst. Damit es danach weiterspielt, muss Outloud hören, ob es pausiert hat: Erlaube Outloud, Systemaudio aufzunehmen."
           }
         }
       }
@@ -403,6 +413,16 @@
         }
       }
     },
+    "Recording system audio" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Systemaudio aufnehmen"
+          }
+        }
+      }
+    },
     "Removes filler words, fixes punctuation and sets paragraphs, without changing what you said." : {
       "localizations" : {
         "de" : {
@@ -459,6 +479,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Einstellungen"
+          }
+        }
+      }
+    },
+    "Something is playing in the background" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Im Hintergrund läuft etwas"
           }
         }
       }

@@ -82,7 +82,7 @@ final class AppModel {
         library.onDelete = { [engines] model in engines.unload(model) }
         dictation.onHistoryChange = { [history] in Task { await history.refresh() } }
         dictation.onRecordingEnded = { [pauser] in pauser.resume() }
-        overlay.bind(to: dictation)
+        overlay.bind(to: dictation, pauser: pauser)
     }
 
     /// Everything the app does once at launch.
