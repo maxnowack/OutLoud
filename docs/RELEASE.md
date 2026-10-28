@@ -38,7 +38,14 @@ Once per Mac:
    error" (2026-10-23).
 2. Notarisation: with the App Store Connect API key of §"iOS"
    (`ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_KEYCHAIN_ITEM`), the release
-   script notarises with it. Without one, store a profile:
+   script notarises with it. Outloud's releases use the Admin key
+   `WS7R9337FC` of issuer `a667ee65-1a94-4b6c-a59f-9b56a5f36f21`, whose
+   `.p8` is the login keychain's generic password
+   `outloud-app-store-connect-key`; the IDs are no secrets, the key stays
+   in the keychain. Without these variables the script falls back to the
+   profile `outloud-notary`, which was never stored, and fails with "No
+   Keychain password item found" (2026-10-28). To use a profile instead,
+   store it:
    `xcrun notarytool store-credentials outloud-notary --apple-id <Apple ID> --team-id 95ZC649QPM`
    (asks for an app-specific password from appleid.apple.com).
 3. Sparkle's key pair: Outloud's own, in the login keychain under the
@@ -51,12 +58,17 @@ Once per Mac:
 Each release:
 
 1. Bump the versions in `apps/macos/project.yml`, commit.
-2. From `apps/macos/`: `./scripts/precommit`, then `./scripts/release`.
+2. From `apps/macos/`: `./scripts/precommit`, then
+   `ASC_KEY_ID=WS7R9337FC ASC_ISSUER_ID=a667ee65-1a94-4b6c-a59f-9b56a5f36f21 ASC_KEY_KEYCHAIN_ITEM=outloud-app-store-connect-key ./scripts/release`
+   (macOS may ask once to allow access to the keychain item).
    It archives, signs with Developer ID, notarises, staples, zips and
    writes `appcast.xml` into `apps/macos/.build/release/updates/`.
 3. Verify: `spctl --assess --type execute -v .build/release/export/Outloud.app`
    reports "accepted, source=Notarized Developer ID"; the app launches.
-4. Tag `v<version>`, push the tag, create the GitHub release and attach
+4. Tag `v<version>` with a message, `git tag -a v<version> -m "Outloud <version>"`
+   — with `tag.gpgsign` in the releasing Mac's git config, as on the
+   maintainer's, every tag is signed and a bare `git tag` fails with "no
+   tag message?" —, push the tag, create the GitHub release and attach
    `Outloud-<version>.zip` and `appcast.xml`.
 5. Check: the previous version finds the update via "Check for Updates…".
 
