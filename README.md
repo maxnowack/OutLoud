@@ -1,50 +1,156 @@
 <p align="center">
-  <img src="docs/images/app-icon.png" width="128" height="128" alt="Outloud, the open-source dictation app for iPhone and Mac">
+  <img src="docs/images/app-icon.png" width="128" height="128" alt="Outloud app icon: open-source offline dictation for Mac and iPhone">
 </p>
 
-<h1 align="center">Outloud — free, open-source dictation for iPhone and Mac</h1>
+<h1 align="center">Outloud — free, open-source offline dictation for Mac and iPhone</h1>
 
 <p align="center">
-  <strong>Speak, and paste what you said. Speech to text that runs entirely on your device.</strong><br>
-  No account, no cloud, no subscription — a private, offline alternative to Wispr Flow and Superwhisper.
+  <strong>Speak, and get finished text where you type. Speech to text that runs entirely on your device.</strong><br>
+  No account, no cloud, no subscription, no word limit — a private, open-source alternative to Wispr Flow and Superwhisper.
 </p>
 
 <!-- When the iPhone app is in the App Store, replace "App Store: coming soon"
-     below and in §"iPhone" with its link (docs/RELEASE.md §"iOS"). -->
+     below and in §"Get started on iPhone" with its link (docs/RELEASE.md §"iOS"). -->
 <p align="center">
-  <a href="#iphone-speech-to-text-in-any-app"><strong>iPhone</strong></a> — App Store: coming soon
-  ·
   <a href="https://github.com/maxnowack/OutLoud/releases/latest"><strong>Download for Mac</strong></a>
+  ·
+  <a href="#voice-to-text-on-iphone"><strong>iPhone</strong></a> — App Store: coming soon
+  ·
+  <a href="#outloud-compared-with-wispr-flow-superwhisper-and-apple-dictation">Comparison</a>
   ·
   <a href="#build-it-yourself">Build it yourself</a>
 </p>
 
+<p align="center">
+  <img src="docs/images/macos-dictation.gif" width="600" alt="Outloud speech to text on the Mac: hold Option and Command, speak, release — the glass pill shows Recording, then Cleaning up, then Pasted">
+</p>
+
 ---
 
-Outloud is a dictation app for iPhone and Mac: voice to text for messages,
-e-mails and notes, in any app. It turns your voice into text with
-[Parakeet v3](https://huggingface.co/FluidInference/parakeet-tdt-0.6b-v3-coreml),
-a fast speech-to-text model that runs offline on your iPhone or Mac. If you
-like, Apple's on-device model then tidies the text up: punctuation, filler
-words, paragraphs — never a rewrite, never a translation.
+Outloud is a dictation app for the Mac and the iPhone. You speak a message,
+an e-mail or a note; Outloud turns it into text with
+[NVIDIA Parakeet v3](https://huggingface.co/FluidInference/parakeet-tdt-0.6b-v3-coreml),
+a fast speech-to-text model that runs offline on your device, and Apple's
+on-device model tidies it up: punctuation, paragraphs, and no more
+"um" and "uh". What you get is the text you meant to type — never a rewrite,
+never a translation — in the app you are typing in.
 
-- **Speech to text on iPhone** — run a shortcut from any app, speak, run it
-  again. The text is on your clipboard, ready to paste, and you never leave
-  the app you are in. The Dynamic Island shows what Outloud is doing.
-- **Dictation on Mac** — hold <kbd>⌥</kbd> <kbd>⌘</kbd>, speak, let go. The
-  text appears in the app you are typing in.
+## Why Outloud
 
-## Private, offline speech to text
+- **Finished text, not a raw transcript.** Filler words go, punctuation and
+  paragraphs are set, your words stay yours. You edit less after you speak.
+- **Right where you type.** On the Mac the text is pasted into the field you
+  were in — even if you switched away while Outloud was still working, it
+  waits until you are back. On the iPhone it is on your clipboard without
+  leaving the app you are in.
+- **Private by design.** Speech recognition and cleanup run on your Mac or
+  iPhone. Your voice and your text never leave the device, and Outloud works
+  in flight mode.
+- **Free, with no catch.** Open source under the MIT license: no account, no
+  subscription, no weekly word limit, no paid tier, no tracking.
+- **One app, two devices.** The same dictation and the same cleanup on the
+  Mac and on the iPhone.
+- **English and German.** Built and tested for both; the model understands
+  25 European languages.
 
-- **Nothing leaves your device.** The speech model is downloaded once
-  (483 MB) and runs locally; the cleanup uses Apple's on-device model.
-- **No account, no tracking, no analytics.** Outloud never sends your voice
-  or your text anywhere.
-- **Your history stays yours.** Recordings are kept only as long as you set
-  — one day by default — and you can delete them at any time.
-- **Open source**, MIT licensed, without monetisation.
+## Speech to text on Mac
 
-## iPhone: speech to text in any app
+Hold <kbd>⌥</kbd> <kbd>⌘</kbd>, speak, let go. A small glass pill at the
+bottom of the screen shows that Outloud is listening, then working, and the
+text appears in the app you are typing in — Mail, Slack, Notes, your editor,
+a browser field.
+
+- **Push to talk from anywhere.** Outloud lives in the menu bar and listens
+  only while you hold the keys. Pressing another key in the first second — a
+  shortcut like <kbd>⌥</kbd> <kbd>⌘</kbd> <kbd>D</kbd> — cancels the
+  dictation, so your other shortcuts keep working. <kbd>⌥</kbd>
+  <kbd>Space</kbd> and two similar shortcuts can be chosen instead.
+- **The text follows its field.** Switch to another app or another chat while
+  a dictation is processed, and Outloud pastes it when you are back in the
+  field you started in. The next dictation can start at once.
+- **Your clipboard stays yours.** After a paste, the clipboard holds what it
+  held before. Password fields never receive a paste.
+- **Music pauses while you speak** and plays on afterwards — no pressing play
+  after every dictation.
+- **A history** keeps your recent dictations with their audio, the
+  transcript and the cleaned text, for as long as you set — one day by
+  default, or not at all.
+- **Opens at login and updates itself** through
+  [Sparkle](https://sparkle-project.org). The download is signed and
+  notarised by Apple.
+
+## Voice to text on iPhone
+
+Run a shortcut from any app — with the Action Button, Back Tap, the Control
+Center, AssistiveTouch or Siri — speak, and run it again. The Dynamic Island
+shows what Outloud is doing, the cleaned text lands on your clipboard, and
+you never leave the app you are in.
+
+<p align="center">
+  <img src="docs/images/ios-recording.png" width="240" alt="Outloud on iPhone recording speech to text, with a live waveform">
+  &nbsp;
+  <img src="docs/images/ios-copied.png" width="240" alt="Outloud on iPhone after a dictation: the cleaned text is copied to the clipboard">
+  &nbsp;
+  <img src="docs/images/ios-history.png" width="240" alt="Outloud dictation history on iPhone with English and German notes">
+</p>
+
+- **Dictate from any app.** "Start or Stop Dictation with Outloud" followed
+  by "Copy to Clipboard" records in the background while the app you are in
+  stays in front. The app's guide sets it up with you.
+- **A Live Activity** in the Dynamic Island and on the Lock Screen shows the
+  recording, the transcription, the cleanup and "Copied".
+- **Or open Outloud** — from the Action Button, the Control Center or the
+  Lock Screen — and tap the big record button.
+- **Clean up any text.** Type or paste text into Outloud, or use the "Clean
+  Up Text with Outloud" shortcut action after the keyboard's own dictation.
+- **The same history** as on the Mac, kept only as long as you set.
+
+## Outloud compared with Wispr Flow, Superwhisper and Apple Dictation
+
+Most dictation apps either send your voice to a server, or charge for the
+cleanup, or run on only one of your devices. Outloud does none of the
+three. It also does fewer things on purpose: dictation and cleanup — no
+cloud modes, no AI rewriting, no custom keyboard.
+
+| App | Speech processed | Mac | iPhone | Price | Open source |
+| --- | --- | :---: | :---: | --- | --- |
+| **Outloud** | **On device only** | ✓ | ✓ | **Free** | **Yes (MIT)** |
+| [Apple Dictation](https://support.apple.com/guide/mac-help/use-dictation-mh40584/mac) | On device or Apple's servers, depending on device and language | ✓ | ✓ | Free, built in | No |
+| [Wispr Flow](https://wisprflow.ai/pricing) | Cloud | ✓ | ✓ | Free up to 2,000 words a week on desktop; Pro $15/month | No |
+| [Superwhisper](https://superwhisper.com/docs/billing/plans.md) | On device or cloud | ✓ | ✓ | Free tier; Pro $8.49/month or $249.99 lifetime | No |
+| [Aqua Voice](https://aquavoice.com/pricing) | Cloud | ✓ | ✓ | Free up to 1,000 words; Pro from $10/month | No |
+| [VoiceInk](https://tryvoiceink.com/) | On device; optional cloud enhancement | ✓ | Beta | From $25 one-time | Yes (GPL-3.0) |
+| [MacWhisper](https://www.macwhisper.com/) | On device; cloud with your own API keys | ✓ | — | Free; Pro €64 one-time | No |
+| [Ghost Pepper](https://github.com/matthartman/ghost-pepper) | On device | ✓ | — | Free | Yes (MIT) |
+
+Prices and features as published by each vendor in October 2026; they
+change, so check the linked pages.
+
+**When another app fits better:** pick Wispr Flow or Aqua Voice for Windows
+and Android, Superwhisper or MacWhisper for custom AI modes and cloud
+models, Ghost Pepper for a Mac-only setup with a local language model of
+your choice. Pick Outloud for private, free dictation that works the same on
+your Mac and your iPhone. Outloud's cleanup prompt started from Ghost
+Pepper's — thank you.
+
+## Get started on Mac
+
+**Requirements:** macOS 27 on a Mac with Apple silicon. The cleanup needs
+Apple Intelligence; without it, Outloud gives you the plain transcript.
+
+1. Download `Outloud-<version>.zip` from the
+   [latest release](https://github.com/maxnowack/OutLoud/releases/latest),
+   unzip it and move **Outloud** to your Applications folder.
+2. Open it. Outloud lives in the menu bar, not in the Dock. The first
+   launch offers the speech model for download (483 MB, once) and asks for
+   the microphone.
+3. Grant **Accessibility** access when asked (System Settings › Privacy &
+   Security › Accessibility). Outloud needs it to notice <kbd>⌥</kbd>
+   <kbd>⌘</kbd> and to paste for you; until then, hold <kbd>⌥</kbd>
+   <kbd>Space</kbd> instead, and the text lands on the clipboard.
+4. Hold <kbd>⌥</kbd> <kbd>⌘</kbd>, speak, release.
+
+## Get started on iPhone
 
 **Requirements:** iOS 27. The cleanup needs Apple Intelligence.
 
@@ -55,62 +161,48 @@ on TestFlight. Once it is installed:
 2. In the Shortcuts app, create a shortcut with the action **Start or Stop
    Dictation with Outloud**, followed by **Copy to Clipboard**. The app's
    guide walks you through it.
-3. Put the shortcut where your thumb is: AssistiveTouch, the Action Button,
-   Back Tap, Control Center or Siri.
-4. In any app, run the shortcut, speak, and run it again. The Dynamic Island
-   shows what is happening, and the text is on your clipboard.
-
-You can also open Outloud and tap the big record button.
-
-## Mac: download and set up
-
-**Requirements:** macOS 27 on a Mac with Apple silicon. The cleanup needs
-Apple Intelligence; without it, Outloud gives you the plain transcript.
-
-1. Download `Outloud-<version>.zip` from the
-   [latest release](https://github.com/maxnowack/OutLoud/releases/latest),
-   unzip it and move **Outloud** to your Applications folder. The app is
-   signed and notarised by Apple.
-2. Open it. Outloud lives in the menu bar, not in the Dock. The first
-   launch offers the speech model for download and asks for the
-   microphone.
-3. Grant **Accessibility** access when asked (System Settings › Privacy &
-   Security › Accessibility). Outloud needs it to notice <kbd>⌥</kbd>
-   <kbd>⌘</kbd> and to paste for you; until then, hold <kbd>⌥</kbd>
-   <kbd>Space</kbd> instead, and the text lands on the clipboard.
-4. Hold <kbd>⌥</kbd> <kbd>⌘</kbd>, speak, release. A small glass pill at the
-   bottom of the screen shows that Outloud is listening, then working.
-
-Pressing another key in the first second — a shortcut like <kbd>⌥</kbd>
-<kbd>⌘</kbd> <kbd>D</kbd> — cancels the dictation, so your other shortcuts
-keep working. Outloud updates itself through
-[Sparkle](https://sparkle-project.org).
+3. Put the shortcut where your thumb is: the Action Button, Back Tap,
+   AssistiveTouch, the Control Center or Siri.
+4. In any app, run the shortcut, speak, and run it again. The text is on
+   your clipboard.
 
 ## FAQ
 
 **Is Outloud free?**
-Yes. Outloud is open source under the MIT license, with no subscription and
-no paid tier.
+Yes. Outloud is open source under the MIT license, with no subscription, no
+paid tier and no word limit.
 
-**Does it work offline?**
-Yes. After the one-time model download, dictation and cleanup run without an
-internet connection. Your voice and your text never leave the device.
+**Does Outloud work offline? Does my audio leave the device?**
+After the one-time model download, dictation and cleanup run without an
+internet connection. Your voice and your text never leave your Mac or
+iPhone; there is no account, no tracking and no analytics.
 
-**How is it different from the iPhone's built-in dictation?**
-The keyboard's dictation types while you speak. Outloud listens first, then
-hands you finished text: filler words removed, punctuation and paragraphs
-set. You start it from any app without switching to the keyboard, and a
-history keeps your recent dictations.
+**Is Outloud a free Wispr Flow alternative?**
+Yes, for dictation on the Mac and the iPhone: hold a key or run a shortcut,
+speak, get cleaned-up text where you type. Unlike Wispr Flow, Outloud
+transcribes on your device instead of in the cloud, needs no account and has
+no weekly word limit. It does not run on Windows or Android.
 
-**How is it different from Wispr Flow or Superwhisper?**
-Outloud does the same job — on the iPhone and on the Mac, speak and get text
-where you type — but runs only on your device, needs no account and is open
-source. It does fewer things on purpose: dictation and cleanup, nothing in
-the cloud.
+**Is Outloud a free Superwhisper alternative?**
+For everyday dictation, yes. Outloud transcribes with Parakeet on your
+device — a model Superwhisper offers in its Pro plan — and cleans the text
+up on the device too, for free. It has no custom AI modes and no cloud
+models.
 
-**Which languages does it understand?**
+**How is it different from Apple Dictation?**
+The built-in dictation of macOS and iOS types while you speak. Outloud
+listens first, then hands you finished text: filler words removed,
+punctuation and paragraphs set. You start it from any app without switching
+to the keyboard, it pastes into the field you were in, and a history keeps
+your recent dictations.
+
+**Which languages does it understand? Funktioniert Outloud auf Deutsch?**
 Parakeet v3 recognises 25 European languages. Outloud is built and tested
-for **English** and **German**, and its interface speaks both.
+for **English** and **German** — ja, Diktieren auf dem Mac und auf dem
+iPhone funktioniert auf Deutsch, und die Oberfläche spricht beide Sprachen.
+
+**Does Outloud read text aloud?**
+No. Despite the name, Outloud is speech to text: you speak, it writes.
 
 **Do I need Apple Intelligence?**
 Only for the cleanup. Without it, Outloud gives you the plain transcript.
@@ -137,10 +229,10 @@ signed and published.
 
 ## Status
 
-Version 0.1.0 is out: the macOS app as a
-[GitHub release](https://github.com/maxnowack/OutLoud/releases/tag/v0.1.0),
-the iOS app as a TestFlight beta. What the first version covers, and what
-is still open, is in `plans/FIRST_VERSION.md` §"Status".
+The Mac app is at version 0.4.0, published as a
+[GitHub release](https://github.com/maxnowack/OutLoud/releases/latest);
+the iPhone app is in a TestFlight beta. What the first version covers, and
+what is still open, is in `plans/FIRST_VERSION.md` §"Status".
 
 ## For contributors
 
@@ -174,7 +266,7 @@ rules. Where to start:
 | `docs/RULE_WRITING.md` | How a rule is phrased and where it goes. |
 | `docs/PROCESSES.md`, `docs/VERIFICATION.md`, `docs/COMMITS.md` | Situational working rules, read when `AGENTS.md` says so. |
 | `docs/adr/` | Decision records with format and index. |
-| `docs/images/` | Images for this README; `app-icon.png` is rendered from `AppIcon.icon` and is re-rendered when the icon changes (`docs/DESIGN.md` §"App icon"). |
+| `docs/images/` | Images for this README: `app-icon.png` is rendered from `AppIcon.icon` and is re-rendered when the icon changes (`docs/DESIGN.md` §"App icon"); `macos-dictation.gif` is a screen recording of the Mac app; the `ios-*.png` screenshots come from the iOS Simulator, dictated with the Debug build's `-OutloudSampleAudio` (`apps/ios/AGENTS.md`). Re-take them when the screens they show change. |
 | `plans/` | Open plans and their index; `plans/done/` for finished ones. |
 
 The structure and the rule documents come from the `agents-template`

@@ -107,8 +107,8 @@ Each build:
    group in TestFlight.
 
 When the app is first published in the App Store, put its link into
-`README.md`: the download line at the top and §"iPhone: speech to text in
-any app", where "App Store: coming soon" stands (the comment above the
+`README.md`: the download line at the top and §"Get started on iPhone",
+where "App Store: coming soon" stands (the comment above the
 download line marks both), and drop the TestFlight sentence there.
 
 The app declares `ITSAppUsesNonExemptEncryption = NO` and ships
