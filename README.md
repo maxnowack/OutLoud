@@ -122,12 +122,25 @@ cloud modes, no AI rewriting, no custom keyboard.
 Prices and features as published by each vendor in October 2026; they
 change, so check the linked pages.
 
-**When another app fits better:** pick Wispr Flow or Aqua Voice for Windows
-and Android, Superwhisper or MacWhisper for custom AI modes and cloud
-models, Ghost Pepper for a Mac-only setup with a local language model of
-your choice. Pick Outloud for private, free dictation that works the same on
-your Mac and your iPhone. Outloud's cleanup prompt started from Ghost
-Pepper's — thank you.
+### Pros and cons
+
+| App | Pros | Cons |
+| --- | --- | --- |
+| **Outloud** | Free and open source; on device on both Mac and iPhone; cleanup included; no keyboard of its own to install — you keep yours, and no third-party keyboard gets full access; the finished text arrives in one piece, so the text field does not grow and jump while you speak; the text follows its field on the Mac; a history with audio | Needs macOS 27 or iOS 27; the cleanup needs Apple Intelligence; on the iPhone the text comes through the clipboard, so you paste it yourself; not yet in the App Store; no Windows or Android; built for English and German; no custom AI modes |
+| Apple Dictation | Built in, nothing to install; many languages; types while you speak | Cleanup limited to punctuation; its new AI model in macOS and iOS 27 needs recent hardware (M3 with 12 GB, iPhone 17 Pro or Air); no history |
+| Wispr Flow | Polished; Mac, Windows, iPhone and Android; an iPhone keyboard | Transcribes in the cloud, always; free tier capped at 2,000 words a week on desktop; subscription for more |
+| Superwhisper | Local and cloud models; custom AI modes; Mac, Windows, iPhone and Android; lifetime licence | Parakeet and the cloud AI modes only in Pro; closed source |
+| Aqua Voice | Own speech model; all four platforms; an iPhone keyboard | Cloud only; free tier capped at 1,000 words; subscription for more |
+| VoiceInk | Open source; transcribes on device; one-time price | Paid; the iPhone app is in beta; its enhancement can use the cloud |
+| MacWhisper | Local Whisper and Parakeet models; AI cleanup with your own API keys or a local model; one-time Pro price | Cleanup needs your own keys or a local model server; Pro is paid; closed source |
+| Ghost Pepper | Free and open source; on device; a choice of speech models and a local language model for cleanup | Mac only, no iPhone app |
+
+**In short:** pick Wispr Flow or Aqua Voice for Windows and Android,
+Superwhisper or MacWhisper for custom AI modes and cloud models, Ghost
+Pepper for a Mac-only setup with a local language model of your choice.
+Pick Outloud for private, free dictation that works the same on your Mac
+and your iPhone. Outloud's cleanup prompt started from Ghost Pepper's —
+thank you.
 
 ## Get started on Mac
 
