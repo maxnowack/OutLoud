@@ -88,10 +88,6 @@ you never leave the app you are in.
 
 <p align="center">
   <img src="docs/images/ios-recording.png" width="240" alt="Outloud on iPhone recording speech to text, with a live waveform">
-  &nbsp;
-  <img src="docs/images/ios-copied.png" width="240" alt="Outloud on iPhone after a dictation: the cleaned text is copied to the clipboard">
-  &nbsp;
-  <img src="docs/images/ios-history.png" width="240" alt="Outloud dictation history on iPhone with English and German notes">
 </p>
 
 - **Dictate from any app.** "Start or Stop Dictation with Outloud" followed
@@ -266,7 +262,7 @@ rules. Where to start:
 | `docs/RULE_WRITING.md` | How a rule is phrased and where it goes. |
 | `docs/PROCESSES.md`, `docs/VERIFICATION.md`, `docs/COMMITS.md` | Situational working rules, read when `AGENTS.md` says so. |
 | `docs/adr/` | Decision records with format and index. |
-| `docs/images/` | Images for this README: `app-icon.png` is rendered from `AppIcon.icon` and is re-rendered when the icon changes (`docs/DESIGN.md` §"App icon"); `macos-dictation.gif` is a screen recording of the Mac app; the `ios-*.png` screenshots come from the iOS Simulator, dictated with the Debug build's `-OutloudSampleAudio` (`apps/ios/AGENTS.md`). Re-take them when the screens they show change. |
+| `docs/images/` | Images for this README: `app-icon.png` is rendered from `AppIcon.icon` and is re-rendered when the icon changes (`docs/DESIGN.md` §"App icon"); `macos-dictation.gif` is a screen recording of the Mac app; `ios-recording.png` is a screenshot from the iOS Simulator. Re-take them when the screens they show change. |
 | `plans/` | Open plans and their index; `plans/done/` for finished ones. |
 
 The structure and the rule documents come from the `agents-template`
