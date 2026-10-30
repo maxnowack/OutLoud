@@ -7,11 +7,11 @@ import SwiftUI
 /// The small floating pill that shows recording and processing while the hotkey is used
 /// (`docs/DESIGN.md` §"Screens": macOS recording overlay).
 ///
-/// The panel is a fixed, transparent area at the bottom of the screen, and the pill lives inside
-/// it: SwiftUI fades it in and out and lets it grow and shrink smoothly with its content, which a
-/// window resizing itself cannot. The panel never becomes key or active, so the app the user is
-/// typing in keeps the focus and receives the paste; it ignores the mouse, so the transparent
-/// area around the pill blocks nothing.
+/// The panel is a fixed, transparent area at the bottom of the screen, and the pill lives in its
+/// middle: SwiftUI fades it in and out and lets it grow and shrink smoothly with its content,
+/// which a window resizing itself cannot. The panel never becomes key or active, so the app the
+/// user is typing in keeps the focus and receives the paste; it ignores the mouse, so the
+/// transparent area around the pill blocks nothing.
 @MainActor
 final class RecordingOverlay {
     private let panel: NSPanel
@@ -80,7 +80,9 @@ final class RecordingOverlay {
         let size = panel.frame.size
         let frame = screen.visibleFrame
         panel.setFrameOrigin(
-            NSPoint(x: frame.midX - size.width / 2, y: frame.minY + Tokens.overlayBottomInset))
+            NSPoint(
+                x: frame.midX - size.width / 2,
+                y: frame.minY + Tokens.overlayMidlineHeight - size.height / 2))
     }
 }
 
@@ -112,12 +114,12 @@ private struct OverlayView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        ZStack(alignment: .bottom) {
+        ZStack {
             if model.isVisible {
                 pill.transition(appearance)
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(Tokens.Spacing.m)
         .task(id: Change(target: target, isVisible: model.isVisible)) { await follow() }
     }

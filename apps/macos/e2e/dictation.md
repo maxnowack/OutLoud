@@ -26,7 +26,9 @@ is not. TextEdit is open with an empty document focused.
    about its middle and fades the new content in, with nothing reaching past the edge; between two
    contents about as wide — within 12 pt — it swaps them in a quick dip without an empty
    capsule, and a narrower content — "Pasted" after "Cleaning up…" — fades in while the
-   capsule shrinks, without an empty capsule.
+   capsule shrinks, without an empty capsule. Every capsule has its middle on the same line,
+   whatever its height: the taller "Recording…" capsule reaches as far below "Pasted" as above
+   it, and does not share its bottom edge.
 3. Paste branch: the cleaned text appears in TextEdit at the cursor; the clipboard holds what it
    held before step 1. Fallback branch: press ⌘V in TextEdit; the cleaned text appears.
 4. Tap ⌥ Space for less than a quarter second. Nothing is recorded; the overlay disappears.

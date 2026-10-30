@@ -74,8 +74,10 @@ public enum Tokens {
     /// The transparent area the overlay's panel takes at the bottom of the screen; the capsule
     /// moves and grows inside it.
     public static let overlayAreaSize = CGSize(width: 640, height: 160)
-    /// The area's distance from the bottom of the visible screen.
-    public static let overlayBottomInset: CGFloat = 68
+    /// The height of the capsule's middle above the bottom of the visible screen, the same for
+    /// every content: a taller capsule grows as far down as up. It is where the middle of the
+    /// recording capsule stood while capsules shared their bottom edge.
+    public static let overlayMidlineHeight: CGFloat = 114
 
     // MARK: Motion
 

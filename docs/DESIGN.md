@@ -380,7 +380,10 @@ design canvas outside the repository on 2026-10-23.
   dictation in sight.
   Centred
   at the bottom of the screen, inside a fixed transparent area of
-  `overlayAreaSize`, it grows and shrinks about its middle.
+  `overlayAreaSize`, it grows and shrinks about its middle: every capsule,
+  whatever its height, has its middle `overlayMidlineHeight` above the
+  bottom of the visible screen, so that a taller one grows as far down as
+  up instead of standing on the same bottom edge.
 - **macOS setup window** — ModelSetup, PrivacyNotice, and the switch
   "Open Outloud at login", preselected.
 - **macOS settings window** — General ("Open at login", with a `warning`
