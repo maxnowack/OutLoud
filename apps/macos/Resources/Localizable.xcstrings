@@ -172,6 +172,16 @@
         }
       }
     },
+    "Dictations wait to be pasted" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diktate warten aufs Einfügen"
+          }
+        }
+      }
+    },
     "Each result keeps the transcript, the recording and the cleaned version. A shorter period also applies to results already kept." : {
       "localizations" : {
         "de" : {

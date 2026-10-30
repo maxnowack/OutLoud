@@ -8,6 +8,9 @@ struct MenuBarPanel: View {
     let app: AppModel
     let showSetup: () -> Void
     let showHistory: () -> Void
+    /// The kept result shown; `nil` for the newest.
+    @State private var shown: HistoryEntry.ID?
+    @FocusState private var focused: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: Tokens.Spacing.m) {
@@ -45,7 +48,22 @@ struct MenuBarPanel: View {
                 }
             }
 
-            if let outcome = app.lastOutcome {
+            PasteQueue(
+                items: app.pendingPastes.map { .init(id: $0.ticket, app: $0.app, text: $0.text) }
+            ) { app.removePending($0.id) }
+
+            let entries = app.history.entries
+            if let index = shownIndex, index < entries.count {
+                VStack(spacing: Tokens.Spacing.s) {
+                    ResultPager(
+                        position: index + 1, count: entries.count, date: entries[index].createdAt,
+                        older: older, newer: newer)
+                    // A card of its own per entry, so that "Copied" does not carry over.
+                    ResultCard(outcome: app.outcome(of: entries[index]))
+                        .id(entries[index].id)
+                }
+            } else if let outcome = app.lastOutcome {
+                // The history keeps nothing.
                 ResultCard(outcome: outcome)
             }
 
@@ -67,7 +85,43 @@ struct MenuBarPanel: View {
         }
         .padding(Tokens.Spacing.l)
         .frame(width: 340)
-        .onAppear { app.refreshAccessibility() }
+        // Takes the keys, so that ← and → step through the results.
+        .focusable()
+        .focusEffectDisabled()
+        .focused($focused)
+        .onKeyPress(.leftArrow) {
+            newer()
+            return .handled
+        }
+        .onKeyPress(.rightArrow) {
+            older()
+            return .handled
+        }
+        .onAppear {
+            shown = nil
+            focused = true
+            app.refreshAccessibility()
+        }
+    }
+
+    /// Where the shown entry is in the history, newest first; `nil` while it keeps nothing.
+    private var shownIndex: Int? {
+        let entries = app.history.entries
+        guard !entries.isEmpty else { return nil }
+        return shown.flatMap { id in entries.firstIndex { $0.id == id } } ?? 0
+    }
+
+    private func older() {
+        let entries = app.history.entries
+        guard let index = shownIndex, index + 1 < entries.count else { return }
+        shown = entries[index + 1].id
+    }
+
+    private func newer() {
+        let entries = app.history.entries
+        guard let index = shownIndex, index > 0 else { return }
+        // Back at the newest, the panel follows the next result again.
+        shown = index == 1 ? nil : entries[index - 1].id
     }
 }
 

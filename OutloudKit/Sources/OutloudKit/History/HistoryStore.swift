@@ -25,6 +25,16 @@ public struct HistoryEntry: Identifiable, Codable, Hashable, Sendable {
     public var result: String { cleaned ?? transcript }
 }
 
+extension DictationOutcome {
+    /// A kept result, as a result view shows it. The history keeps no failed cleanup; the caller
+    /// says whether the entry's cleanup failed.
+    public init(entry: HistoryEntry, cleanupFailed: Bool = false) {
+        self.init(
+            transcript: entry.transcript,
+            cleanup: entry.cleaned.map { .cleaned($0) } ?? (cleanupFailed ? .failed : .off))
+    }
+}
+
 /// The one owner of the history's files (`OutloudKit/AGENTS.md` §"Persistence").
 ///
 /// The folder holds `index.json` and one 16 kHz mono WAV file per entry with audio. Voice

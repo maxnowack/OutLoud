@@ -62,6 +62,16 @@
         }
       }
     },
+    "%lld of %lld · %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld von %lld · %@"
+          }
+        }
+      }
+    },
     "1 day" : {
       "localizations" : {
         "de" : {
@@ -265,6 +275,16 @@
         }
       }
     },
+    "Copies the text. Outloud no longer pastes it." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kopiert den Text. Outloud fügt ihn nicht mehr ein."
+          }
+        }
+      }
+    },
     "Copy" : {
       "localizations" : {
         "de" : {
@@ -301,6 +321,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ löschen?"
+          }
+        }
+      }
+    },
+    "Don't Paste" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nicht einfügen"
           }
         }
       }
@@ -396,6 +426,26 @@
         }
       }
     },
+    "Into %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In %@"
+          }
+        }
+      }
+    },
+    "Into the next text field" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ins nächste Textfeld"
+          }
+        }
+      }
+    },
     "Keep results for" : {
       "localizations" : {
         "de" : {
@@ -447,6 +497,26 @@
         }
       }
     },
+    "Newer result" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neueres Ergebnis"
+          }
+        }
+      }
+    },
+    "Newer result (←)" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Neueres Ergebnis (←)"
+          }
+        }
+      }
+    },
     "No results kept" : {
       "localizations" : {
         "de" : {
@@ -493,6 +563,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aus"
+          }
+        }
+      }
+    },
+    "Older result" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Älteres Ergebnis"
+          }
+        }
+      }
+    },
+    "Older result (→)" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Älteres Ergebnis (→)"
           }
         }
       }
@@ -557,6 +647,16 @@
         }
       }
     },
+    "Outloud no longer pastes the text. It stays in the history." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outloud fügt den Text nicht mehr ein. Er bleibt im Verlauf."
+          }
+        }
+      }
+    },
     "Outloud transcribes and cleans up on this device. It needs its models once; after that, nothing you say leaves the device." : {
       "extractionState" : "stale",
       "localizations" : {
@@ -614,6 +714,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Am besten im WLAN."
+          }
+        }
+      }
+    },
+    "Processing…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wird verarbeitet …"
           }
         }
       }
@@ -981,6 +1091,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nutzt Apple Intelligence auf diesem Gerät. Kein Download."
+          }
+        }
+      }
+    },
+    "Waiting to paste" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wartet auf Einfügen"
           }
         }
       }

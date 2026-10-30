@@ -17,6 +17,8 @@ final class AppModel {
     /// The last result and how it was handed over, for the menu bar panel.
     private(set) var lastOutcome: DictationOutcome?
     private(set) var lastDelivery: AutoPaster.Delivery?
+    /// The dictations that wait to be pasted, oldest first, for the menu bar panel and icon.
+    private(set) var pendingPastes: [PendingPaste] = []
     /// The shortcut that works: the chosen one, its fallback while ⌥ ⌘ lacks Accessibility
     /// access (ADR 0020), or `nil` when another app holds it.
     private(set) var activeHotkey: HotkeyPreset? = .default
@@ -44,7 +46,9 @@ final class AppModel {
     @ObservationIgnored private var presses = 0
     /// The field focused when the recording started, which its result follows (ADR 0027).
     @ObservationIgnored private var target: AutoPaster.Target?
-    @ObservationIgnored private var returnPaste = ReturnPaste<AutoPaster.Target>()
+    @ObservationIgnored private var returnPaste = ReturnPaste<AutoPaster.Target>() {
+        didSet { publishPending() }
+    }
     /// The dictation processed in sight: its press, and its ticket when it follows a field.
     @ObservationIgnored private var inSight:
         (press: Int, ticket: ReturnPaste<AutoPaster.Target>.Ticket?)?
@@ -230,7 +234,7 @@ final class AppModel {
         if wasInSight { inSight = nil }
         if let ticket {
             guard let outcome else {
-                returnPaste.fail(ticket)
+                returnPaste.remove(ticket)
                 // Out of sight, a failure shows no pill, which could cover the next recording's.
                 if wasInSight { overlay.showBriefly() }
                 return
@@ -296,10 +300,53 @@ final class AppModel {
                     inSight = nil
                     dictation.continueInBackground()
                 }
-                let app = NSRunningApplication(processIdentifier: field.pid)?.localizedName ?? ""
-                show(.waiting(app: app))
+                show(.waiting(app: Self.appName(of: field)))
             }
         }
+    }
+
+    private static func appName(of field: AutoPaster.Target) -> String {
+        NSRunningApplication(processIdentifier: field.pid)?.localizedName ?? ""
+    }
+
+    // MARK: The menu bar panel
+
+    /// A dictation that waits to be pasted.
+    struct PendingPaste: Equatable {
+        let ticket: ReturnPaste<AutoPaster.Target>.Ticket
+        /// The app whose field it goes into; `nil` for the next field focused.
+        let app: String?
+        /// The result; `nil` while the dictation is processed.
+        let text: String?
+    }
+
+    /// Publishes what waits, only when it changed: the focus is checked every 0.3 s.
+    private func publishPending() {
+        let pending = returnPaste.pending.map {
+            PendingPaste(ticket: $0.ticket, app: $0.field.map(Self.appName(of:)), text: $0.text)
+        }
+        if pending != pendingPastes { pendingPastes = pending }
+    }
+
+    /// Takes a dictation out at the user's request — copied, or not to be pasted —, so that it is
+    /// pasted nowhere; it is still kept in the history. One whose pill shows goes out of sight
+    /// first, so that the pill does not stay.
+    func removePending(_ ticket: ReturnPaste<AutoPaster.Target>.Ticket) {
+        if let sight = inSight, sight.ticket == ticket {
+            inSight = nil
+            dictation.continueInBackground()
+            overlay.hide()
+        }
+        returnPaste.remove(ticket)
+    }
+
+    /// A kept result as the panel shows it. The history keeps no failed cleanup: the newest entry
+    /// had one when it is the last outcome and that failed.
+    func outcome(of entry: HistoryEntry) -> DictationOutcome {
+        let failed =
+            entry.id == history.entries.first?.id && lastOutcome?.cleanup == .failed
+            && lastOutcome?.transcript == entry.transcript
+        return DictationOutcome(entry: entry, cleanupFailed: failed)
     }
 
     // MARK: Accessibility

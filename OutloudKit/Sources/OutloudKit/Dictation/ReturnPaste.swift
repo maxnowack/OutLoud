@@ -18,8 +18,17 @@ public struct ReturnPaste<Field: Equatable> {
     }
 
     /// Names one dictation.
-    public struct Ticket: Equatable, Sendable {
+    public struct Ticket: Hashable, Sendable {
         fileprivate let number: Int
+    }
+
+    /// A dictation that waits to be pasted, as the menu bar panel lists it.
+    public struct Pending: Equatable {
+        public let ticket: Ticket
+        /// The field it is pasted into; `nil` while it goes into the next field focused.
+        public let field: Field?
+        /// The result; `nil` while the dictation is processed.
+        public let text: String?
     }
 
     private enum Target: Equatable {
@@ -43,6 +52,18 @@ public struct ReturnPaste<Field: Equatable> {
     /// Whether a check of the focused field is needed.
     public var isActive: Bool { !dictations.isEmpty }
 
+    /// The dictations that wait, oldest first.
+    public var pending: [Pending] {
+        dictations.map { dictation in
+            switch dictation.target {
+            case .field(let field):
+                Pending(ticket: dictation.ticket, field: field, text: dictation.result)
+            case .nextField:
+                Pending(ticket: dictation.ticket, field: nil, text: dictation.result)
+            }
+        }
+    }
+
     /// A dictation was released in `field`. It goes into the next other field when a dictation
     /// for `field` is still processed or waits.
     public mutating func start(in field: Field) -> Ticket {
@@ -62,8 +83,9 @@ public struct ReturnPaste<Field: Equatable> {
         return true
     }
 
-    /// The dictation ended without a result.
-    public mutating func fail(_ ticket: Ticket) {
+    /// The dictation is not pasted: it ended without a result, or the user took it out. A result
+    /// that comes for it afterwards is dropped.
+    public mutating func remove(_ ticket: Ticket) {
         dictations.removeAll { $0.ticket == ticket }
     }
 

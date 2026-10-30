@@ -122,10 +122,64 @@ struct ReturnPasteTests {
     @Test func aFailedDictationWaitsForNothing() {
         var paste = ReturnPaste<Field>()
         let ticket = paste.start(in: chat)
-        paste.fail(ticket)
+        paste.remove(ticket)
         #expect(!paste.isActive)
         paste.finish(ticket, "Late")
         #expect(paste.check(focused: chat) == [])
         #expect(!paste.goesToNextField(paste.start(in: chat)))
+    }
+
+    @Test func listsWhatWaitsOldestFirst() {
+        var paste = ReturnPaste<Field>()
+        let first = paste.start(in: chat)
+        let second = paste.start(in: chat)
+        let third = paste.start(in: mail)
+        paste.finish(third, "Third")
+        #expect(
+            paste.pending == [
+                .init(ticket: first, field: chat, text: nil),
+                .init(ticket: second, field: nil, text: nil),
+                .init(ticket: third, field: mail, text: "Third"),
+            ])
+    }
+
+    @Test func aDictationForTheNextFieldListsTheFieldItWentTo() {
+        var paste = ReturnPaste<Field>()
+        _ = paste.start(in: chat)
+        let second = paste.start(in: chat)
+        _ = paste.check(focused: mail)
+        #expect(paste.pending.last == .init(ticket: second, field: mail, text: nil))
+    }
+
+    @Test func aDictationTakenOutWhileProcessedIsNeitherPastedNorReported() {
+        var paste = ReturnPaste<Field>()
+        let ticket = paste.start(in: chat)
+        paste.remove(ticket)
+        #expect(paste.check(focused: nil) == [])
+        paste.finish(ticket, "Hello")
+        #expect(paste.check(focused: chat) == [])
+        #expect(paste.pending == [])
+    }
+
+    @Test func aWaitingDictationTakenOutIsNotPastedOnReturn() {
+        var paste = ReturnPaste<Field>()
+        let first = paste.start(in: chat)
+        let second = paste.start(in: mail)
+        #expect(paste.check(focused: nil).count == 2)
+        paste.finish(first, "First")
+        paste.finish(second, "Second")
+        paste.remove(first)
+        #expect(paste.check(focused: chat) == [])
+        #expect(paste.check(focused: mail) == [.paste("Second")])
+        #expect(!paste.isActive)
+    }
+
+    @Test func aDictationForTheNextFieldTakenOutIsNotCopied() {
+        var paste = ReturnPaste<Field>()
+        _ = paste.start(in: chat)
+        let second = paste.start(in: chat)
+        paste.finish(second, "Second")
+        paste.remove(second)
+        #expect(paste.check(focused: chat) == [])
     }
 }

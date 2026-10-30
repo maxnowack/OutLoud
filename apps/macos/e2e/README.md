@@ -6,6 +6,8 @@ Executed as `apps/macos/AGENTS.md` §"End-to-end test plans" says.
 | --- | --- | --- |
 | Setup window | `first-launch.md` | |
 | Menu bar panel | `dictation.md`, `first-launch.md` | |
+| Menu bar panel's queue of what waits to be pasted, the icon's clock | `pending-pastes.md` | Needs Messages and TextEdit |
+| Menu bar panel's results, stepped through with buttons and ← → | `browse-results.md` | |
 | Menu bar icon's right-click menu | `settings.md` | |
 | Recording overlay | `dictation.md` | |
 | Auto-paste and clipboard fallback | `dictation.md` | |

@@ -111,6 +111,20 @@ struct HistoryStoreTests {
         }
         #expect(try Data(contentsOf: index) == Data("not json".utf8))
     }
+
+    @Test func anEntryShowsAsTheOutcomeItWasKeptFrom() {
+        let cleaned = HistoryEntry(
+            createdAt: created, transcript: "äh hallo", cleaned: "Hallo.", hasAudio: false)
+        let plain = HistoryEntry(
+            createdAt: created, transcript: "hallo", cleaned: nil, hasAudio: false)
+        #expect(
+            DictationOutcome(entry: cleaned)
+                == DictationOutcome(transcript: "äh hallo", cleanup: .cleaned("Hallo.")))
+        #expect(DictationOutcome(entry: plain) == DictationOutcome(transcript: "hallo"))
+        #expect(
+            DictationOutcome(entry: plain, cleanupFailed: true)
+                == DictationOutcome(transcript: "hallo", cleanup: .failed))
+    }
 }
 
 struct WaveformTests {

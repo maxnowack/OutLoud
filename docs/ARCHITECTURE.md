@@ -29,7 +29,7 @@ Three targets (ADR 0013):
   dictations ended in or handed to the background (ADR 0027) one after
   another with it; `OptionCommandChord` decides the ⌥ ⌘ chord from the
   modifier flags, and `ReturnPaste` where and when a dictation that follows
-  its field is pasted, the platform
+  its field is pasted, and which ones wait, the platform
   reading the keys and the focused field; `AudioRecorder` captures the microphone as
   16 kHz mono samples; `HistoryStore` is the one owner of the history's
   files and `HistoryModel` presents them; `OutloudSettings` keeps the
@@ -170,7 +170,9 @@ not while a recording is held; the result is pasted with the same ⌘V only
 when element and identity equal the remembered ones. A dictation started
 in a field that already has one follows the next other field focused, and
 is copied when none was by its end (`ReturnPaste` in `OutloudKit`
-decides). Outloud never activates an app and posts no other key. Writing
+decides). Outloud never activates an app to paste and posts no other key;
+it activates another app only to hand the activation back when the user
+closes the menu bar panel (ADR 0028). Writing
 into an app in the background through Accessibility was measured and
 rejected (ADR 0026).
 

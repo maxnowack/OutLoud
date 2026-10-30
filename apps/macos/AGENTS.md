@@ -74,9 +74,16 @@ describe this area — read them before making changes here.
 - **(MUST)** Paste a dictation that follows its field only into the field
   it was recorded in — or, for one started in a field that already had
   one, the next other field focused —, while its app is in front and that
-  field — element and identity — has the focus; never activate an app and
-  post no key but ⌘V (ADR 0026, ADR 0027). A paste on a looser match lands
-  the user's words in another conversation.
+  field — element and identity — has the focus; never activate an app to
+  paste, and post no key but ⌘V (ADR 0026, ADR 0027). A paste on a looser
+  match lands the user's words in another conversation.
+- **(MUST NOT)** Activate any app without the user's interaction — not on
+  a timer, a focus check or a finished dictation. The one activation of
+  another app hands it back to the app that was in front when the user
+  opened the menu bar panel, as the user closes it (ADR 0028). An
+  activation the user did not cause is a focus change they did not make;
+  one that brings a waiting dictation's app forward pastes into it without
+  the user's return.
 
 ## Coding rules
 

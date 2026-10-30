@@ -171,6 +171,34 @@ cleanup fell back; a Copy button that turns into "Copied" with `success`
 for two seconds. Empty state: not shown. Accessibility: the text is read
 as is; the copy button has its own label.
 
+### ResultPager
+
+macOS: steps through the kept results, above the ResultCard. A small "‹"
+(`chevron.left`) and "›" (`chevron.right`) push button, and between them
+"2 of 12 · <date and time>" in `caption` and `textSecondary`; the newest
+result is 1, "›" goes back to an older one and "‹" forward to a newer one —
+the user's choice of 2026-10-30. A button at its end is disabled. The
+screen that shows it handles → and ← the same way. Accessibility: the
+buttons are "Newer result" and "Older result", with ← and → in their
+tooltips; the line is read as is.
+
+### PasteQueue
+
+macOS: the dictations that wait to be pasted (ADR 0027), oldest first,
+under "Waiting to paste" in `detail` and `textSecondary`. A row on
+`surface` with `radiusMedium` says where it goes — a clock in `accent` and
+"Into <app>" or "Into the next text field", in `caption` and
+`textSecondary` —, then the text in `body`, at most three lines, or a small
+spinner and "Processing…" in `detail` and `textSecondary` while it is
+processed; below, at the trailing edge, the small push buttons "Copy",
+once there is text, and "Don't Paste". Copy puts the text on the clipboard and takes the dictation
+out of the queue: the row stays for two seconds with "Copied" and a check
+mark in `success` instead of its buttons, then goes. Don't Paste takes it
+out at once. Empty state: not shown. Accessibility: the target and the
+text — or "Processing…" — are read as one element; the buttons have their
+labels and say in their tooltips that Outloud then no longer pastes the
+text; "Copied" is announced.
+
 ### DictationLiveActivity
 
 iOS: a dictation started from another app (ADR 0022), in the Dynamic Island
@@ -305,9 +333,19 @@ design canvas outside the repository on 2026-10-23.
 
 ## Screens
 
+- **macOS menu bar icon** — a template symbol that follows the state:
+  `waveform`, `record.circle` while recording, `ellipsis.circle` while a
+  dictation is processed in sight, `exclamationmark.circle` after a
+  failure, and `clock` while dictations wait to be pasted and none of
+  these applies — with "Dictations wait to be pasted" as its accessibility
+  value.
 - **macOS menu bar panel** — a popover under the menu bar icon, opened by
-  a click: StatusIndicator, ResultCard, FailureNotice and one push button,
-  "History…". A right-click (or ⌃-click) on the icon opens a menu instead:
+  a click: StatusIndicator, FailureNotice, the PasteQueue, the ResultPager
+  over the ResultCard — the newest kept result each time the panel opens,
+  or the last result without the pager while the history keeps nothing —
+  and one push button, "History…". Opening it makes Outloud the active app,
+  so that ← and → reach the pager; closing it hands the activation back to
+  the app that had it. A right-click (or ⌃-click) on the icon opens a menu instead:
   "Settings…" (⌘,), "Check for Updates…", "Quit Outloud" (⌘Q); the settings
   open in a window of their own.
 - **macOS recording overlay** — a Liquid Glass capsule (AppKit's

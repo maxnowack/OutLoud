@@ -19,6 +19,7 @@ change; the authoritative status description always lives in the plan's own
 | `PAUSE_PLAYBACK_WHILE_DICTATING.md` | Pausing what plays while a dictation records, on the Mac and the iPhone | Built; the run with the user open |
 | `AUTOMATIC_PASTE_ON_RETURN.md` | Every dictation on macOS follows its field: leaving it sends it to the background, the text is pasted on the return (ADR 0027) | In progress |
 | `TRANSCRIPTION_PROGRESS.md` | A progress bar while transcribing, in both apps and the Live Activity | Built; the run with the user open |
+| `PANEL_QUEUE_AND_RESULTS.md` | The macOS menu bar panel lists what waits to be pasted, and steps through the results | Built (ADR 0028); the run with the user open |
 
 ## Implemented (`plans/done/`)
 

@@ -208,11 +208,27 @@ Rules:
   for which an earlier one is still processed or waits goes into the next
   other text field the user focuses; when it is done before the user
   focused one, it is copied. Dictations of different fields wait side by
-  side. No Enter is pressed, and Outloud never brings an app to the front;
+  side. No Enter is pressed, and Outloud never brings an app to the front
+  to paste;
   every result stays in the history. Without Accessibility access or a
   text field at the start, or with auto-paste off, the result is delivered
   at its end as above, and copied when a new recording sent it out of
   sight.
+- **What waits**: while dictations wait to be pasted, the menu bar panel
+  lists them, oldest first — where each goes ("Into <app>", "Into the next
+  text field") and its text, or "Processing…" while it is processed —, and
+  the menu bar icon shows a clock. "Copy" puts a text on the clipboard and
+  takes it out: Outloud no longer pastes it. "Don't Paste" takes a
+  dictation out, also while it is processed; it is still processed and
+  kept in the history.
+- **The panel's results**: the menu bar panel shows the newest kept result
+  each time it opens; "›" or → steps back to an older one, "‹" or ← forward
+  to a newer one, and a line says which one it is ("2 of 12") and when it
+  was made.
+  While the history keeps nothing, the panel shows the last result. Outloud
+  is the active app while the panel is open, and hands the activation back
+  to the app that had it when the user closes the panel — the one time it
+  activates another app, and never without the user's action (ADR 0028).
 
 Acceptance criteria:
 
@@ -236,13 +252,21 @@ Acceptance criteria:
   processed, is pasted into that chat on the return to it, and not into
   another chat of the same app; a second dictation can start while the
   first is still processed, without a further key (ADR 0027).
+- With two dictations waiting, the menu bar panel lists both with their
+  apps and texts; one copied there is on the clipboard and not pasted on
+  the return to its field, one marked "Don't Paste" is not pasted either,
+  and both are in the history.
+- The menu bar panel steps through the kept results with its buttons and
+  with ← and →, and opens on the newest; closing it leaves the user in the
+  app they came from.
 
 Acceptance criteria are proposals written on 2026-10-23 from the rules
 above, while the user was away (`plans/FIRST_VERSION.md` §"Decisions for
 the user").
 
 Verified by: `apps/macos/e2e/dictation.md`, `apps/macos/e2e/settings.md`,
-`apps/macos/e2e/paste-on-return.md`.
+`apps/macos/e2e/paste-on-return.md`, `apps/macos/e2e/pending-pastes.md`,
+`apps/macos/e2e/browse-results.md`.
 
 ### Cleanup
 
