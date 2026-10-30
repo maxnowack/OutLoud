@@ -105,15 +105,82 @@ public struct DictationPipeline: Sendable {
     /// up; one with well under half its words means it dropped what was said, as it does with a
     /// request that follows a statement. Neither is used. The slack of a few words lets a short
     /// text lose a corrected passage. Nor is one that repeats a passage the transcript holds
-    /// once: the model lost its place and wrote it again, and what it skipped is lost.
+    /// once: the model lost its place and wrote it again, and what it skipped is lost. Nor is
+    /// one that lacks a passage of the transcript that was neither fillers nor corrected, as
+    /// when the model runs an unfinished sentence into the next one.
     static func isUsable(_ cleaned: String, for transcript: String) -> Bool {
         !cleaned.isEmpty && cleaned.count <= transcript.count * 3 / 2 + 40
             && wordCount(of: cleaned) * 2 + 6 >= wordCount(of: transcript)
             && !repeatsPassage(cleaned, beyond: transcript)
+            && !dropsPassage(of: transcript, from: cleaned)
     }
 
     private static func wordCount(of text: String) -> Int {
         text.split(whereSeparator: \.isWhitespace).count
+    }
+
+    /// The words of a text, compared without case and punctuation.
+    private static func comparableWords(in text: String) -> [String] {
+        text.split(whereSeparator: \.isWhitespace)
+            .map { $0.trimmingCharacters(in: .punctuationCharacters).lowercased() }
+            .filter { !$0.isEmpty }
+    }
+
+    /// The words of the fillers the prompt deletes, and "also" at the start of a sentence.
+    private static let fillerWords = Set(
+        (CleanupPrompt.englishFillers + CleanupPrompt.germanFillers + ["also"])
+            .flatMap(comparableWords))
+    private static let corrections =
+        (CleanupPrompt.englishCorrections
+        + CleanupPrompt.germanCorrections).map(comparableWords)
+
+    /// Whether `cleaned` lacks four words in a row of `transcript`, not counting fillers, that
+    /// no correction phrase in or right after them explains. The words are paired in order as
+    /// the texts' longest common subsequence, so a word kept elsewhere does not count as kept.
+    private static func dropsPassage(of transcript: String, from cleaned: String) -> Bool {
+        let said = comparableWords(in: transcript)
+        let longestCorrection = corrections.map(\.count).max() ?? 0
+        return gaps(in: said, against: comparableWords(in: cleaned)).contains { gap in
+            let around = said[gap.lowerBound..<min(gap.upperBound + longestCorrection, said.count)]
+            let corrected = corrections.contains { phrase in
+                around.indices.contains { around[$0...].starts(with: phrase) }
+            }
+            return !corrected && said[gap].filter { !fillerWords.contains($0) }.count >= 4
+        }
+    }
+
+    /// The stretches of `said` without a counterpart in `kept` when both are paired in order as
+    /// their longest common subsequence.
+    private static func gaps(in said: [String], against kept: [String]) -> [Range<Int>] {
+        // common[i][j]: the length of the longest common subsequence of said[i...] and kept[j...]
+        var common = Array(
+            repeating: Array(repeating: 0, count: kept.count + 1), count: said.count + 1)
+        for i in said.indices.reversed() {
+            for j in kept.indices.reversed() {
+                common[i][j] =
+                    said[i] == kept[j]
+                    ? common[i + 1][j + 1] + 1 : max(common[i + 1][j], common[i][j + 1])
+            }
+        }
+        var gaps: [Range<Int>] = []
+        var gapStart: Int?
+        var i = 0
+        var j = 0
+        while i < said.count {
+            if j < kept.count, said[i] == kept[j] {
+                if let start = gapStart { gaps.append(start..<i) }
+                gapStart = nil
+                i += 1
+                j += 1
+            } else if j < kept.count, common[i][j + 1] > common[i + 1][j] {
+                j += 1
+            } else {
+                if gapStart == nil { gapStart = i }
+                i += 1
+            }
+        }
+        if let start = gapStart { gaps.append(start..<said.count) }
+        return gaps
     }
 
     /// Whether a run of five words occurs more than once in `cleaned` and more often than in
@@ -128,9 +195,7 @@ public struct DictationPipeline: Sendable {
 
     /// How often each run of five words occurs, compared without case and punctuation.
     private static func runsOfFiveWords(in text: String) -> [String: Int] {
-        let words = text.split(whereSeparator: \.isWhitespace)
-            .map { $0.trimmingCharacters(in: .punctuationCharacters).lowercased() }
-            .filter { !$0.isEmpty }
+        let words = comparableWords(in: text)
         guard words.count >= 5 else { return [:] }
         var counts: [String: Int] = [:]
         for start in 0...(words.count - 5) {

@@ -64,6 +64,17 @@ sentence before the model reads it, and the reported text comes out whole.
 As a safety net, a result in which a run of five words occurs more than
 once and more often than in the text the model read is discarded.
 
+Further (2026-10-30), on 21 inputs (the ten of phase 1 rebuilt, the two
+dropped requests, the reported text and three variants, four sentences
+with softening words, a second filler text) through the real pipeline:
+- With a comma after "so eine", the model ran the unfinished sentence
+  into the next one and lost a clause, with no repetition. A result that
+  lacks four words in a row of the text the model read — not counting the
+  prompt's fillers, and not where a correction phrase explains it — is now
+  discarded; it caught this result, and none of the 20 right ones. The
+  fillers and corrections are now constants the prompt lists and the
+  check reads.
+
 ## Problem
 
 The cleanup runs Qwen 3.5 (0.8B or 4B) with llama.cpp on the GPU

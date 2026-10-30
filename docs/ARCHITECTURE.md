@@ -104,7 +104,10 @@ the transcript becomes the result — when it times out (20 s), is empty,
 is much longer than the transcript, keeps well under half of its words
 (the model dropped a request that followed a statement), repeats a run of
 five words more often than the transcript (the model lost its place and
-wrote a passage again), or the model refuses (`CleanerError`:
+wrote a passage again), lacks four words in a row of the transcript that
+are neither fillers of the prompt nor explained by one of its correction
+phrases — the words paired in order as the longest common subsequence —
+(the model ran an unfinished sentence into the next one), or the model refuses (`CleanerError`:
 in the background Apple limits how often an app may use it); transcripts
 over 4,000 characters are not cleaned up. The prompt's test inputs and
 results are in `plans/APPLE_CLEANUP.md`.

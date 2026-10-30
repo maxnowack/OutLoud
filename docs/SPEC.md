@@ -297,7 +297,7 @@ Verified by: `apps/macos/e2e/dictation.md`, `apps/macos/e2e/settings.md`,
   expected duration has passed. On iOS the Live Activity shows both too. Text from
   system dictation and the debug seams show none.
 - When cleanup fails — the model times out after 20 s, answers instead
-  of cleaning up, drops much of what was said, repeats a passage, refuses (in the background, Apple limits how often an
+  of cleaning up, drops much of what was said or a passage of it, repeats a passage, refuses (in the background, Apple limits how often an
   app may use it, above all on battery; a language it does not support),
   or the text is longer than 4,000 characters — the transcript is the
   result, and the result view says "Cleanup failed — this is the

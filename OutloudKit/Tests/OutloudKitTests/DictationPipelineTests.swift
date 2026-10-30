@@ -94,6 +94,52 @@ struct DictationPipelineTests {
         #expect(outcome == DictationOutcome(transcript: transcript, cleanup: .failed))
     }
 
+    @Test func refusesACleanupThatRunsASentenceIntoTheNext() async throws {
+        let transcript = """
+            Wichtig ist natürlich, dass diese Aufgabe auch getauscht werden kann und dann muss die \
+            Aufgabe, die gerade getauscht wurde, abgeschlossen sein. Also das ist dann quasi so \
+            eine, also da kommt dann keine neue Aufgabe, sondern dann ist einfach die Aufgabe, \
+            dass eine Aufgabe getauscht werden muss, abgeschlossen.
+            """
+        let merged = """
+            Wichtig ist natürlich, dass diese Aufgabe auch getauscht werden kann und dann muss die \
+            Aufgabe, die gerade getauscht wurde, abgeschlossen sein. Das ist dann quasi eine \
+            Aufgabe, dass eine Aufgabe getauscht werden muss, abgeschlossen ist.
+            """
+        let pipeline = DictationPipeline(
+            transcriber: FixedTranscriber(text: transcript),
+            cleaner: FixedCleaner(output: .success(merged)))
+        let outcome = try await pipeline.run(samples: speech)
+        #expect(outcome == DictationOutcome(transcript: transcript, cleanup: .failed))
+    }
+
+    @Test(arguments: [
+        (
+            "the report is late because of the numbers scratch that the report is ready",
+            "The report is ready."
+        ),
+        (
+            "so like you know basically literally we could meet on friday",
+            "So we could meet on Friday."
+        ),
+        (
+            "the meeting is on march third at two thirty pm",
+            "The meeting is on March 3rd at 2:30 pm."
+        ),
+        (
+            "und die kommt so lange bis man das das erste Mal gemacht hat",
+            "Und die kommt so lange, bis man die Aufgabe das erste Mal gemacht hat."
+        ),
+    ])
+    func keepsACleanupThatLosesOnlyFillersCorrectionsAndFormatting(
+        transcript: String, cleaned: String
+    ) async throws {
+        let pipeline = DictationPipeline(
+            transcriber: FixedTranscriber(text: transcript),
+            cleaner: FixedCleaner(output: .success(cleaned)))
+        #expect(try await pipeline.run(samples: speech).cleanup == .cleaned(cleaned))
+    }
+
     @Test func listsFillersAndCorrectionsInThePrompt() {
         #expect(
             CleanupPrompt.system.contains(
