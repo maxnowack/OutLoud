@@ -37,6 +37,8 @@ Setup completed; microphone allowed (simulator: `xcrun simctl privacy booted gra
    sein. Also das ist dann quasi so eine. Also da kommt dann keine neue Aufgabe, sondern die
    Aufgabe ist einfach abgeschlossen." The result holds every sentence once, the last one
    included, and neither starts with "Also"; no sentence is repeated.
+10. Softening words: dictate "Ich hab das halt quasi schon gemacht" and "It is sort of done and
+   kind of works". The results keep "quasi schon", "sort of" and "kind of".
 
 ## Assertions
 

@@ -9,12 +9,8 @@ import Foundation
 /// paragraph rule, and without the rules that rely on screen (OCR) context.
 public enum CleanupPrompt {
     /// The filler words rule 1 deletes.
-    static let englishFillers = [
-        "um", "uh", "er", "like", "you know", "basically", "literally", "sort of", "kind of",
-    ]
-    static let germanFillers = [
-        "äh", "ähm", "öhm", "hm", "halt", "quasi", "sozusagen", "irgendwie", "ne", "gell",
-    ]
+    static let englishFillers = ["um", "uh", "er", "like", "you know", "basically", "literally"]
+    static let germanFillers = ["äh", "ähm", "öhm", "hm", "halt", "ne", "gell"]
     /// The phrases with which a speaker corrects what they said (rule 2).
     static let englishCorrections = ["scratch that", "never mind", "no wait", "let me start over"]
     static let germanCorrections = [
@@ -106,6 +102,14 @@ public enum CleanupPrompt {
         (
             "the release went fine and the numbers look good completely different topic the office is closed on monday",
             "The release went fine and the numbers look good.\n\nCompletely different topic: the office is closed on Monday."
+        ),
+        (
+            "das ist quasi fertig ne ich muss halt nur noch halt die tests schreiben",
+            "Das ist quasi fertig, ich muss nur noch die Tests schreiben."
+        ),
+        (
+            "it sort of works but you know the layout is kind of off",
+            "It sort of works, but the layout is kind of off."
         ),
     ]
 

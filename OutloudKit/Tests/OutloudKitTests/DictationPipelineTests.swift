@@ -147,7 +147,7 @@ struct DictationPipelineTests {
             ))
         #expect(
             CleanupPrompt.system.contains(
-                "German: äh, ähm, öhm, hm, halt, quasi, sozusagen, irgendwie, ne, gell, and \"also\" at the start of a sentence.\n2."
+                "German: äh, ähm, öhm, hm, halt, ne, gell, and \"also\" at the start of a sentence.\n2."
             ))
     }
 

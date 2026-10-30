@@ -74,6 +74,14 @@ with softening words, a second filler text) through the real pipeline:
   discarded; it caught this result, and none of the 20 right ones. The
   fillers and corrections are now constants the prompt lists and the
   check reads.
+- Rule 1 had the model delete "quasi", "sozusagen", "irgendwie", "sort
+  of" and "kind of", which changes what was said ("quasi fertig" →
+  "fertig"; one result also lost "schon"). Before: all four sentences lost
+  them. Listing them as words to keep made it worse ("so eine" → "so");
+  dropping them from the list alone changed little. Dropping them and
+  adding a German and an English example that keep them while deleting
+  "halt", "ne" and "you know" keeps them in all four; "halt" now stays in
+  two of four texts.
 
 ## Problem
 

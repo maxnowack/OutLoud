@@ -273,7 +273,9 @@ Verified by: `apps/macos/e2e/dictation.md`, `apps/macos/e2e/settings.md`,
 - Cleanup is optional.
 - It fixes punctuation, removes filler words and sets paragraphs, in
   German and English.
-- It does not change the content.
+- It does not change the content. Words that soften a statement ("quasi",
+  "irgendwie", "sort of", "kind of") stay: without them, "quasi fertig"
+  would read as "fertig".
 - The default cleanup prompt starts from ghost-pepper's
   (`plans/done/CONCEPT.md` §"Prior art") and is multilingual: its filler words
   and self-correction phrases cover every language Outloud supports, not
