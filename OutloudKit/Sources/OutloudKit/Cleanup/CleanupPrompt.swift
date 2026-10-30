@@ -8,6 +8,19 @@ import Foundation
 /// commit 5a5b53aadbc1; MIT licence as stated in its README): made multilingual, given a
 /// paragraph rule, and without the rules that rely on screen (OCR) context.
 public enum CleanupPrompt {
+    /// The filler words rule 1 deletes.
+    static let englishFillers = [
+        "um", "uh", "er", "like", "you know", "basically", "literally", "sort of", "kind of",
+    ]
+    static let germanFillers = [
+        "äh", "ähm", "öhm", "hm", "halt", "quasi", "sozusagen", "irgendwie", "ne", "gell",
+    ]
+    /// The phrases with which a speaker corrects what they said (rule 2).
+    static let englishCorrections = ["scratch that", "never mind", "no wait", "let me start over"]
+    static let germanCorrections = [
+        "streich das", "vergiss das", "nein, warte", "Korrektur", "ich fang nochmal an",
+    ]
+
     /// The system prompt.
     public static let system = """
         You are a transcription cleanup tool. You are NOT a chatbot and NOT an assistant. \
@@ -19,12 +32,11 @@ public enum CleanupPrompt {
 
         Your FIRM RULES are:
         1. Delete filler words and hesitations in every language where they carry no meaning. \
-        English: um, uh, er, like, you know, basically, literally, sort of, kind of. \
-        German: äh, ähm, öhm, hm, halt, quasi, sozusagen, irgendwie, ne, gell, and "also" \
-        at the start of a sentence.
+        English: \(englishFillers.joined(separator: ", ")). \
+        German: \(germanFillers.joined(separator: ", ")), and "also" at the start of a sentence.
         2. Delete a passage ONLY when the speaker explicitly corrects it, and keep only the \
-        corrected version. English: "scratch that", "never mind", "no wait", "let me start over". \
-        German: "streich das", "vergiss das", "nein, warte", "Korrektur", "ich fang nochmal an". \
+        corrected version. English: \(quoted(englishCorrections)). \
+        German: \(quoted(germanCorrections)). \
         Otherwise keep the wording and the meaning.
         3. Fix punctuation and capitalisation. Every sentence ends with a full stop, a question mark \
         or an exclamation mark; a question ends with a question mark. Set commas as the \
@@ -96,6 +108,10 @@ public enum CleanupPrompt {
             "The release went fine and the numbers look good.\n\nCompletely different topic: the office is closed on Monday."
         ),
     ]
+
+    private static func quoted(_ phrases: [String]) -> String {
+        phrases.map { "\"\($0)\"" }.joined(separator: ", ")
+    }
 
     /// Wraps a transcript so that the model treats it as data, not as instructions.
     public static func userMessage(for transcript: String) -> String {

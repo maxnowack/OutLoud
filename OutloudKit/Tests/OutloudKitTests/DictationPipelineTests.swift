@@ -94,6 +94,17 @@ struct DictationPipelineTests {
         #expect(outcome == DictationOutcome(transcript: transcript, cleanup: .failed))
     }
 
+    @Test func listsFillersAndCorrectionsInThePrompt() {
+        #expect(
+            CleanupPrompt.system.contains(
+                #"German: "streich das", "vergiss das", "nein, warte", "Korrektur", "ich fang nochmal an"."#
+            ))
+        #expect(
+            CleanupPrompt.system.contains(
+                "German: äh, ähm, öhm, hm, halt, quasi, sozusagen, irgendwie, ne, gell, and \"also\" at the start of a sentence.\n2."
+            ))
+    }
+
     @Test func keepsARepetitionThatWasSaid() async throws {
         let pipeline = DictationPipeline(
             transcriber: FixedTranscriber(
