@@ -75,6 +75,36 @@ struct DictationPipelineTests {
         #expect(outcome == DictationOutcome(transcript: transcript, cleanup: .failed))
     }
 
+    @Test func refusesACleanupThatRepeatsAPassage() async throws {
+        let transcript = """
+            Wichtig ist natürlich, dass diese Aufgabe auch getauscht werden kann und dann muss die \
+            Aufgabe, die gerade getauscht wurde, abgeschlossen sein. Also das ist dann quasi so \
+            eine., also da kommt dann keine neue Aufgabe, sondern dann ist einfach die Aufgabe, \
+            dass eine Aufgabe getauscht werden muss, abgeschlossen.
+            """
+        let repeated = """
+            Wichtig ist natürlich, dass diese Aufgabe auch getauscht werden kann und dann muss die \
+            Aufgabe, die gerade getauscht wurde, abgeschlossen sein. Das ist dann quasi so eine. \
+            Das ist dann quasi so eine.
+            """
+        let pipeline = DictationPipeline(
+            transcriber: FixedTranscriber(text: transcript),
+            cleaner: FixedCleaner(output: .success(repeated)))
+        let outcome = try await pipeline.run(samples: speech)
+        #expect(outcome == DictationOutcome(transcript: transcript, cleanup: .failed))
+    }
+
+    @Test func keepsARepetitionThatWasSaid() async throws {
+        let pipeline = DictationPipeline(
+            transcriber: FixedTranscriber(
+                text: "nein nein nein nein nein nein das geht so nicht"),
+            cleaner: FixedCleaner(
+                output: .success("Nein, nein, nein, nein, nein, nein, das geht so nicht.")))
+        #expect(
+            try await pipeline.run(samples: speech).cleanup
+                == .cleaned("Nein, nein, nein, nein, nein, nein, das geht so nicht."))
+    }
+
     @Test func keepsACleanupThatRemovesFillersAndACorrection() async throws {
         let pipeline = DictationPipeline(
             transcriber: FixedTranscriber(

@@ -93,13 +93,18 @@ cellular data.
 
 Before the cleanup model sees a transcript, `HesitationFilter` removes
 hesitation sounds ("äh", "uh"; "um" and "er" only where a comma sets them
-off, since they are German words). Each cleanup opens a fresh session whose
+off, since they are German words) and, in a German text (by
+`NLLanguageRecognizer`), "also" at the start of a sentence: the model,
+left to drop it at the start of two sentences in a row, repeats the first.
+Each cleanup opens a fresh session whose
 transcript holds the instructions of `CleanupPrompt` and the worked
 examples as earlier turns; the transcript follows, framed as
 `<USER-INPUT>`, answered with greedy sampling. The answer is discarded —
 the transcript becomes the result — when it times out (20 s), is empty,
 is much longer than the transcript, keeps well under half of its words
-(the model dropped a request that followed a statement), or the model refuses (`CleanerError`:
+(the model dropped a request that followed a statement), repeats a run of
+five words more often than the transcript (the model lost its place and
+wrote a passage again), or the model refuses (`CleanerError`:
 in the background Apple limits how often an app may use it); transcripts
 over 4,000 characters are not cleaned up. The prompt's test inputs and
 results are in `plans/APPLE_CLEANUP.md`.

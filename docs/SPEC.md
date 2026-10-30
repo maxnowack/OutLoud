@@ -282,7 +282,7 @@ Verified by: `apps/macos/e2e/dictation.md`, `apps/macos/e2e/settings.md`,
 - The prompt's rules about screen (OCR) context are left out, because
   Outloud does not read the screen.
 - Hesitation sounds ("äh", "ähm", "uh") are removed before the model sees
-  the transcript.
+  the transcript, and so is "also" at the start of a German sentence.
 - Cleanup runs on Apple's on-device model (ADR 0019), also while the iOS
   app is in the background. It is available where the device supports
   Apple Intelligence and the user switched it on; elsewhere the cleanup
@@ -297,7 +297,7 @@ Verified by: `apps/macos/e2e/dictation.md`, `apps/macos/e2e/settings.md`,
   expected duration has passed. On iOS the Live Activity shows both too. Text from
   system dictation and the debug seams show none.
 - When cleanup fails — the model times out after 20 s, answers instead
-  of cleaning up, drops much of what was said, refuses (in the background, Apple limits how often an
+  of cleaning up, drops much of what was said, repeats a passage, refuses (in the background, Apple limits how often an
   app may use it, above all on battery; a language it does not support),
   or the text is longer than 4,000 characters — the transcript is the
   result, and the result view says "Cleanup failed — this is the

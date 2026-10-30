@@ -32,6 +32,11 @@ Setup completed; microphone allowed (simulator: `xcrun simctl privacy booted gra
    the music pauses while recording and plays on afterwards (if the player resumes). Run the
    shortcut from another app with music playing: the music turns down while recording; with a
    podcast playing, it pauses. Turn the setting off: playback goes on unchanged in both.
+9. Two sentences in a row starting with "also": dictate "Wichtig ist, dass diese Aufgabe
+   getauscht werden kann und dann muss die Aufgabe, die gerade getauscht wurde, abgeschlossen
+   sein. Also das ist dann quasi so eine. Also da kommt dann keine neue Aufgabe, sondern die
+   Aufgabe ist einfach abgeschlossen." The result holds every sentence once, the last one
+   included, and neither starts with "Also"; no sentence is repeated.
 
 ## Assertions
 

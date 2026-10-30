@@ -53,6 +53,17 @@ out whole, and the injection and correction inputs still behave. As a
 safety net, a result with well under half the words of the text the model
 read (twice its words plus six) is discarded and the transcript used.
 
+Addendum (2026-10-30): when two sentences in a row began with "also"
+("… Also das ist dann quasi so eine. also da kommt dann keine neue
+Aufgabe …"), the model dropped the first, lost its place at the second,
+wrote the first sentence again and stopped, losing the rest; in a variant
+it repeated the sentence until the context was full. Either "also" alone,
+or none, came out whole; the punctuation and the text's length did not
+matter. `HesitationFilter` now removes "also" at the start of a German
+sentence before the model reads it, and the reported text comes out whole.
+As a safety net, a result in which a run of five words occurs more than
+once and more often than in the text the model read is discarded.
+
 ## Problem
 
 The cleanup runs Qwen 3.5 (0.8B or 4B) with llama.cpp on the GPU

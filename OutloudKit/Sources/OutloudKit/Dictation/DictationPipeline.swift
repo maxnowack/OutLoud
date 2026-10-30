@@ -104,13 +104,38 @@ public struct DictationPipeline: Sendable {
     /// empty or much longer than the text the model read means it answered instead of cleaning
     /// up; one with well under half its words means it dropped what was said, as it does with a
     /// request that follows a statement. Neither is used. The slack of a few words lets a short
-    /// text lose a corrected passage.
+    /// text lose a corrected passage. Nor is one that repeats a passage the transcript holds
+    /// once: the model lost its place and wrote it again, and what it skipped is lost.
     static func isUsable(_ cleaned: String, for transcript: String) -> Bool {
         !cleaned.isEmpty && cleaned.count <= transcript.count * 3 / 2 + 40
             && wordCount(of: cleaned) * 2 + 6 >= wordCount(of: transcript)
+            && !repeatsPassage(cleaned, beyond: transcript)
     }
 
     private static func wordCount(of text: String) -> Int {
         text.split(whereSeparator: \.isWhitespace).count
+    }
+
+    /// Whether a run of five words occurs more than once in `cleaned` and more often than in
+    /// `transcript`. Removing fillers joins words into runs the transcript lacks, so only a
+    /// repeated run counts.
+    private static func repeatsPassage(_ cleaned: String, beyond transcript: String) -> Bool {
+        let inTranscript = runsOfFiveWords(in: transcript)
+        return runsOfFiveWords(in: cleaned).contains { run, count in
+            count > 1 && count > inTranscript[run, default: 0]
+        }
+    }
+
+    /// How often each run of five words occurs, compared without case and punctuation.
+    private static func runsOfFiveWords(in text: String) -> [String: Int] {
+        let words = text.split(whereSeparator: \.isWhitespace)
+            .map { $0.trimmingCharacters(in: .punctuationCharacters).lowercased() }
+            .filter { !$0.isEmpty }
+        guard words.count >= 5 else { return [:] }
+        var counts: [String: Int] = [:]
+        for start in 0...(words.count - 5) {
+            counts[words[start..<start + 5].joined(separator: " "), default: 0] += 1
+        }
+        return counts
     }
 }

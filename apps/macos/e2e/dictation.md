@@ -57,6 +57,11 @@ is not. TextEdit is open with an empty document focused.
    Each dictation records and is transcribed, the log of `dev.nowack.outloud` holds no
    "Format mismatch" from AVFAudio, and clicking the menu bar icon afterwards opens the panel —
    the app does not crash.
+12. Two sentences in a row starting with "also": dictate "Wichtig ist, dass diese Aufgabe
+   getauscht werden kann und dann muss die Aufgabe, die gerade getauscht wurde, abgeschlossen
+   sein. Also das ist dann quasi so eine. Also da kommt dann keine neue Aufgabe, sondern die
+   Aufgabe ist einfach abgeschlossen." The result holds every sentence once, the last one
+   included, and neither starts with "Also"; no sentence is repeated.
 
 ## Assertions
 
