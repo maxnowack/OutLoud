@@ -1,9 +1,10 @@
 /// The ⌥ ⌘ push-to-talk chord of the macOS app, decided from the modifier flags of every key
 /// event (ADR 0020, ADR 0021).
 ///
-/// ⌥ ⌘ held alone records. ⇧ or ⌃ joining it cancels at any time; another key cancels within
-/// `shortcutWindow` of the press, since it makes a shortcut such as ⌥ ⌘ D. The second ⌘ or ⌥ —
-/// the one on the other side of the keyboard — changes nothing (ADR 0027).
+/// ⌥ ⌘ held alone records. ⌃ joining it cancels at any time; ⇧ or another key cancels within
+/// `shortcutWindow` of the press, since it makes a shortcut such as ⌥ ⌘ D, and is typed after it
+/// (ADR 0029). The second ⌘ or ⌥ — the one on the other side of the keyboard — changes nothing
+/// (ADR 0027).
 public struct OptionCommandChord: Sendable {
     public enum Event: Equatable, Sendable { case pressed, released, cancelled }
 
@@ -24,6 +25,13 @@ public struct OptionCommandChord: Sendable {
     private var spoiled = false
     private var pressedAt: ContinuousClock.Instant?
 
+    /// While the chord is held: from when keys and ⇧ are typed rather than make a shortcut, and
+    /// reach the app without ⌥ and ⌘ (ADR 0029).
+    public var typingStarts: ContinuousClock.Instant? {
+        guard isPressed, let pressedAt else { return nil }
+        return pressedAt + Self.shortcutWindow
+    }
+
     public init() {}
 
     /// The flags of a `flagsChanged` event, as `NSEvent.ModifierFlags.rawValue`.
@@ -39,7 +47,11 @@ public struct OptionCommandChord: Sendable {
             return .pressed
         }
         if modifiers & chord == chord {
-            // ⇧ or ⌃ joined ⌥ ⌘: a shortcut, at any time.
+            // ⇧ joined ⌥ ⌘ to type a capital, once keys are typed.
+            if modifiers == chord | Self.shift, let typingStarts, now >= typingStarts {
+                return nil
+            }
+            // ⌃ at any time, or ⇧ early: a shortcut.
             return cancel()
         }
         spoiled = false
@@ -50,7 +62,7 @@ public struct OptionCommandChord: Sendable {
 
     /// A key other than a modifier went down.
     public mutating func keyPressed(at now: ContinuousClock.Instant) -> Event? {
-        guard isPressed, let pressedAt, now - pressedAt < Self.shortcutWindow else { return nil }
+        guard let typingStarts, now < typingStarts else { return nil }
         return cancel()
     }
 

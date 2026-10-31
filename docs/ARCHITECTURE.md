@@ -184,6 +184,16 @@ closes the menu bar panel (ADR 0028). Writing
 into an app in the background through Accessibility was measured and
 rejected (ADR 0026).
 
+### Keys typed while ⌥ ⌘ is held (macOS)
+
+While the ⌥ ⌘ chord is held and its first second has passed, an event tap
+at the HID level takes ⌥ and ⌘ off every key-down and key-up event, so that
+the user's typing reaches their app as text (ADR 0029). The tap is enabled
+only for that time — an active tap holds every keystroke until Outloud's
+main thread answers —, changes nothing but those flags, posts no key and
+reads no character. `OptionCommandChord` decides from when keys are typed;
+`HotkeyMonitor` turns the tap on and off.
+
 ### Model downloads
 
 Model files come from outside and are loaded into the model runtimes. On

@@ -173,10 +173,11 @@ Rules:
 - Focus changes, protected fields and hotkey conflicts limit how reliably
   auto-paste works.
 - The push-to-talk hotkey is ⌥ ⌘, held alone, by default (ADR 0020);
-  ⌥ Space, ⌃ ⌥ Space and ⇧ ⌥ Space can be chosen instead. ⇧ or ⌃ joining
-  ⌥ ⌘ cancels the recording at any time; another key cancels it within
-  the first second — a shortcut such as ⌥ ⌘ D —, later it is typed as
-  usual and the recording goes on (ADR 0021). ⌥ ⌘ needs Accessibility
+  ⌥ Space, ⌃ ⌥ Space and ⇧ ⌥ Space can be chosen instead. ⌃ joining
+  ⌥ ⌘ cancels the recording at any time; ⇧ or another key cancels it
+  within the first second — a shortcut such as ⌥ ⌘ D —, later the keys
+  are typed as if ⌥ and ⌘ were not held — Space a space, ⇧ a capital —
+  and the recording goes on (ADR 0021, ADR 0029). ⌥ ⌘ needs Accessibility
   access; until it is allowed, ⌥ Space works instead, and the settings say
   so and offer to allow it. A press shorter than a quarter second records
   nothing. When another app holds the shortcut, Outloud says so.
@@ -235,6 +236,9 @@ Acceptance criteria:
 - Holding the hotkey shows a wave that follows the voice, without taking
   the focus from the app the user types in; releasing it pastes the result there when
   Accessibility is allowed and a text field is focused.
+- With ⌥ ⌘ held for more than a second, typing "Hallo Welt" with Space
+  and ⇧ types it into the focused field, opens no Finder search, and the
+  recording goes on until ⌥ or ⌘ is released.
 - Without Accessibility, or without a text field, the result is on the
   clipboard and the overlay says so.
 - The menu bar panel shows the state and the last result with a copy

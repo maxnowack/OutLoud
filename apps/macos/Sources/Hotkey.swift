@@ -51,6 +51,11 @@ final class HotkeyMonitor {
     private var hotKey: EventHotKeyRef?
     private var handler: EventHandlerRef?
     private var eventMonitors: [Any] = []
+    /// Takes ⌥ and ⌘ off the keys typed while the chord is held past its first second (ADR 0029);
+    /// enabled only for that time.
+    private var typingTap: (port: CFMachPort, source: CFRunLoopSource)?
+    /// Enables `typingTap` once the held chord's keys are typed.
+    private var typing: Task<Void, Never>?
     /// Whether the Carbon hot key is held.
     private var isPressed = false
     private var chord = OptionCommandChord()
@@ -81,6 +86,12 @@ final class HotkeyMonitor {
         hotKey = nil
         eventMonitors.forEach(NSEvent.removeMonitor)
         eventMonitors = []
+        stopTyping()
+        if let typingTap {
+            CFMachPortInvalidate(typingTap.port)
+            CFRunLoopRemoveSource(CFRunLoopGetMain(), typingTap.source, .commonModes)
+        }
+        typingTap = nil
         if let event = chord.reset() { onEvent(event) }
         if isPressed {
             isPressed = false
@@ -142,13 +153,13 @@ final class HotkeyMonitor {
             Task { @MainActor in
                 guard let self else { return }
                 guard let event = self.chord.modifiersChanged(modifiers, at: .now) else { return }
-                self.onEvent(event)
+                self.chordChanged(event)
             }
         }
         let keys: (NSEvent) -> Void = { [weak self] _ in
             Task { @MainActor in
                 guard let self, let event = self.chord.keyPressed(at: .now) else { return }
-                self.onEvent(event)
+                self.chordChanged(event)
             }
         }
         eventMonitors = [
@@ -163,5 +174,51 @@ final class HotkeyMonitor {
                 return $0
             },
         ].compactMap { $0 }
+        typingTap = Self.makeTypingTap()
+    }
+
+    /// Passes a chord event on, and has the keys typed from the end of the shortcut window while
+    /// the chord is held.
+    private func chordChanged(_ event: Event) {
+        stopTyping()
+        if event == .pressed, let start = chord.typingStarts {
+            typing = Task { [weak self] in
+                do { try await Task.sleep(until: start) } catch { return }
+                guard let port = self?.typingTap?.port else { return }
+                CGEvent.tapEnable(tap: port, enable: true)
+            }
+        }
+        onEvent(event)
+    }
+
+    private func stopTyping() {
+        typing?.cancel()
+        typing = nil
+        if let port = typingTap?.port { CGEvent.tapEnable(tap: port, enable: false) }
+    }
+
+    /// An active tap on key events at the HID level, where a key enters before any shortcut is
+    /// matched, created disabled: while enabled, every keystroke waits for the main thread. When
+    /// macOS disables it for a slow answer, the keys keep ⌥ ⌘ until the next press enables it.
+    private static func makeTypingTap() -> (port: CFMachPort, source: CFRunLoopSource)? {
+        let keys = (1 << CGEventType.keyDown.rawValue) | (1 << CGEventType.keyUp.rawValue)
+        guard
+            let port = CGEvent.tapCreate(
+                tap: .cghidEventTap, place: .headInsertEventTap, options: .defaultTap,
+                eventsOfInterest: CGEventMask(keys),
+                callback: { _, type, event, _ in
+                    if type == .keyDown || type == .keyUp {
+                        // ⌥ and ⌘, and the bits of either side (NX_DEVICEL/RCMDKEYMASK,
+                        // NX_DEVICEL/RALTKEYMASK in <IOKit/hidsystem/IOLLEvent.h>).
+                        let sides = CGEventFlags(rawValue: 0x08 | 0x10 | 0x20 | 0x40)
+                        event.flags.subtract([.maskCommand, .maskAlternate, sides])
+                    }
+                    return Unmanaged.passUnretained(event)
+                }, userInfo: nil),
+            let source = CFMachPortCreateRunLoopSource(nil, port, 0)
+        else { return nil }
+        CGEvent.tapEnable(tap: port, enable: false)
+        CFRunLoopAddSource(CFRunLoopGetMain(), source, .commonModes)
+        return (port, source)
     }
 }

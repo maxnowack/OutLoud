@@ -66,6 +66,13 @@ is not. TextEdit is open with an empty document focused.
    included, and neither starts with "Also"; no sentence is repeated.
 13. Softening words: dictate "Ich hab das halt quasi schon gemacht" and "It is sort of done and
    kind of works". The results keep "quasi schon", "sort of" and "kind of".
+14. Typing while ⌥ ⌘ is held (ADR 0029): hold ⌥ ⌘ in TextEdit, wait a second, and type
+   "Hallo Welt" with Space and ⇧ while saying a sentence, then release. "Hallo Welt" appears as
+   typed, no Finder search window opens, the overlay keeps recording while typing, and the
+   dictation is pasted after release. Repeat in Helium and in Claude: the same. Hold ⌥ ⌘ and
+   press ⇧ or D at once: the recording is cancelled and ⌥ ⌘ D reaches the app. Hold ⌥ ⌘, wait a
+   second and press ⌃: the recording is cancelled. After release, Space and ⌘ shortcuts work as
+   usual.
 
 ## Assertions
 
