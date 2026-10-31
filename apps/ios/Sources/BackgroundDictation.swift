@@ -26,19 +26,38 @@ final class BackgroundDictation {
     /// Starts a recording, or ends it and returns the text.
     func toggle() async -> String? {
         if app.dictation.state == .recording { return await stop() }
+        let invoked = ContinuousClock.now
+        // iOS lets an app in the background start its audio only while it holds an assertion;
+        // the one the system takes to deliver the intent ends about 0.1 s later, which a slow
+        // start misses (ADR 0031).
+        let task = UIApplication.shared.beginBackgroundTask(withName: "Dictation start")
+        defer { UIApplication.shared.endBackgroundTask(task) }
         await app.start()
         // A second run while the last dictation is still processed starts nothing.
-        guard app.dictation.hasRequiredModels, !app.dictation.state.isBusy else { return nil }
+        guard app.dictation.hasRequiredModels, !app.dictation.state.isBusy else {
+            await recordStart(
+                since: invoked,
+                state: app.dictation.hasRequiredModels
+                    ? app.dictation.state : .failed(.modelsMissing))
+            return nil
+        }
         recordingSince = .now
         activityID = try? Activity.request(
             attributes: DictationActivityAttributes(),
             content: .init(state: .init(phase: .recording, since: recordingSince), staleDate: nil)
         ).id
-        if await !app.dictation.startRecording(mixable: true) {
+        let started = await app.dictation.startRecording(mixable: true)
+        await recordStart(since: invoked, state: app.dictation.state)
+        if !started {
             app.dictation.reset()
             await finish(.failed)
         }
         return nil
+    }
+
+    private func recordStart(since invoked: ContinuousClock.Instant, state: DictationState) async {
+        await app.diagnostics.record(
+            .start(at: .now, trigger: .shortcut, after: invoked.duration(to: .now), state: state))
     }
 
     /// Ends the recording, transcribes and cleans it up, and returns the text.
@@ -47,6 +66,7 @@ final class BackgroundDictation {
     ///   Activity's button, the record button —, the text is copied only when Outloud is in front.
     func stop(viaShortcut: Bool = true) async -> String? {
         guard app.dictation.state == .recording else { return nil }
+        let stopped = ContinuousClock.now
         // The processing has to finish even if iOS would suspend the app meanwhile.
         let task = UIApplication.shared.beginBackgroundTask(withName: "Dictation")
         defer { UIApplication.shared.endBackgroundTask(task) }
@@ -64,6 +84,10 @@ final class BackgroundDictation {
         }
         let outcome = await app.dictation.stopRecording()
         watcher.cancel()
+        await app.diagnostics.record(
+            .end(
+                at: .now, trigger: .shortcut, after: stopped.duration(to: .now), outcome: outcome,
+                state: app.dictation.state))
         let nothingRecognised = app.dictation.state == .failed(.nothingRecognised)
         app.dictation.reset()
         guard let outcome else {

@@ -31,9 +31,11 @@ Three targets (ADR 0013):
   modifier flags, and `ReturnPaste` where and when a dictation that follows
   its field is pasted, and which ones wait, the platform
   reading the keys and the focused field; `AudioRecorder` captures the microphone as
-  16 kHz mono samples; `HistoryStore` is the one owner of the history's
-  files and `HistoryModel` presents them; `OutloudSettings` keeps the
-  shared settings in `UserDefaults`.
+  16 kHz mono samples, on iOS waiting up to a second for an input that has
+  no format yet (ADR 0031); `HistoryStore` is the one owner of the history's
+  files and `HistoryModel` presents them; `DiagnosticsLog` is the one owner
+  of the iOS app's log of starts and ends (§"Data"); `OutloudSettings`
+  keeps the shared settings in `UserDefaults`.
 - **`OutloudUI`** — the tokens and components of `docs/DESIGN.md`.
 - **`OutloudCLI`** (`outloud`, macOS only) — lists, downloads and deletes
   the models in the cache and dictates an audio file; a developer tool.
@@ -56,7 +58,11 @@ mixes with other audio — iOS refuses an exclusive one in the background —
 and a Live Activity (`DictationLiveActivity` in the widget extension), and
 its next run ends it and returns the cleaned text (ADR 0022);
 `BackgroundDictation` runs it and keeps the activity in step with the
-dictation. "Clean Up Text with Outloud" cleans up text it is given. Apple's
+dictation. Its start holds a background task until the recording runs:
+iOS lets an app in the background start audio only while it holds an
+assertion, and the one it takes to deliver the intent ends about 0.1 s
+later (ADR 0031). The app records its starts and ends in
+`DiagnosticsLog` (§"Data"). "Clean Up Text with Outloud" cleans up text it is given. Apple's
 model may be used in the background, within a budget (ADR 0019). One
 `AppModel` serves the interface and the intents.
 
@@ -232,6 +238,16 @@ launch, every five minutes while the app runs, and when the period
 changes (`docs/SPEC.md` §"History"). Voice recordings and the texts
 dictated are personal data. The logs carry durations, lengths and error
 kinds of the cleanup, never a text.
+
+On iOS, `DiagnosticsLog` keeps how dictations started and ended, to be
+read out later (ADR 0031): one line of JSON per first use of a process,
+per start (`trigger` `shortcut` or `app`, `milliseconds` from the trigger
+to the recording, `outcome` `recording` or why not) and per end
+(`milliseconds` from the stop to the text, `outcome` what became of the
+cleanup or why there is no text), each with its time `at`. It is
+`Application Support/Outloud/diagnostics.jsonl`, the last 500 entries,
+protected like the history; it holds no text and leaves the device only
+when the developer copies it with `devicectl`.
 
 ## Deployment shape
 

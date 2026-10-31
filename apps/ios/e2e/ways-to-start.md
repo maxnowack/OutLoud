@@ -1,6 +1,6 @@
 # The user starts a dictation from the Action Button or another way without opening Outloud first
 
-- Covers: the "Dictate" control (ADR 0017), the shortcut that starts and stops a dictation in the background with its Live Activity (ADR 0022), the "Ways to start Outloud" sheet, the hint card on the dictate tab.
+- Covers: the "Dictate" control (ADR 0017), the shortcut that starts and stops a dictation in the background with its Live Activity (ADR 0022), the "Ways to start Outloud" sheet, the hint card on the dictate tab, the log of starts and ends (ADR 0031).
 - Build: Debug on the user's iPhone (`docs/RELEASE.md` §"iOS").
 
 ## Preconditions
@@ -38,6 +38,13 @@ knows its control and shortcuts).
    background, the text arrives uncleaned, and the history keeps only the transcript.
 10. Dismiss the card with its ×: it does not come back after relaunching; the sheet stays
    reachable from the bolt in the navigation bar and from Settings › "Ways to start Outloud".
+11. Read out the log of starts and ends (ADR 0031) after the steps above, or after some days of
+   daily use, with the iPhone unlocked:
+   `xcrun devicectl device copy from --device <udid> --domain-type appDataContainer
+   --domain-identifier dev.nowack.outloud --source "Library/Application
+   Support/Outloud/diagnostics.jsonl" --destination diagnostics.jsonl`. Each start of
+   steps 6–8 has a line `"kind":"start","trigger":"shortcut"` with `"outcome":"recording"` (the
+   second run of step 8: `"busy"`), and each end a line `"kind":"end"`.
 
 ## Assertions
 
@@ -47,6 +54,10 @@ knows its control and shortcuts).
 - In step 6 the text is cleaned up by Apple's model (ADR 0019); the first run after iOS started
   Outloud takes up to about 20 s, later runs a few seconds. Music playing meanwhile goes on
   (the recording mixes with other audio, ADR 0022).
+- In the log of step 11, no start from the shortcut fails — also not one whose `milliseconds`
+  are over 110, nor one right after a podcast was paused in another app — and no
+  `"kind":"launch"` follows within a minute of an end with `"outcome":"cleanupFailed"` and
+  `milliseconds` over 20,000 (ADRs 0030, 0031). The log holds no dictated text.
 
 ## Screen reader pass
 

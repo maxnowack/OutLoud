@@ -56,7 +56,9 @@ public final class AudioRecorder: @unchecked Sendable {
     ///
     /// - Parameters:
     /// - Parameter otherAudio: iOS: what the session does to other audio.
-    public func start(otherAudio: OtherAudio = .interrupt) throws {
+    public func start(
+        otherAudio: OtherAudio = .interrupt, isolation: isolated (any Actor)? = #isolation
+    ) async throws {
         try lock.withLock {
             guard !isRecording else { throw AudioRecorderError.alreadyRecording }
             isRecording = true
@@ -89,7 +91,7 @@ public final class AudioRecorder: @unchecked Sendable {
                 }
             #endif
             // Made after the session is active, so its input node takes the session's format.
-            let engine = AVAudioEngine()
+            let engine = try await Self.makeEngine()
             self.engine = engine
             let input = engine.inputNode
             let inputFormat = input.outputFormat(forBus: 0)
@@ -139,6 +141,22 @@ public final class AudioRecorder: @unchecked Sendable {
             lock.withLock { isRecording = false }
             throw error
         }
+    }
+
+    /// An engine whose input has a format. Activated while another app's session is interrupted,
+    /// the iOS input may have none yet, for up to a second (ADR 0031); an engine keeps the format
+    /// it saw first, so each try makes a new one.
+    private static func makeEngine(
+        isolation: isolated (any Actor)? = #isolation
+    ) async throws -> AVAudioEngine {
+        #if os(iOS)
+            for _ in 0..<10 {
+                let engine = AVAudioEngine()
+                if engine.inputNode.outputFormat(forBus: 0).sampleRate > 0 { return engine }
+                try await Task.sleep(for: .milliseconds(100))
+            }
+        #endif
+        return AVAudioEngine()
     }
 
     /// The level of the loudest moment since the last call, 0 to 1; the IO buffers it is

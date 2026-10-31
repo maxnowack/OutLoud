@@ -129,7 +129,7 @@ public final class DictationController {
         do {
             let otherAudio: AudioRecorder.OtherAudio =
                 settings.pausesPlayback ? (mixable ? .quiet : .interrupt) : .mix
-            try recorder.start(otherAudio: otherAudio)
+            try await recorder.start(otherAudio: otherAudio)
             state = .recording
             levelReading = Task { [weak self] in
                 while !Task.isCancelled {

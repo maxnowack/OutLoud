@@ -17,6 +17,8 @@ final class AppModel {
     let history: HistoryModel
     let dictation: DictationController
     @ObservationIgnored let engines: Engines
+    /// How dictations start and end on this device, to be read out later (ADR 0031).
+    @ObservationIgnored let diagnostics: DiagnosticsLog
     /// Downloads the models in a background session, so that they go on while the app is not in
     /// front (`plans/BACKGROUND_DICTATION.md`).
     @ObservationIgnored let fetcher: URLSessionFileFetcher
@@ -47,6 +49,9 @@ final class AppModel {
         history = HistoryModel(store: historyStore, settings: settings)
         dictation = DictationController(
             settings: settings, library: library, engines: engines, history: historyStore)
+        diagnostics = DiagnosticsLog(
+            file: (try? DiagnosticsLog.defaultFile())
+                ?? support.appending(path: "Outloud/diagnostics.jsonl"))
         #if DEBUG
             // A relative path is read from the app's `tmp/`, where `devicectl device copy to` puts it.
             sampleAudio = UserDefaults.standard.string(forKey: "OutloudSampleAudio").map {
@@ -71,6 +76,7 @@ final class AppModel {
     }
 
     private func load() async {
+        await diagnostics.record(.launch(at: .now))
         history.startExpiringEntries()
         await library.refresh()
         // A recording can start before these finish; the transcription model loads on demand.
@@ -111,6 +117,7 @@ final class AppModel {
     }
 
     func startRecording() async {
+        let invoked = ContinuousClock.now
         await start()
         guard !isRecording, !dictation.state.isBusy else { return }
         if sampleAudio != nil {
@@ -118,6 +125,9 @@ final class AppModel {
             return
         }
         await dictation.startRecording()
+        await diagnostics.record(
+            .start(
+                at: .now, trigger: .app, after: invoked.duration(to: .now), state: dictation.state))
     }
 
     func stopRecording() async {
@@ -127,7 +137,12 @@ final class AppModel {
             let samples = (try? AudioFile.samples(of: sampleAudio)) ?? []
             outcome = await dictation.process(samples: samples)
         } else {
+            let stopped = ContinuousClock.now
             outcome = await dictation.stopRecording()
+            await diagnostics.record(
+                .end(
+                    at: .now, trigger: .app, after: stopped.duration(to: .now), outcome: outcome,
+                    state: dictation.state))
         }
         if let outcome { deliver(outcome) }
     }
