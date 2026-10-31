@@ -109,7 +109,10 @@ are neither fillers of the prompt nor explained by one of its correction
 phrases — the words paired in order as the longest common subsequence —
 (the model ran an unfinished sentence into the next one), or the model refuses (`CleanerError`:
 in the background Apple limits how often an app may use it); transcripts
-over 4,000 characters are not cleaned up. The prompt's test inputs and
+over 4,000 characters are not cleaned up. A request that times out is not
+cancelled: it runs to its end and its answer is dropped, since Foundation
+Models, cancelled, often keeps the assertion that holds the app running,
+and iOS ends the app for it (ADR 0030). The prompt's test inputs and
 results are in `plans/APPLE_CLEANUP.md`.
 
 ## Communication paths

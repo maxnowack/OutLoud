@@ -88,13 +88,15 @@ public struct AppleCleaner: Cleaning {
         }
     }
 
-    /// Runs `operation`, but throws `CleanerError.timedOut` once `timeout` has passed, whether or
-    /// not the operation reacts to its cancellation: a structured task group would wait for it.
+    /// Runs `operation`, but throws `CleanerError.timedOut` once `timeout` has passed: a
+    /// structured task group would wait for it. The operation is not cancelled; it runs to its end
+    /// and its result is dropped. Cancelled, Foundation Models often keeps the assertion that
+    /// holds the app running, and iOS ends the app for it (ADR 0030).
     static func withDeadline<Value: Sendable>(
         _ timeout: Duration, _ operation: @escaping @Sendable () async throws -> Value
     ) async throws -> Value {
         let race = Race<Value>()
-        let work = Task {
+        Task {
             do { race.finish(.success(try await operation())) } catch {
                 race.finish(.failure(error))
             }
@@ -105,7 +107,7 @@ public struct AppleCleaner: Cleaning {
         }
         return try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { continuation in
-                race.wait(continuation, cancelling: [work, timer])
+                race.wait(continuation, cancelling: [timer])
             }
         } onCancel: {
             race.finish(.failure(CancellationError()))
@@ -148,8 +150,8 @@ public struct AppleCleaner: Cleaning {
     }
 }
 
-/// The first of the operation, the timer and a cancellation to finish wins; the others are
-/// cancelled and their results dropped.
+/// The first of the operation, the timer and a cancellation to finish wins; the timer is
+/// cancelled, and the others' results are dropped.
 private final class Race<Value: Sendable>: @unchecked Sendable {
     private let lock = NSLock()
     // Guarded by `lock`.

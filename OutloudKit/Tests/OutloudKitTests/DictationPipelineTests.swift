@@ -216,11 +216,11 @@ struct DictationPipelineTests {
 }
 
 struct CleanupDeadlineTests {
-    @Test func givesUpOnAnOperationThatIgnoresItsCancellation() async {
+    @Test func givesUpAtTheDeadline() async {
         let started = ContinuousClock.now
         await #expect(throws: CleanerError.timedOut) {
             try await AppleCleaner.withDeadline(.milliseconds(100)) {
-                // Waits two seconds and cannot be cancelled.
+                // Waits two seconds.
                 await withCheckedContinuation { continuation in
                     DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
                         continuation.resume()
@@ -230,6 +230,24 @@ struct CleanupDeadlineTests {
             }
         }
         #expect(ContinuousClock.now - started < .seconds(1))
+    }
+
+    /// Cancelled, Foundation Models often keeps the assertion that holds the app running (ADR 0030).
+    @Test func letsTheOperationRunToItsEndPastTheDeadline() async {
+        let (ended, end) = AsyncStream<Bool>.makeStream()
+        await #expect(throws: CleanerError.timedOut) {
+            try await AppleCleaner.withDeadline(.milliseconds(100)) {
+                await withCheckedContinuation { continuation in
+                    DispatchQueue.global().asyncAfter(deadline: .now() + 0.3) {
+                        continuation.resume()
+                    }
+                }
+                end.yield(Task.isCancelled)
+                return "late"
+            }
+        }
+        var endings = ended.makeAsyncIterator()
+        #expect(await endings.next() == false)
     }
 
     @Test func returnsAnAnswerInTime() async throws {
