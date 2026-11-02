@@ -13,6 +13,9 @@ copy.json                      eyebrow, headline, subline per screen and locale
 capture.mjs                    the simulator run that takes the captures
 generate.mjs                   the renderer
 check-listing.mjs              checks the listing copy against the field limits
+upload.mjs                     puts the listing and the screenshots into App Store Connect
+creative-assets.mjs            puts the header and the search results image there
+asc.mjs                        the App Store Connect API key and requests both use
 out/<format>/<locale>/*.png    the deliverables
 out/MANIFEST.txt               what the last run produced
 ```
@@ -61,6 +64,18 @@ node store-screenshots/check-listing.mjs
 ```
 
 counts every field of `marketing/STORE_LISTING_*.md` against its limit.
+
+```bash
+ASC_KEY_ID=… ASC_ISSUER_ID=… ASC_KEY_KEYCHAIN_ITEM=… node store-screenshots/upload.mjs
+ASC_KEY_ID=… ASC_ISSUER_ID=… ASC_KEY_KEYCHAIN_ITEM=… node store-screenshots/creative-assets.mjs
+```
+
+put the listing, the screenshots and the creative assets into the App
+Store version being prepared (ADR 0033), with the release script's API key
+(`docs/RELEASE.md` §"iOS"). `upload.mjs` replaces the screenshots on every
+run; `creative-assets.mjs` uploads an image only when its rendering
+changed. Apple processes each image for up to minutes. Neither submits
+anything for review.
 
 ## What is real in these screenshots, and what is not
 

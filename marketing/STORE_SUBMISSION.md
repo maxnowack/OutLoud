@@ -44,9 +44,14 @@ Not derivable from the repository; the user answers them in the console:
   result should be **4+**.
 - Content rights — Outloud ships no third-party content; the model it
   downloads is CC-BY-4.0 and attributed in Settings › Acknowledgements.
+- The privacy policy URL (per language, under App Information) and the
+  support URL (per language, on the version). On 2026-11-02 the API
+  showed neither as set, for either language; App Store Connect refuses a
+  submission without them.
 
-The privacy policy URL and the support URL were entered in App Store
-Connect before 2026-11-01 (per the user).
+Everything else on the version page — copy, screenshots, creative assets,
+copyright, categories, review notes — `upload.mjs` and
+`creative-assets.mjs` set (`marketing/store-screenshots/README.md`).
 
 ## 3. Field limits
 
