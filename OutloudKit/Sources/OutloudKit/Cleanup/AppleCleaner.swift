@@ -25,7 +25,10 @@ public enum CleanupAvailability: Equatable, Sendable {
 
     /// What the system says now; it changes when the user switches Apple Intelligence on or off.
     public static var current: CleanupAvailability {
-        switch SystemLanguageModel.default.availability {
+        #if DEBUG
+            if StandInCleaner.text != nil { return .available }
+        #endif
+        return switch SystemLanguageModel.default.availability {
         case .available: .available
         case .unavailable(.deviceNotEligible): .deviceNotEligible
         case .unavailable(.appleIntelligenceNotEnabled): .appleIntelligenceOff

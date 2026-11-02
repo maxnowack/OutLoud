@@ -93,7 +93,10 @@ public final class DictationController {
     /// Apple's on-device model where the system offers it; asked per dictation, since the user
     /// can switch Apple Intelligence on or off at any time (ADR 0019).
     public static func appleCleaner() -> (any Cleaning)? {
-        CleanupAvailability.current == .available ? AppleCleaner() : nil
+        #if DEBUG
+            if let text = StandInCleaner.text { return StandInCleaner(text: text) }
+        #endif
+        return CleanupAvailability.current == .available ? AppleCleaner() : nil
     }
 
     /// Whether the transcription model is installed; the cleanup needs no download (ADR 0019).

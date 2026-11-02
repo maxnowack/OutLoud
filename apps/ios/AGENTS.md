@@ -36,7 +36,10 @@ this area — read them before making changes here.
 - **(MUST)** State that a simulator run proves behaviour, not memory or
   speed: whether the models fit an iPhone is only shown on a device
   (ADR 0006). The cleanup needs Apple Intelligence, which a simulator may
-  lack; launch with `-cleanupEnabled NO` to check the screens.
+  lack; launch with `-cleanupEnabled NO` to check the screens, or, in a
+  Debug build, with `-OutloudCleanupStandIn <text>` to have every cleanup
+  return that text (`""` only makes the cleanup available). The
+  iOS 27 simulator offers no Apple Intelligence.
 - Debug builds take `-OutloudSampleAudio <wav> -OutloudAutoDictate YES` to
   dictate a file once at launch (the file must be inside the app's
   container; a relative path is read from its `tmp/`), and
