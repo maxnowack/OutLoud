@@ -116,10 +116,10 @@ assets into the version being prepared; price, availability, privacy
 answers, age rating and URLs are set in the console
 (`marketing/store-screenshots/README.md`, ADR 0033).
 
-When the app is first published in the App Store, put its link into
-`README.md`: the download line at the top and §"Get started on iPhone",
-where "App Store: coming soon" stands (the comment above the
-download line marks both), and drop the TestFlight sentence there.
+The app is in the App Store since 0.1.0 (2026-11-02), at
+https://apps.apple.com/app/outloud-offline-dictation/id6826376907.
+`README.md` links it from the download line at the top, §"Get started on
+iPhone" and §"Status"; a new version updates the version in §"Status".
 
 The app declares `ITSAppUsesNonExemptEncryption = NO` and ships
 `Resources/PrivacyInfo.xcprivacy`; a new use of a required-reason API

@@ -257,7 +257,8 @@ reversed. The first three block parts of the plan.
 15. **iOS distribution channel**: TestFlight or the App Store — not
     discussed yet (`docs/RELEASE.md` §"iOS"). *Addendum 2026-10-23:*
     TestFlight first, the App Store later (ADR 0023); 0.1.0 (1) was
-    uploaded the same day.
+    uploaded the same day. *Addendum 2026-11-02:* 0.1.0 is in the App
+    Store, https://apps.apple.com/app/outloud-offline-dictation/id6826376907.
 
 ## Open questions
 

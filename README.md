@@ -9,12 +9,10 @@
   No account, no cloud, no subscription, no word limit — a private, open-source alternative to Wispr Flow and Superwhisper.
 </p>
 
-<!-- When the iPhone app is in the App Store, replace "App Store: coming soon"
-     below and in §"Get started on iPhone" with its link (docs/RELEASE.md §"iOS"). -->
 <p align="center">
   <a href="https://github.com/maxnowack/OutLoud/releases/latest"><strong>Download for Mac</strong></a>
   ·
-  <a href="#voice-to-text-on-iphone"><strong>iPhone</strong></a> — App Store: coming soon
+  <a href="https://apps.apple.com/app/outloud-offline-dictation/id6826376907"><strong>Download for iPhone</strong></a>
   ·
   <a href="#outloud-compared-with-wispr-flow-superwhisper-and-apple-dictation">Comparison</a>
   ·
@@ -163,8 +161,8 @@ Apple Intelligence; without it, Outloud gives you the plain transcript.
 
 **Requirements:** iOS 27. The cleanup needs Apple Intelligence.
 
-**App Store: coming soon.** Until then, the iPhone app is in a closed beta
-on TestFlight. Once it is installed:
+**[Get Outloud from the App Store](https://apps.apple.com/app/outloud-offline-dictation/id6826376907).**
+Once it is installed:
 
 1. Open Outloud once and download the speech model.
 2. In the Shortcuts app, create a shortcut with the action **Start or Stop
@@ -240,7 +238,8 @@ signed and published.
 
 The Mac app is at version 0.4.0, published as a
 [GitHub release](https://github.com/maxnowack/OutLoud/releases/latest);
-the iPhone app is in a TestFlight beta. What the first version covers, and
+the iPhone app is at version 0.1.0, in the
+[App Store](https://apps.apple.com/app/outloud-offline-dictation/id6826376907). What the first version covers, and
 what is still open, is in `plans/FIRST_VERSION.md` §"Status".
 
 ## For contributors
