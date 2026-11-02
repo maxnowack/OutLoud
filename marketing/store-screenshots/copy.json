@@ -1,0 +1,95 @@
+{
+  "_comment": "Copy for the store screenshots. `*asterisks*` mark the accent span. Keep headlines to two rendered lines, and keep every claim visible in the screenshot beneath it or true by docs/SPEC.md.",
+  "en-US": {
+    "wide": {
+      "eyebrow": "OUTLOUD",
+      "headline": "Speak. Get *finished text*.",
+      "subline": "Dictation that stays on your iPhone.",
+      "screens": ["01-result", "03-history"]
+    },
+    "screens": [
+      {
+        "file": "01-result",
+        "eyebrow": "Dictation",
+        "headline": "Speak. Get *finished text*.",
+        "subline": "Filler words gone, punctuation set, copied and ready to paste."
+      },
+      {
+        "file": "02-any-app",
+        "eyebrow": "Any app",
+        "headline": "Dictate *without switching* apps",
+        "subline": "Action Button, Back Tap or Siri. The text lands on your clipboard."
+      },
+      {
+        "file": "03-history",
+        "eyebrow": "History",
+        "headline": "Your recent dictations, *your rules*",
+        "subline": "Keep them for a day, three months or not at all."
+      },
+      {
+        "file": "04-detail",
+        "eyebrow": "Every result",
+        "headline": "Listen again, *copy either version*",
+        "subline": "The recording, the transcript and the cleaned text."
+      },
+      {
+        "file": "05-privacy",
+        "eyebrow": "Private",
+        "headline": "Your voice *never leaves* your iPhone",
+        "subline": "No account, no cloud, no subscription, no tracking."
+      },
+      {
+        "file": "06-setup",
+        "eyebrow": "Works offline",
+        "headline": "Download once, *dictate anywhere*",
+        "subline": "After the one-time model download, Outloud works in flight mode."
+      }
+    ]
+  },
+  "de-DE": {
+    "wide": {
+      "eyebrow": "OUTLOUD",
+      "headline": "Sprich. Hab *fertigen Text*.",
+      "subline": "Diktieren, das auf deinem iPhone bleibt.",
+      "screens": ["01-result", "03-history"]
+    },
+    "screens": [
+      {
+        "file": "01-result",
+        "eyebrow": "Diktat",
+        "headline": "Sprich. Hab *fertigen Text*.",
+        "subline": "Ohne Füllwörter, mit Satzzeichen, kopiert und bereit zum Einfügen."
+      },
+      {
+        "file": "02-any-app",
+        "eyebrow": "Jede App",
+        "headline": "Diktieren *ohne App-Wechsel*",
+        "subline": "Action-Taste, Auf Rückseite tippen oder Siri. Der Text landet in der Zwischenablage."
+      },
+      {
+        "file": "03-history",
+        "eyebrow": "Verlauf",
+        "headline": "Deine letzten Diktate, *deine Regeln*",
+        "subline": "Behalte sie einen Tag, drei Monate oder gar nicht."
+      },
+      {
+        "file": "04-detail",
+        "eyebrow": "Jedes Ergebnis",
+        "headline": "Nachhören, *beides kopieren*",
+        "subline": "Die Aufnahme, das Transkript und der bereinigte Text."
+      },
+      {
+        "file": "05-privacy",
+        "eyebrow": "Privat",
+        "headline": "Deine Stimme *verlässt nie* dein iPhone",
+        "subline": "Kein Konto, keine Cloud, kein Abo, kein Tracking."
+      },
+      {
+        "file": "06-setup",
+        "eyebrow": "Offline",
+        "headline": "Einmal laden, *überall diktieren*",
+        "subline": "Nach dem einmaligen Modell-Download funktioniert Outloud im Flugmodus."
+      }
+    ]
+  }
+}

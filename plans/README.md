@@ -30,6 +30,7 @@ change; the authoritative status description always lives in the plan's own
 | `MAC_LOGIN_OVERLAY_PROGRESS.md` | Open the Mac app at login, no hanging pill, the microphone at launch, a truthful cleanup progress | 2026-10-24; the prewarming on the iPhone not checked |
 | `PASTE_ON_RETURN.md` | The second ⌘ or ⌥ lets a dictation finish in the background and pastes it on return to its field (ADR 0026) | 2026-10-28; writing into an app in the background refuted |
 | `TYPING_WHILE_DICTATING.md` | Typing while ⌥ ⌘ is held: the keys reach the app without ⌥ and ⌘ (ADR 0029) | 2026-10-30; checked by the user in the debug build |
+| `APP_STORE_LISTING.md` | The iOS app's App Store listing: copy in English and German, screenshots generated from the real app, the submission sheet | 2026-11-02; the cleanup's text in the screenshots from a stand-in cleaner (ADR 0032) |
 
 ## The shape of a plan
 

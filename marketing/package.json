@@ -1,0 +1,15 @@
+{
+  "name": "outloud-marketing",
+  "private": true,
+  "description": "Generates the App Store screenshots and creative assets (marketing/store-screenshots/README.md, ADR 0032).",
+  "type": "module",
+  "scripts": {
+    "capture": "node store-screenshots/capture.mjs",
+    "generate": "node store-screenshots/generate.mjs",
+    "check-listing": "node store-screenshots/check-listing.mjs"
+  },
+  "devDependencies": {
+    "pngjs": "7.0.0",
+    "puppeteer": "25.14.0"
+  }
+}

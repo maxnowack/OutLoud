@@ -106,6 +106,13 @@ Each build:
 3. Once App Store Connect has processed the build, add it to the testing
    group in TestFlight.
 
+For an App Store version, on top of the build: the listing copy from
+`marketing/STORE_LISTING_EN.md` and `_DE.md`, the settings, privacy answers
+and review notes from `marketing/STORE_SUBMISSION.md`, and the screenshots
+from `marketing/store-screenshots/out/`. When a screen they show has
+changed since the last capture, capture and render them again first
+(`marketing/store-screenshots/README.md`).
+
 When the app is first published in the App Store, put its link into
 `README.md`: the download line at the top and §"Get started on iPhone",
 where "App Store: coming soon" stands (the comment above the

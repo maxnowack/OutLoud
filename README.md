@@ -266,6 +266,7 @@ rules. Where to start:
 | `apps/macos/` | The macOS menu bar app, with its end-to-end plans in `e2e/`; its Xcode project is generated from `project.yml`. |
 | `apps/ios/` | The iOS app, with its end-to-end plans in `e2e/`; its Xcode project is generated from `project.yml`. |
 | `apps/shared/` | What both apps build from: the app icon (`AppIcon.icon`, `docs/DESIGN.md` §"App icon") and the release scripts' shared parts. |
+| `marketing/` | The App Store listing of the iOS app: the copy per language, the submission sheet, and the screenshots generated from the real app (`marketing/store-screenshots/README.md`, ADR 0032). |
 | `docs/SPEC.md` | What the product does. |
 | `docs/ARCHITECTURE.md` | Components, trust boundaries and data. |
 | `docs/DESIGN.md` | The visual style: tokens, components, screens, the app icon. |

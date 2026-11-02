@@ -1,0 +1,16 @@
+ios-6.9/de-DE/01-result.png
+ios-6.9/de-DE/02-any-app.png
+ios-6.9/de-DE/03-history.png
+ios-6.9/de-DE/04-detail.png
+ios-6.9/de-DE/05-privacy.png
+ios-6.9/de-DE/06-setup.png
+ios-6.9/en-US/01-result.png
+ios-6.9/en-US/02-any-app.png
+ios-6.9/en-US/03-history.png
+ios-6.9/en-US/04-detail.png
+ios-6.9/en-US/05-privacy.png
+ios-6.9/en-US/06-setup.png
+ios-product-page-header/de-DE/ios-product-page-header.png
+ios-product-page-header/en-US/ios-product-page-header.png
+ios-search-results/de-DE/ios-search-results.png
+ios-search-results/en-US/ios-search-results.png

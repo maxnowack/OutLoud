@@ -170,6 +170,7 @@ the reader cannot tell which one is current.
 | `docs/HORIZONTAL_SCALING.md` | The register of everything that keeps a service from running as more than one instance: what it is, what goes wrong at two nodes, what coordinating it would take |
 | `docs/ARCHITECTURE_PRINCIPLES.md` | The technology-independent architectural rules |
 | `docs/RULE_WRITING.md` | How a rule is phrased, where it lives, and the shape of an area file |
+| `marketing/STORE_SUBMISSION.md` | The App Store submission of the iOS app: settings, privacy answers, review notes, field limits; the per-language copy in `marketing/STORE_LISTING_*.md` |
 | `docs/PROCESSES.md`, `docs/VERIFICATION.md`, `docs/COMMITS.md` | The situational working rules: what is started or connected to, how a change is verified, how a commit is made — read at the moment this file names |
 | `AGENTS.md` and the area files above | Working rules, including both maps |
 
