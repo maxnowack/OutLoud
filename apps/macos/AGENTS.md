@@ -66,7 +66,10 @@ describe this area — read them before making changes here.
 
 ## Security
 
-- **(MUST)** Record only while the hotkey is held, and post keystrokes
+- **(MUST)** Record — sound and, with lip reading on, the camera — only
+  while the hotkey is held; the camera's one exception is the silent
+  practice in the settings, between the user's Start and Done (ADR 0034).
+  Keep only the mouth crop of the camera's picture. Post keystrokes
   only to paste a result after the hotkey was released, into an element
   that takes text and is not a password field (ADR 0004). Alter the
   user's own keystrokes only by taking ⌥ and ⌘ off the keys typed while

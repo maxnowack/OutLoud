@@ -48,7 +48,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func showSettings() {
         windows.show(
-            "settings", title: String(localized: "Settings"), size: NSSize(width: 520, height: 440),
+            "settings", title: String(localized: "Settings"), size: NSSize(width: 640, height: 440),
             resizable: false
         ) {
             SettingsView(app: app)

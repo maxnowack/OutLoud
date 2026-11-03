@@ -16,4 +16,5 @@ Executed as `apps/macos/AGENTS.md` §"End-to-end test plans" says.
 | Open at login | `first-launch.md`, `settings.md` | Log out and in once |
 | Settings › Models | `models.md` | |
 | Settings › History, Privacy | `settings.md` | |
+| Settings › Lip Reading, the silent practice, dictation read from the lips | `lip-reading.md` | Needs a camera and the installed lip-reading model |
 | History window | `history.md` | |

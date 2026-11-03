@@ -31,6 +31,12 @@ public struct ModelFile: Hashable, Sendable {
 
 /// A model Outloud offers, pinned to one revision of one Hugging Face repository.
 public struct ModelDescriptor: Identifiable, Hashable, Sendable {
+    /// What the model does, for its row in the settings.
+    public enum Kind: Hashable, Sendable {
+        case transcription
+        case lipReading
+    }
+
     public let id: String
     public let displayName: String
     /// The repository on Hugging Face, `organisation/name`.
@@ -42,6 +48,7 @@ public struct ModelDescriptor: Identifiable, Hashable, Sendable {
     public let languages: [String]
     /// The attribution the model's licence requires.
     public let attribution: String
+    public var kind = Kind.transcription
 
     public var totalSize: Int64 { files.reduce(0) { $0 + $1.size } }
 }
@@ -133,10 +140,45 @@ public enum ModelCatalog {
             + "Core ML conversion by FluidInference."
     )
 
-    /// Every model, in the order the selection shows them.
+    /// The lip reader of the Mac: Auto-AVSR's visual model with an English and a German decoder,
+    /// converted to MLX and published by Outloud (ADR 0034, `plans/LIP_READING.md` §"Phase 7").
+    public static let lipReading = ModelDescriptor(
+        id: "outloud-lipreading",
+        displayName: "Auto-AVSR",
+        repository: "maxnowack/outloud-lipreading",
+        revision: "b8b95a0325451ad7eaffd9814949e58dce023ffd",
+        files: [
+            .lfs(
+                "encoder.safetensors", size: 364_176_944,
+                sha256: "1cf4e50f3b0d22b3c25e34015a993c2053c2b3e7977be22bdfa834116a16181c"),
+            .lfs(
+                "decoder-en.safetensors", size: 128_962_554,
+                sha256: "a85c53947dc9188b0648cda69489995da8a4760855756eba2aa1f874bdfe69fb"),
+            .git(
+                "vocabulary-en.json", size: 176_798,
+                blob: "b44cb5718b60f41aa0a761105e0531641d67c2b7"),
+            .lfs(
+                "decoder-de.safetensors", size: 114_985_105,
+                sha256: "d3dc9ded98d5cfc1a0ce5a8190e68410f70277c2d9f1da3f54d0d8160787bf96"),
+            .git(
+                "vocabulary-de.json", size: 16569,
+                blob: "5f6afc1096dc5751aa472e381993f9d825e29403"),
+            .git("SOURCES.md", size: 12606, blob: "5e54348c7a8ebfb90d17343c82752377ae439900"),
+        ],
+        languages: ["de", "en"],
+        attribution:
+            "Auto-AVSR by Pingchuan Ma et al., weights for non-commercial use "
+            + "(github.com/mpc001/auto_avsr); German decoder trained on Wikimedia Commons videos "
+            + "under CC BY and CC BY-SA, listed in SOURCES.md.",
+        kind: .lipReading
+    )
+
+    /// The transcription models, in the order the selection shows them.
     public static let all: [ModelDescriptor] = [parakeetV3]
+    /// Every model Outloud downloads: the transcription models and the Mac's lip reader.
+    public static let downloadable = all + [lipReading]
 
     public static func model(id: String) -> ModelDescriptor? {
-        all.first { $0.id == id }
+        downloadable.first { $0.id == id }
     }
 }

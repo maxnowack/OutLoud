@@ -39,6 +39,14 @@ are marked `ASSUMPTION` and listed with the open questions in
   focused text field itself.
 - **History** — the results Outloud keeps, each with its transcript, its
   recording and its cleaned version, for as long as the user has set.
+- **Lip reading** — macOS only: reading the transcript from the user's
+  lips, with the camera, instead of from the sound.
+- **Mouth frames** — the grey 96 × 96 picture of the mouth, 25 a second,
+  that lip reading keeps of a recording; never the camera's whole picture.
+- **Training sample** — mouth frames with the text they say: the transcript
+  of a voiced dictation, or a practice sentence mouthed without sound.
+- **Adapter** — what lip reading learned from the user's training samples,
+  a few megabytes beside the shared model.
 
 ## Scope of the first version
 
@@ -272,6 +280,91 @@ Verified by: `apps/macos/e2e/dictation.md`, `apps/macos/e2e/settings.md`,
 `apps/macos/e2e/paste-on-return.md`, `apps/macos/e2e/pending-pastes.md`,
 `apps/macos/e2e/browse-results.md`.
 
+### Lip reading on macOS
+
+Dictation without sound (`plans/LIP_READING.md`, ADR 0034): while the user
+holds the hotkey, the camera watches their mouth, and Outloud reads the
+transcript from the lips. Everything after the transcript — cleanup, paste,
+history — is the same as for a voiced dictation.
+
+- Lip reading is marked experimental in its settings, which say that it
+  still misreads many words and improves as it learns.
+- Its model (610 MB, German and English) is downloaded only when the user
+  clicks Download in the Lip Reading settings, with the progress, Stop,
+  and Delete behind a confirmation, as for the transcription model
+  (§"Models"). Without it, a dictation that needs the lips ends with
+  "Nothing recognised".
+
+Rules:
+
+- The setting "Read the lips" is *Off* (the default), *When there is no
+  sound* or *Always, without sound*. Off, the camera is used only to learn
+  (below).
+- *When there is no sound*: the camera runs with every recording; when
+  transcription finds nothing in the sound, the lips' text is used.
+  *Always, without sound*: the lips' text is used whenever the camera ran,
+  and the sound is not transcribed; when it could not run, the sound is.
+- The camera runs only while the hotkey is held, and while the user
+  practises in the settings, between Start and Done. Outloud asks for the
+  camera the first time lip reading needs it; without it, dictation goes
+  on with sound alone, and the settings offer to allow it.
+- The language of lip reading, German or English, follows the language of
+  the last dictation transcribed from sound, when its transcript is surely
+  in one of them; the lips do not tell the languages apart, so a silent
+  dictation is read in that language. The settings show it and let the
+  user change it before mouthing words in the other one.
+- Without a face in the picture, or without the model of the language set,
+  a dictation that needs the lips ends with "Nothing recognised".
+- "Learn from my dictations" (off until the user turns it on): the camera
+  runs with every recording, also with lip reading *Off*, and a voiced
+  dictation keeps its mouth frames with its transcript as a training sample,
+  in German or English as the transcript reads; a transcript not surely in
+  either — a single "Okay." — keeps no sample. With the mode *Off*, the
+  transcript is pasted as without the camera.
+- Learning runs on the Mac, on its own in each language once 10 new samples
+  of it came in, the Mac
+  is on mains power and nobody touched mouse or keyboard for 10 minutes, or
+  by "Learn Now". The first input stops a run started on its own, and
+  nothing of it is kept. A tenth of the samples is held back; what was
+  learned replaces the earlier adapter only when it reads the held-back
+  samples better, and the settings say by how much.
+- The settings show the accuracy of the reader in use — the share of words
+  it reads right on the held-back samples —, when it last learned and from
+  how many samples, and when it learns next: after how many more samples,
+  or once the Mac is idle and plugged in. The first time fewer than 30 % of
+  the words are misread in a language,
+  Outloud says once, with a notification, that lip reading is good enough
+  to use (the user's decision of 2026-11-03).
+- "Practise Silently…" shows everyday sentences to mouth without sound;
+  each one mouthed becomes a training sample.
+- The settings show how many samples are kept and their size. "Delete
+  Samples…" deletes the samples and the adapters after a confirmation.
+  Samples are kept until the user deletes them; the history's retention
+  period does not apply to them.
+- Mouth frames, samples and adapters never leave the Mac. The dictated
+  text of a sample is not logged.
+
+Acceptance criteria:
+
+- With lip reading *Always, without sound* and the model installed, a
+  sentence mouthed without sound while the hotkey is held is pasted as
+  text, and the menu bar shows the camera in use only while the hotkey is
+  held.
+- With *When there is no sound*, a voiced dictation is transcribed from the
+  sound as before, and the sample count in the settings grows by one.
+- With lip reading *Off* and "Learn from my dictations" off, the camera is
+  never in use. With learning on, it is in use only while the hotkey is
+  held, and the sound's text is pasted.
+- A training started on its own begins only after 10 minutes without input
+  and stops at the next key press or mouse move.
+- "Delete Samples…" leaves the count at zero, and the next dictation reads
+  with the shared model alone.
+
+Acceptance criteria are proposals written on 2026-11-03 from the user's
+request, while lip reading is tested.
+
+Verified by: `apps/macos/e2e/lip-reading.md`.
+
 ### Cleanup
 
 - Cleanup is optional.
@@ -449,7 +542,8 @@ Verified by: `apps/macos/e2e/history.md`, `apps/ios/e2e/history.md`.
 
 - Outloud explains how processing and data transfer work.
 - Audio is not stored permanently by default.
-- Neither audio nor text leaves the device for processing (ADR 0005).
+- Neither audio nor text leaves the device for processing (ADR 0005); on
+  macOS, neither do the mouth frames of lip reading (ADR 0034).
 - The setup and the settings explain this, the model download as the only
   transfer, and the current retention period; the acknowledgements list
   the licences of the models and libraries.

@@ -37,7 +37,7 @@ public final class ModelLibrary {
     public init(store: ModelStore, defaults: UserDefaults = .standard) {
         self.store = store
         self.defaults = defaults
-        for model in ModelCatalog.all { states[model.id] = .notInstalled }
+        for model in ModelCatalog.downloadable { states[model.id] = .notInstalled }
     }
 
     /// The downloads the user started and that have not ended, with whether cellular data was
@@ -54,7 +54,7 @@ public final class ModelLibrary {
     /// Reads which models are complete in the cache. Another tool may have added or removed
     /// files since the last look.
     public func refresh() async {
-        for model in ModelCatalog.all where !state(of: model).isDownloading {
+        for model in ModelCatalog.downloadable where !state(of: model).isDownloading {
             states[model.id] = await store.isInstalled(model) ? .installed : .notInstalled
         }
     }
@@ -64,8 +64,8 @@ public final class ModelLibrary {
     public func resumeDownloads() async {
         let fetching = await store.modelsBeingFetched().map(\.id)
         let pending = self.pending
-        for model in ModelCatalog.all where pending[model.id] != nil || fetching.contains(model.id)
-        {
+        for model in ModelCatalog.downloadable
+        where pending[model.id] != nil || fetching.contains(model.id) {
             download(model, overCellular: pending[model.id] ?? false)
         }
     }

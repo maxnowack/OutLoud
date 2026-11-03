@@ -53,7 +53,10 @@ public struct PrivacyNotice: View {
 /// The licences and attributions of what Outloud includes or downloads
 /// (`docs/DESIGN.md` §"Acknowledgements").
 public struct Acknowledgements: View {
-    public init() {}
+    let more: [(name: String, notice: String)]
+
+    /// `more` are the entries of what only one app includes, such as the Mac's lip reading.
+    public init(more: [(name: String, notice: String)] = []) { self.more = more }
 
     static let entries: [(name: String, notice: String)] = [
         (ModelCatalog.parakeetV3.displayName, ModelCatalog.parakeetV3.attribution),
@@ -66,7 +69,7 @@ public struct Acknowledgements: View {
 
     public var body: some View {
         VStack(alignment: .leading, spacing: Tokens.Spacing.m) {
-            ForEach(Self.entries, id: \.name) { entry in
+            ForEach(Self.entries + more, id: \.name) { entry in
                 VStack(alignment: .leading, spacing: Tokens.Spacing.xs) {
                     Text(entry.name).font(Tokens.heading)
                     Text(entry.notice)

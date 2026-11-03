@@ -12,13 +12,16 @@ let package = Package(
     products: [
         .library(name: "OutloudKit", targets: ["OutloudKit"]),
         .library(name: "OutloudUI", targets: ["OutloudUI"]),
+        .library(name: "OutloudLipreading", targets: ["OutloudLipreading"]),
         .executable(name: "outloud", targets: ["OutloudCLI"]),
     ],
     dependencies: [
         // Parakeet v3 (ADR 0006). The text-normalisation trait would add a prebuilt binary
         // Outloud does not use.
         .package(
-            url: "https://github.com/FluidInference/FluidAudio.git", exact: "0.17.7", traits: [])
+            url: "https://github.com/FluidInference/FluidAudio.git", exact: "0.17.7", traits: []),
+        // Lip reading runs and trains on MLX (ADR 0034); macOS only, so iOS does not link it.
+        .package(url: "https://github.com/ml-explore/mlx-swift.git", exact: "0.33.0"),
     ],
     targets: [
         .target(
@@ -29,7 +32,16 @@ let package = Package(
             resources: [.process("Resources")]),
         .target(
             name: "OutloudUI", dependencies: ["OutloudKit"], resources: [.process("Resources")]),
-        .executableTarget(name: "OutloudCLI", dependencies: ["OutloudKit"]),
+        .target(
+            name: "OutloudLipreading",
+            dependencies: [
+                "OutloudKit",
+                .product(name: "MLX", package: "mlx-swift"),
+                .product(name: "MLXNN", package: "mlx-swift"),
+                .product(name: "MLXOptimizers", package: "mlx-swift"),
+            ]),
+        .executableTarget(name: "OutloudCLI", dependencies: ["OutloudKit", "OutloudLipreading"]),
         .testTarget(name: "OutloudKitTests", dependencies: ["OutloudKit"]),
+        .testTarget(name: "OutloudLipreadingTests", dependencies: ["OutloudLipreading"]),
     ]
 )

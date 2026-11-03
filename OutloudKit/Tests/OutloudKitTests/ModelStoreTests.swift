@@ -242,7 +242,7 @@ struct ModelStoreTests {
     #endif
 
     @Test func pinsEveryCatalogueFileToAHash() {
-        for model in ModelCatalog.all {
+        for model in ModelCatalog.downloadable {
             #expect(!model.files.isEmpty)
             for file in model.files {
                 switch file.hash {
@@ -252,6 +252,14 @@ struct ModelStoreTests {
             }
             #expect(model.revision.count == 40)
         }
+    }
+
+    @MainActor @Test func offersTheLipReaderForDownloadButNotForTranscription() throws {
+        #expect(ModelCatalog.model(id: ModelCatalog.lipReading.id) == ModelCatalog.lipReading)
+        #expect(!ModelCatalog.all.contains(ModelCatalog.lipReading))
+        let settings = OutloudSettings(defaults: try #require(UserDefaults(suiteName: "\(UUID())")))
+        settings.transcriptionModelID = ModelCatalog.lipReading.id
+        #expect(settings.transcriptionModel == ModelCatalog.parakeetV3)
     }
 }
 

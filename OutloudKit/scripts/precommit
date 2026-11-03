@@ -10,3 +10,6 @@ swift test --jobs 4 -Xswiftc -warnings-as-errors
 # The libraries also build for iOS; the CLI is macOS only.
 xcodebuild -scheme OutloudUI -destination 'generic/platform=iOS Simulator' \
     -derivedDataPath .build/DerivedData-ios -jobs 4 -quiet build
+# The CLI as it runs lip reading: SwiftPM does not compile MLX's Metal shaders (AGENTS.md).
+xcodebuild -scheme outloud -destination 'platform=macOS' \
+    -derivedDataPath .build/DerivedData-cli -configuration Release -jobs 4 -quiet build

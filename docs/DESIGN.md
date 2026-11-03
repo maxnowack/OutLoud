@@ -393,8 +393,24 @@ design canvas outside the repository on 2026-10-23.
   while ⌥ ⌘ waits for Accessibility access; "Pause playback while
   dictating", with "Recording system audio" and "Allow…" while that
   permission is declined; auto-paste), Models (ModelRow of the
-  transcription model), History (RetentionPicker), Privacy (PrivacyNotice,
-  Acknowledgements).
+  transcription model), Lip Reading (a first section headed "Experimental"
+  with a flask in `warning`, the ModelRow of the lip-reading model —
+  "Lip reading" in its caption — and a footer saying it still misreads
+  many words; the mode picker — Off, When there is
+  no sound, Always, without sound —, the language picker, which follows the
+  language last dictated aloud and says so in the footer, "Allow…" while
+  the camera is not allowed, a footer saying when the camera runs; "Learn from my
+  dictations", the samples kept with their size, "Accuracy" against the
+  70 % that is good enough, "Last learned" (when, from how many samples),
+  "Next learning" (after how many more samples, or when the Mac is idle and
+  plugged in), "Practise Silently…",
+  "Learn Now", a destructive "Delete Samples…" behind a confirmation, and
+  the learning's state — a small ProgressView while it runs, the word
+  error before and after once it ended), History (RetentionPicker),
+  Privacy (PrivacyNotice, Acknowledgements). The silent practice is a
+  sheet: "Sentence n of 40" in `secondary`, the sentence in `title2`, what
+  to do next, a red note when no face was seen, and Close, Skip and
+  Start or Done (the default button).
 - **macOS history window** — HistoryList, HistoryEntryDetail.
 - **iOS setup** — ModelSetup.
 - **iOS dictate tab** — a dismissible card pointing to dictating from any

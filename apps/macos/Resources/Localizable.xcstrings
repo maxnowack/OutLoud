@@ -21,12 +21,62 @@
         }
       }
     },
+    "%@ – good enough from %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ – gut genug ab %2$@"
+          }
+        }
+      }
+    },
+    "%@ – good enough to use" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ – gut genug zum Benutzen"
+          }
+        }
+      }
+    },
+    "%@, from %lld samples" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@, aus %2$lld Beispielen"
+          }
+        }
+      }
+    },
+    "%lld, %lld of them silent – %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld, davon %2$lld ohne Ton – %3$@"
+          }
+        }
+      }
+    },
     "Accessibility access" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zugriff für Bedienungshilfen"
+          }
+        }
+      }
+    },
+    "Accuracy" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Genauigkeit"
           }
         }
       }
@@ -41,12 +91,32 @@
         }
       }
     },
+    "After %lld more samples" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nach %lld weiteren Beispielen"
+          }
+        }
+      }
+    },
     "Allow Accessibility…" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bedienungshilfen erlauben …"
+          }
+        }
+      }
+    },
+    "Allowed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erlaubt"
           }
         }
       }
@@ -61,12 +131,22 @@
         }
       }
     },
-    "Allowed" : {
+    "Always, without sound" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erlaubt"
+            "value" : "Immer, ohne Ton"
+          }
+        }
+      }
+    },
+    "Camera access" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kamerazugriff"
           }
         }
       }
@@ -98,6 +178,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bereinigung"
+          }
+        }
+      }
+    },
+    "Click Start, then mouth the sentence without sound." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Klicke auf „Start“ und forme dann den Satz ohne Ton."
+          }
+        }
+      }
+    },
+    "Close" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schließen"
           }
         }
       }
@@ -162,6 +262,26 @@
         }
       }
     },
+    "Delete all samples?" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alle Beispiele löschen?"
+          }
+        }
+      }
+    },
+    "Delete Samples…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Beispiele löschen …"
+          }
+        }
+      }
+    },
     "Dictating" : {
       "localizations" : {
         "de" : {
@@ -182,6 +302,16 @@
         }
       }
     },
+    "Done" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fertig"
+          }
+        }
+      }
+    },
     "Each result keeps the transcript, the recording and the cleaned version. A shorter period also applies to results already kept." : {
       "localizations" : {
         "de" : {
@@ -192,12 +322,42 @@
         }
       }
     },
+    "English" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Englisch"
+          }
+        }
+      }
+    },
+    "Experimental" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Experimentell"
+          }
+        }
+      }
+    },
     "General" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Allgemein"
+          }
+        }
+      }
+    },
+    "German" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deutsch"
           }
         }
       }
@@ -252,6 +412,106 @@
         }
       }
     },
+    "Language" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sprache"
+          }
+        }
+      }
+    },
+    "Last learned" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zuletzt gelernt"
+          }
+        }
+      }
+    },
+    "Learn from my dictations" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aus meinen Diktaten lernen"
+          }
+        }
+      }
+    },
+    "Learn Now" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetzt lernen"
+          }
+        }
+      }
+    },
+    "Learned: words misread fell from %@ to %@." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gelernt: falsch gelesene Wörter sanken von %1$@ auf %2$@."
+          }
+        }
+      }
+    },
+    "Learning failed." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Lernen ist fehlgeschlagen."
+          }
+        }
+      }
+    },
+    "Learning from your samples…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lernt aus deinen Beispielen …"
+          }
+        }
+      }
+    },
+    "Lip Reading" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lippenlesen"
+          }
+        }
+      }
+    },
+    "Lip reading is experimental: it still misreads many words, and reads you better the more it learns from your dictations. It needs its model on this Mac." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lippenlesen ist experimentell: Es liest noch viele Wörter falsch und liest dich besser, je mehr es aus deinen Diktaten lernt. Es braucht sein Modell auf diesem Mac."
+          }
+        }
+      }
+    },
+    "Lip reading is ready" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lippenlesen ist bereit"
+          }
+        }
+      }
+    },
     "macOS asks you to allow Outloud in Login Items." : {
       "localizations" : {
         "de" : {
@@ -293,6 +553,26 @@
         }
       }
     },
+    "More samples are needed to learn from." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zum Lernen braucht es mehr Beispiele."
+          }
+        }
+      }
+    },
+    "Mouth the sentence without sound, looking at the camera. Then click Done." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forme den Satz ohne Ton und schau dabei in die Kamera. Klicke dann auf „Fertig“."
+          }
+        }
+      }
+    },
     "Music or a video that plays pauses while you hold the shortcut and plays on afterwards. Outloud listens to the sound of other apps to tell, and needs Accessibility access." : {
       "localizations" : {
         "de" : {
@@ -309,6 +589,76 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Musik oder ein Video, das gerade läuft, pausiert, solange du das Kürzel hältst. Damit es danach weiterspielt, muss Outloud hören, ob es pausiert hat: Erlaube Outloud, Systemaudio aufzunehmen."
+          }
+        }
+      }
+    },
+    "Next learning" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nächstes Lernen"
+          }
+        }
+      }
+    },
+    "No face was seen. Sit in front of the camera and try again." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Es war kein Gesicht zu sehen. Setz dich vor die Kamera und versuche es noch einmal."
+          }
+        }
+      }
+    },
+    "Not measured yet" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch nicht gemessen"
+          }
+        }
+      }
+    },
+    "Not yet" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch nicht"
+          }
+        }
+      }
+    },
+    "Nothing learned this time: %@ words misread, %@ before. The earlier state stays." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Diesmal nichts gelernt: %1$@ Wörter falsch gelesen, vorher %2$@. Der bisherige Stand bleibt."
+          }
+        }
+      }
+    },
+    "Now" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jetzt"
+          }
+        }
+      }
+    },
+    "Off" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aus"
           }
         }
       }
@@ -349,6 +699,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Outloud braucht seine Modelle, bevor du diktieren kannst."
+          }
+        }
+      }
+    },
+    "Outloud now reads your lips in %@ well enough to dictate without sound. Choose a mode in Settings › Lip Reading." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outloud liest deine Lippen auf %@ jetzt gut genug, um ohne Ton zu diktieren. Wähle einen Modus unter Einstellungen › Lippenlesen."
           }
         }
       }
@@ -403,6 +763,16 @@
         }
       }
     },
+    "Practise Silently…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ohne Ton üben …"
+          }
+        }
+      }
+    },
     "Privacy" : {
       "localizations" : {
         "de" : {
@@ -433,6 +803,16 @@
         }
       }
     },
+    "Read the lips" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lippen lesen"
+          }
+        }
+      }
+    },
     "Recording system audio" : {
       "localizations" : {
         "de" : {
@@ -453,12 +833,32 @@
         }
       }
     },
+    "Samples kept" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gespeicherte Beispiele"
+          }
+        }
+      }
+    },
     "Select a result" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Wähle ein Ergebnis"
+          }
+        }
+      }
+    },
+    "Sentence %lld of %lld" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Satz %1$lld von %2$lld"
           }
         }
       }
@@ -483,16 +883,6 @@
         }
       }
     },
-    "Settings…" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Einstellungen …"
-          }
-        }
-      }
-    },
     "Settings" : {
       "localizations" : {
         "de" : {
@@ -503,12 +893,62 @@
         }
       }
     },
+    "Settings…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Einstellungen …"
+          }
+        }
+      }
+    },
+    "Skip" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Überspringen"
+          }
+        }
+      }
+    },
     "Something is playing in the background" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Im Hintergrund läuft etwas"
+          }
+        }
+      }
+    },
+    "Start" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start"
+          }
+        }
+      }
+    },
+    "The language follows what you last dictated aloud. To mouth words in the other one, choose it here first." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Sprache folgt dem, was du zuletzt laut diktiert hast. Um Wörter in der anderen lautlos zu sprechen, wähle sie vorher hier aus."
+          }
+        }
+      }
+    },
+    "The pictures of your mouth and what Outloud learned from them are deleted from this Mac." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Bilder deines Mundes und was Outloud daraus gelernt hat, werden von diesem Mac gelöscht."
           }
         }
       }
@@ -549,6 +989,56 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Transkripte, Aufnahmen und bereinigte Fassungen werden von diesem Mac gelöscht."
+          }
+        }
+      }
+    },
+    "When the model is installed" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sobald das Modell installiert ist"
+          }
+        }
+      }
+    },
+    "When there is no sound" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn kein Ton zu hören ist"
+          }
+        }
+      }
+    },
+    "When this Mac is idle and plugged in" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wenn dieser Mac nicht benutzt wird und am Strom hängt"
+          }
+        }
+      }
+    },
+    "While you dictate aloud, the camera watches too — also with lip reading off — and Outloud keeps a small picture of your mouth with the transcript. It learns from them on this Mac while nobody uses it and it is plugged in, and tells you once it reads you well enough. Silent practice teaches it how your lips move without sound." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Während du laut diktierst, schaut die Kamera mit – auch wenn Lippenlesen aus ist –, und Outloud behält ein kleines Bild deines Mundes mit dem Transkript. Daraus lernt es auf diesem Mac, solange niemand ihn benutzt und er am Strom hängt, und sagt dir einmal Bescheid, sobald es dich gut genug liest. Stummes Üben bringt ihm bei, wie sich deine Lippen ohne Ton bewegen."
+          }
+        }
+      }
+    },
+    "While you hold the shortcut, the camera watches your mouth. Mouth the words without sound, and Outloud reads them from your lips. The camera is on only while you hold the shortcut." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Während du das Kürzel hältst, beobachtet die Kamera deinen Mund. Forme die Wörter ohne Ton, und Outloud liest sie dir von den Lippen ab. Die Kamera ist nur an, solange du das Kürzel hältst."
           }
         }
       }

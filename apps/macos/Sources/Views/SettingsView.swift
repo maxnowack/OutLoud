@@ -1,4 +1,5 @@
 import OutloudKit
+import OutloudLipreading
 import OutloudUI
 import SwiftUI
 
@@ -12,12 +13,14 @@ struct SettingsView: View {
                 .tabItem { Label("General", systemImage: "gearshape") }
             ModelSettings(app: app)
                 .tabItem { Label("Models", systemImage: "cpu") }
+            LipReadingSettings(app: app)
+                .tabItem { Label("Lip Reading", systemImage: "mouth") }
             HistorySettings(app: app)
                 .tabItem { Label("History", systemImage: "clock") }
             PrivacySettings(app: app)
                 .tabItem { Label("Privacy", systemImage: "hand.raised") }
         }
-        .frame(width: 520, height: 440)
+        .frame(width: 640, height: 440)
         // Push buttons, as the HIG asks: inside a grouped form, the automatic style draws
         // text only (`docs/DESIGN.md` §"Buttons").
         .buttonStyle(.bordered)
@@ -212,7 +215,7 @@ private struct PrivacySettings: View {
                 PrivacyNotice(period: app.settings.retentionPeriod)
                 Divider()
                 Text("Acknowledgements").font(Tokens.heading)
-                Acknowledgements()
+                Acknowledgements(more: LipReadingFiles.acknowledgements)
             }
             .padding(Tokens.Spacing.xl)
         }

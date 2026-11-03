@@ -74,6 +74,10 @@ public final class DictationController {
     /// Called once a recording has ended, whether it is processed or dropped; the Mac resumes
     /// the playback it paused (ADR 0024).
     @ObservationIgnored public var onRecordingEnded: (() -> Void)?
+    /// Reads the lips where the settings ask for it; only the Mac has it (`plans/LIP_READING.md`).
+    @ObservationIgnored public var lipReading: (any LipReading)?
+    /// Whether the camera runs with the current recording.
+    @ObservationIgnored private var watching = false
 
     public init(
         settings: OutloudSettings, library: ModelLibrary, engines: Engines, history: HistoryStore,
@@ -134,6 +138,7 @@ public final class DictationController {
                 settings.pausesPlayback ? (mixable ? .quiet : .interrupt) : .mix
             try await recorder.start(otherAudio: otherAudio)
             state = .recording
+            watching = Self.watchesLips(settings) && (lipReading?.startWatching() ?? false)
             levelReading = Task { [weak self] in
                 while !Task.isCancelled {
                     try? await Task.sleep(for: InputLevel.tick)
@@ -159,12 +164,13 @@ public final class DictationController {
     public func stopRecording() async -> DictationOutcome? {
         guard state == .recording else { return nil }
         let samples = endRecording()
+        let lips = endWatching()
         let prepared = takePreparedCleaner()
         state = .transcribing
         let publishes = inSight()
         return await queue.run {
             await self.transcribe(
-                samples, prepared: prepared, showsProgress: true, publishes: publishes)
+                samples, lips: lips, prepared: prepared, showsProgress: true, publishes: publishes)
         }
     }
 
@@ -194,11 +200,13 @@ public final class DictationController {
     public func stopRecordingInBackground() async -> DictationOutcome? {
         guard state == .recording else { return nil }
         let samples = endRecording()
+        let lips = endWatching()
         let prepared = takePreparedCleaner()
         state = .idle
         return await queue.run {
             await self.transcribe(
-                samples, prepared: prepared, showsProgress: false, publishes: { false })
+                samples, lips: lips, prepared: prepared, showsProgress: false,
+                publishes: { false })
         }
     }
 
@@ -206,6 +214,7 @@ public final class DictationController {
     public func cancelRecording() {
         guard state == .recording else { return }
         _ = endRecording()
+        _ = endWatching()
         preparedCleaner = nil
         state = .idle
     }
@@ -217,6 +226,13 @@ public final class DictationController {
         voice = []
         onRecordingEnded?()
         return samples
+    }
+
+    /// Turns the camera off; the mouth frames arrive once the last frames are cropped.
+    private func endWatching() -> Task<MouthFrames?, Never>? {
+        guard watching, let lipReading else { return nil }
+        watching = false
+        return Task { await lipReading.stopWatching() }
     }
 
     private func takePreparedCleaner() -> (any Cleaning)? {
@@ -234,20 +250,44 @@ public final class DictationController {
         let publishes = inSight()
         return await queue.run {
             await self.transcribe(
-                samples, prepared: nil, showsProgress: false, publishes: publishes)
+                samples, lips: nil, prepared: nil, showsProgress: false, publishes: publishes)
+        }
+    }
+
+    /// Whether the camera runs with a recording: to read the lips in a mode that uses them, or to
+    /// learn from the dictation while the mode is still *Off* (`plans/LIP_READING.md` §"Phase 6").
+    static func watchesLips(_ settings: OutloudSettings) -> Bool {
+        settings.lipReading != .off || settings.learnsFromDictations
+    }
+
+    /// Processes samples with mouth frames, as a recording with the camera; internal for the
+    /// tests, which have neither microphone nor camera.
+    func process(samples: [Float], lips: MouthFrames?) async -> DictationOutcome? {
+        state = .transcribing
+        let publishes = inSight()
+        return await queue.run {
+            await self.transcribe(
+                samples, lips: Task { lips }, prepared: nil, showsProgress: false,
+                publishes: publishes)
         }
     }
 
     /// - Parameters:
+    ///   - lips: The recording's mouth frames, when the camera ran with it: read in the silent
+    ///     mode or when the sound holds no speech, kept to learn from when it does.
     ///   - prepared: The cleaner made when the recording started.
     ///   - showsProgress: Publishes `progress` and learns the durations of the transcription and
     ///     the cleanup: after a recording, whose cleaner was prewarmed.
     ///   - publishes: Whether it moves `state` through the phases, asked at each: a dictation
     ///     processed in the background leaves it to the one the user sees.
     private func transcribe(
-        _ samples: [Float], prepared: (any Cleaning)?, showsProgress: Bool,
-        publishes: @escaping @MainActor () -> Bool
+        _ samples: [Float], lips: Task<MouthFrames?, Never>?, prepared: (any Cleaning)?,
+        showsProgress: Bool, publishes: @escaping @MainActor () -> Bool
     ) async -> DictationOutcome? {
+        if settings.lipReading == .silent, let lips {
+            return await readLips(
+                await lips.value, audio: samples, prepared: prepared, publishes: publishes)
+        }
         guard hasRequiredModels else {
             if publishes() { state = .failed(.modelsMissing) }
             return nil
@@ -268,15 +308,55 @@ public final class DictationController {
                         .run(samples: samples).transcript
                 })
         } catch DictationError.nothingRecognised {
+            if settings.lipReading == .whenSilent, let lips {
+                return await readLips(
+                    await lips.value, audio: samples, prepared: prepared, publishes: publishes)
+            }
             if publishes() { state = .failed(.nothingRecognised) }
             return nil
         } catch {
             if publishes() { state = .failed(.transcriptionFailed(error.localizedDescription)) }
             return nil
         }
+        await heard(transcript, lips: lips)
         return await finish(
             transcript: transcript, audio: samples, showsProgress: showsProgress,
             prepared: prepared, publishes: publishes)
+    }
+
+    /// Takes the language of a transcript heard aloud for the lips, which a silent dictation has
+    /// no sound to tell, and keeps the recording's lips with it to learn from; a transcript in
+    /// no language for sure changes neither.
+    func heard(_ transcript: String, lips: Task<MouthFrames?, Never>?) async {
+        guard let language = LipReadingLanguage.of(transcript) else { return }
+        settings.lipReadingLanguage = language
+        if settings.learnsFromDictations, let frames = await lips?.value {
+            await lipReading?.keep(frames, transcript: transcript, language: language)
+        }
+    }
+
+    /// Reads the lips of a recording without speech and goes on as with its transcript.
+    private func readLips(
+        _ frames: MouthFrames?, audio: [Float], prepared: (any Cleaning)?,
+        publishes: @escaping @MainActor () -> Bool
+    ) async -> DictationOutcome? {
+        let text: String
+        do {
+            guard let frames, let lipReading else { throw DictationError.nothingRecognised }
+            text = try await run(.transcribing, estimate: nil, publishes: publishes, units: 0) {
+                try await lipReading.read(frames)
+            }
+        } catch {
+            if publishes() { state = .failed(.nothingRecognised) }
+            return nil
+        }
+        guard !text.isEmpty else {
+            if publishes() { state = .failed(.nothingRecognised) }
+            return nil
+        }
+        return await finish(
+            transcript: text, audio: audio, showsProgress: false, prepared: prepared,
+            publishes: publishes)
     }
 
     /// Cleans up text that system dictation supplied, and keeps the result in the history. Returns

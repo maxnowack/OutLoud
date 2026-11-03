@@ -23,7 +23,7 @@ public struct ModelRow: View {
                 VStack(alignment: .leading, spacing: Tokens.Spacing.xs) {
                     Text(model.displayName).font(Tokens.heading)
                     Text(
-                        "\(localized("Transcription")) · \(model.totalSize.formattedBytes) · \(model.languageSummary)"
+                        "\(model.kind == .lipReading ? localized("Lip reading") : localized("Transcription")) · \(model.totalSize.formattedBytes) · \(model.languageSummary)"
                     )
                     .font(Tokens.caption)
                     .foregroundStyle(Tokens.textSecondary)

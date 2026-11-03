@@ -43,6 +43,24 @@
         }
       }
     },
+    "NSCameraUsageDescription" : {
+      "comment" : "Privacy - Camera Usage Description",
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ist Lippenlesen an, beobachtet Outloud deinen Mund, solange du das Kürzel hältst, um ohne Ton zu lesen, was du sagst. Behalten wird nur ein kleines Bild deines Mundes, auf diesem Mac."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "With lip reading on, Outloud watches your mouth while you hold the shortcut, to read what you say without sound. Only a small picture of your mouth is kept, on this Mac."
+          }
+        }
+      }
+    },
     "NSMicrophoneUsageDescription" : {
       "comment" : "Privacy - Microphone Usage Description",
       "extractionState" : "manual",

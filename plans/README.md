@@ -21,6 +21,7 @@ change; the authoritative status description always lives in the plan's own
 | `TRANSCRIPTION_PROGRESS.md` | A progress bar while transcribing, in both apps and the Live Activity | Built; the run with the user open |
 | `PANEL_QUEUE_AND_RESULTS.md` | The macOS menu bar panel lists what waits to be pasted, and steps through the results | Built (ADR 0028); the run with the user open |
 | `IOS_SHORTCUT_START.md` | The iOS shortcut starts a recording every time; a cleanup that times out does not get Outloud ended | In progress: the fixes and a log of the starts on the device built; reading out the log after some days of use open |
+| `LIP_READING.md` | Dictating without sound on the Mac by reading the lips, in German and English, trained on the Mac from the user's own dictations | In progress: built and trained on recorded video; silent measurements and the live camera test need the user |
 
 ## Implemented (`plans/done/`)
 

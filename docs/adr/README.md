@@ -59,7 +59,7 @@ able to tell what was decided without opening the file.
 - [0010 – On macOS, Outloud stores its models in the Hugging Face hub cache, in the hub's own layout](0010-models-in-the-hugging-face-hub-cache-on-macos.md)
 - [0011 – The repository holds three units — the OutloudKit package, the macOS app and the iOS app — and XcodeGen generates the apps' Xcode projects](0011-monorepo-of-three-units-with-xcodegen.md)
 - [0012 – iOS 27 and macOS 27 are the oldest versions Outloud supports](0012-ios-27-and-macos-27-are-the-oldest-supported.md)
-- [0013 – OutloudKit also holds the audio capture, the shared interface components and a command-line tool](0013-outloudkit-holds-capture-interface-and-cli.md)
+- [0013 – OutloudKit also holds the audio capture, the shared interface components and a command-line tool](0013-outloudkit-holds-capture-interface-and-cli.md) *(lip-reading target added by 0034)*
 - [0014 – Every model file is checked against the hash the catalogue pins, after the download and before it is loaded when it changed](0014-model-files-are-checked-against-pinned-hashes.md)
 - [0015 – The catalogue also offers Qwen 3.5 4B as a second, optional cleanup model](0015-qwen-4b-as-an-optional-cleanup-model.md) *(superseded by 0019)*
 - [0016 – The macOS app is signed with Developer ID of team 95ZC649QPM, notarised, and updated by Sparkle from GitHub releases](0016-macos-release-developer-id-notarised-sparkle.md)
@@ -80,3 +80,4 @@ able to tell what was decided without opening the file.
 - [0031 – On iOS, the shortcut's start holds a background task until the recording runs, and Outloud keeps a log of its starts and ends on the device to be read out later](0031-the-ios-shortcut-start-holds-its-own-assertion-and-outloud-logs-its-starts-on-the-device.md)
 - [0032 – The App Store screenshots are captured from the real app in a fresh simulator and framed by a Node script with Puppeteer, kept in `marketing/` with its own pinned dependencies](0032-store-screenshots-are-captured-from-the-real-app-and-framed-with-node-and-puppeteer.md)
 - [0033 – The App Store listing, screenshots and creative assets are uploaded by scripts through the App Store Connect API, the creative assets through its unpublished Asset Library](0033-the-store-listing-is-uploaded-through-the-app-store-connect-api-creative-assets-through-its-unpublished-asset-library.md)
+- [0034 – On macOS, lip reading runs Auto-AVSR's visual model on MLX Swift, watches the mouth only while the hotkey is held, and learns from the user's dictations on the device](0034-lip-reading-runs-auto-avsrs-visual-model-on-mlx-on-the-mac-and-learns-from-the-users-dictations-on-the-device.md)

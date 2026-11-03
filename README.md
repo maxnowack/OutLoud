@@ -261,7 +261,7 @@ rules. Where to start:
 | `AGENTS.md` | The repository-wide working rules, the map of rule files and the map of living documents. |
 | `CLAUDE.md` | A pointer to `AGENTS.md`, for harnesses that read that name. |
 | `LICENSE` | MIT. |
-| `OutloudKit/` | The shared Swift package: models, downloads, transcription, cleanup, settings, history, the interface components, and the `outloud` developer CLI. |
+| `OutloudKit/` | The shared Swift package: models, downloads, transcription, cleanup, settings, history, the interface components, the Mac's experimental lip reading (`plans/LIP_READING.md`, with its model scripts in `scripts/lipreading/`), and the `outloud` developer CLI. |
 | `apps/macos/` | The macOS menu bar app, with its end-to-end plans in `e2e/`; its Xcode project is generated from `project.yml`. |
 | `apps/ios/` | The iOS app, with its end-to-end plans in `e2e/`; its Xcode project is generated from `project.yml`. |
 | `apps/shared/` | What both apps build from: the app icon (`AppIcon.icon`, `docs/DESIGN.md` §"App icon") and the release scripts' shared parts. |

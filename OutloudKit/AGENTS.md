@@ -2,8 +2,9 @@
 
 These rules cover the shared Swift package: the model catalogue, the
 downloads, transcription, cleanup, the settings, the history and the audio
-capture (`OutloudKit`), the design system's components (`OutloudUI`) and the
-developer tool `outloud` (`OutloudCLI`) (ADR 0002, ADR 0011, ADR 0013).
+capture (`OutloudKit`), the design system's components (`OutloudUI`), lip
+reading on the Mac (`OutloudLipreading`) and the developer tool `outloud`
+(`OutloudCLI`) (ADR 0002, ADR 0011, ADR 0013, ADR 0034).
 Repository-wide rules — how to work, plan and ADR duties, commit and
 staging discipline, the Swift conventions — live in the root
 `AGENTS.md`; the architectural rules they specialise live in
@@ -20,6 +21,12 @@ this area — read them before making changes here.
   macOS 27 (ADR 0012). The apps link it as a local package.
 - `precommit` also builds `OutloudUI` for the iOS Simulator with
   `xcodebuild`, since `swift build` only builds for the Mac.
+- **(MUST)** Build `OutloudLipreading` and the CLI with `xcodebuild`
+  (`-scheme outloud -derivedDataPath .build/DerivedData-cli`) whenever
+  they run on the GPU: SwiftPM does not compile MLX's Metal shaders, and a
+  `swift build` binary fails at the first array it evaluates. It needs
+  Xcode's Metal Toolchain (`xcodebuild -downloadComponent MetalToolchain`).
+  `swift test` runs the lip-reading tests, which do not touch the GPU.
 - `swift run outloud models | download | delete <id> | dictate <file>`
   works on the shared cache — the same one the macOS app uses. `dictate`
   cleans up with Apple's on-device model, which needs Apple Intelligence
@@ -51,7 +58,9 @@ this area — read them before making changes here.
 
 ## Persistence
 
-- **(MUST)** One type owns the model files and one owns the history; no
+- **(MUST)** One type owns the model files, one the history and one the
+  lip-reading files (`LipReadingFiles`: samples, adapters; the
+  lip-reading model is the model files' owner's, in the cache); no
   other code reads or writes their paths. The model directory is shared
   with other tools on macOS (ADR 0010), and the history holds personal
   data with a retention period (`docs/SPEC.md` §"History"); a second

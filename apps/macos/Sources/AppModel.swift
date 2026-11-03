@@ -1,6 +1,8 @@
 import AppKit
 import Observation
 import OutloudKit
+import OutloudLipreading
+import UserNotifications
 
 /// The macOS app's state and the push-to-talk flow (ADR 0004).
 @MainActor
@@ -12,6 +14,9 @@ final class AppModel {
     let history: HistoryModel
     let dictation: DictationController
     let loginItem = LoginItem()
+    /// Reading the lips and learning from the dictations (`plans/LIP_READING.md`).
+    let lipReading: CameraLipReading
+    let lipCoach: LipReadingCoach
     @ObservationIgnored let engines: Engines
 
     /// The last result and how it was handed over, for the menu bar panel.
@@ -76,6 +81,11 @@ final class AppModel {
         history = HistoryModel(store: historyStore, settings: settings)
         dictation = DictationController(
             settings: settings, library: library, engines: engines, history: historyStore)
+        let lipFiles = LipReadingFiles(
+            root: support.appending(path: "Outloud/LipReading"),
+            model: store.cache.snapshotFolder(of: ModelCatalog.lipReading))
+        lipReading = CameraLipReading(files: lipFiles, settings: settings)
+        lipCoach = LipReadingCoach(files: lipFiles, settings: settings)
         hotkey =
             UserDefaults.standard.string(forKey: "hotkey").flatMap(HotkeyPreset.init(rawValue:))
             ?? .default
@@ -90,14 +100,41 @@ final class AppModel {
             sampleAudio = nil
         #endif
 
-        library.onDelete = { [engines] model in engines.unload(model) }
+        library.onDelete = { [engines, lipReading] model in
+            engines.unload(model)
+            if model.kind == .lipReading { lipReading.reload() }
+        }
         dictation.onHistoryChange = { [history] in Task { await history.refresh() } }
         dictation.onRecordingEnded = { [pauser] in pauser.resume() }
         overlay.bind(to: dictation, pauser: pauser)
+        dictation.lipReading = lipReading
+        lipReading.onSampleKept = { [lipCoach] in Task { await lipCoach.sampleKept() } }
+        lipCoach.onAdapterChange = { [lipReading] in lipReading.reload() }
+        lipCoach.onReady = { language in Task { await Self.announceLipReading(language) } }
+    }
+
+    /// Tells the user once that lip reading reads them well enough to be used
+    /// (`plans/LIP_READING.md` §"Phase 6"); asks for notifications the first time.
+    private static func announceLipReading(_ language: String) async {
+        let center = UNUserNotificationCenter.current()
+        guard (try? await center.requestAuthorization(options: [.alert, .sound])) == true else {
+            return
+        }
+        let content = UNMutableNotificationContent()
+        content.title = String(localized: "Lip reading is ready")
+        let name = Locale.current.localizedString(forLanguageCode: language) ?? language
+        content.body = String(
+            localized:
+                "Outloud now reads your lips in \(name) well enough to dictate without sound. Choose a mode in Settings › Lip Reading."
+        )
+        try? await center.add(
+            UNNotificationRequest(
+                identifier: "lipReadingReady.\(language)", content: content, trigger: nil))
     }
 
     /// Everything the app does once at launch.
     func start() async {
+        Task { [lipCoach] in await lipCoach.trainsWhenIdle() }
         hotkeyMonitor = HotkeyMonitor { [weak self] event in
             guard let self else { return }
             switch event {

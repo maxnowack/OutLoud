@@ -107,7 +107,7 @@ public actor ModelStore {
     public func modelsBeingFetched() async -> [ModelDescriptor] {
         let urls = Set(await fetcher.activeDownloads())
         guard !urls.isEmpty else { return [] }
-        return ModelCatalog.all.filter { model in
+        return ModelCatalog.downloadable.filter { model in
             model.files.contains { urls.contains(cache.downloadURL($0, of: model)) }
         }
     }

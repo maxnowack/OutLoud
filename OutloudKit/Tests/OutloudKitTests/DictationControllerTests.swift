@@ -14,6 +14,19 @@ private struct StandInCleaner: Cleaning {
     }
 }
 
+/// Reads a fixed text from any lips and keeps what it is given.
+@MainActor
+private final class StandInLipReader: LipReading {
+    var text = ""
+    var kept: [(frames: MouthFrames, transcript: String, language: String)] = []
+    func startWatching() -> Bool { true }
+    func stopWatching() async -> MouthFrames? { nil }
+    func read(_ frames: MouthFrames) async throws -> String { text }
+    func keep(_ frames: MouthFrames, transcript: String, language: String) async {
+        kept.append((frames, transcript, language))
+    }
+}
+
 @MainActor
 struct DictationControllerTests {
     let root = FileManager.default.temporaryDirectory.appending(
@@ -21,14 +34,17 @@ struct DictationControllerTests {
 
     private func controller(
         cleanupEnabled: Bool = true, cleaner: (any Cleaning)?,
-        estimates: UserDefaults? = nil
+        estimates: UserDefaults? = nil, lipReading: LipReadingMode = .off,
+        settings given: OutloudSettings? = nil
     ) throws -> DictationController {
         let store = ModelStore(
             cache: HubCache(root: root.appending(path: "hub")),
             recordURL: root.appending(path: "record.json"))
-        let settings = OutloudSettings(defaults: try #require(UserDefaults(suiteName: "\(UUID())")))
+        let settings =
+            try given ?? OutloudSettings(defaults: #require(UserDefaults(suiteName: "\(UUID())")))
         settings.cleanupEnabled = cleanupEnabled
         settings.retentionPeriod = .nothing
+        settings.lipReading = lipReading
         return DictationController(
             settings: settings, library: ModelLibrary(store: store), engines: Engines(store: store),
             history: HistoryStore(folder: root.appending(path: "history")), cleaner: { cleaner },
@@ -74,6 +90,60 @@ struct DictationControllerTests {
         #expect(controller.secondsLeft == nil)
         let learned = estimate.expectedDuration(units: 10)
         #expect(learned > .milliseconds(500) && learned < .seconds(2))
+    }
+
+    @Test func readsTheLipsInTheSilentModeWithoutTheTranscriptionModel() async throws {
+        let lips = StandInLipReader()
+        lips.text = "hello there"
+        let dictation = try controller(
+            cleaner: StandInCleaner(answer: .success("Hello there.")), lipReading: .silent)
+        dictation.lipReading = lips
+        let frames = MouthFrames(pixels: [UInt8](repeating: 0, count: 96 * 96), frames: 1)
+        let outcome = try #require(await dictation.process(samples: [0, 0], lips: frames))
+        #expect(outcome.transcript == "hello there")
+        #expect(outcome.result == "Hello there.")
+        #expect(lips.kept.isEmpty)
+    }
+
+    @Test func takesTheLanguageOfWhatIsSaidAloudAndKeepsTheLipsInIt() async throws {
+        let settings = OutloudSettings(defaults: try #require(UserDefaults(suiteName: "\(UUID())")))
+        settings.lipReadingLanguage = "en"
+        settings.learnsFromDictations = true
+        let lips = StandInLipReader()
+        let dictation = try controller(cleaner: nil, settings: settings)
+        dictation.lipReading = lips
+        let frames = MouthFrames(pixels: [UInt8](repeating: 0, count: 96 * 96), frames: 1)
+
+        await dictation.heard("Okay.", lips: Task { frames })
+        #expect(settings.lipReadingLanguage == "en")
+        #expect(lips.kept.isEmpty)
+
+        await dictation.heard("Bitte schick mir den Bericht bis Freitag.", lips: Task { frames })
+        #expect(settings.lipReadingLanguage == "de")
+        #expect(lips.kept.map(\.language) == ["de"])
+
+        settings.learnsFromDictations = false
+        await dictation.heard("Please send me the report by Friday.", lips: Task { frames })
+        #expect(settings.lipReadingLanguage == "en")
+        #expect(lips.kept.count == 1)
+    }
+
+    @Test func reportsNothingRecognisedWhenNoFaceWasSeen() async throws {
+        let dictation = try controller(cleaner: nil, lipReading: .silent)
+        dictation.lipReading = StandInLipReader()
+        #expect(await dictation.process(samples: [0], lips: nil) == nil)
+        #expect(dictation.state == .failed(.nothingRecognised))
+    }
+
+    @Test func watchesTheLipsToReadThemOrToLearnFromThem() throws {
+        let settings = OutloudSettings(defaults: try #require(UserDefaults(suiteName: "\(UUID())")))
+        #expect(!settings.learnsFromDictations)
+        #expect(!DictationController.watchesLips(settings))
+        settings.learnsFromDictations = true
+        #expect(DictationController.watchesLips(settings))
+        settings.learnsFromDictations = false
+        settings.lipReading = .whenSilent
+        #expect(DictationController.watchesLips(settings))
     }
 
     @Test func cleansUpWithTheModel() async throws {
