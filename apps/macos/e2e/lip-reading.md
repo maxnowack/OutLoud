@@ -42,8 +42,9 @@ document. Samples deleted before the run (Settings › Lip Reading › "Delete S
    one silent sample more.
 8. Choose language "German": the sentences of the practice are German; without the German model,
    the footer says it is not installed.
-9. With at least 10 English samples, "Learn Now": "Learning from your samples…" with a spinner,
-   then either "Learned: words misread fell from … to …" or "Nothing learned this time: …".
+9. With at least 10 English samples, "Learn Now": "Learning from your samples…" with a bar
+   that fills, "Preparing sample n of m", then "Round 1 of 6" to "Round 6 of 6"; meanwhile
+   the menu bar icon is a brain, and a dictation shows the recording icon over it. Then either "Learned: words misread fell from … to …" or "Nothing learned this time: …".
    With fewer samples: "More samples are needed to learn from."
 10. "Delete Samples…", confirm "Delete All": the count is 0 and the size zero bytes.
 11. Choose "Off" and dictate aloud: the camera light comes on while the shortcut is held
@@ -53,7 +54,8 @@ document. Samples deleted before the run (Settings › Lip Reading › "Delete S
     else first — "Learning from your samples…" shows, or its result. Start another such run and
     move the mouse: the spinner goes away within a few seconds, and the earlier result stays.
 13. After a learning, "Accuracy" shows its share with "good enough from 70 %", or "good enough
-    to use"; "Last learned" says when and from how many samples, and "Next learning" waits for
+    to use", and below it "Measured on n held-back sentences"; the menu bar icon is the
+    waveform again; "Last learned" says when and from how many samples, and "Next learning" waits for
     10 more. The first time the accuracy passes 70 %, one notification "Lip reading is ready"
     comes; later learnings bring none.
 14. With 10 new German samples while "Language" is "English", leave the Mac idle as in step 12:

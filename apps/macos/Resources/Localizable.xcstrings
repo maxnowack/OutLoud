@@ -482,6 +482,16 @@
         }
       }
     },
+    "Learning lip reading" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lernt Lippenlesen"
+          }
+        }
+      }
+    },
     "Lip Reading" : {
       "localizations" : {
         "de" : {
@@ -528,6 +538,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "macOS hat es nicht erlaubt. Füge Outloud unter Systemeinstellungen › Allgemein › Anmeldeobjekte hinzu."
+          }
+        }
+      }
+    },
+    "Measured on %lld held-back sentences" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gemessen an %lld zurückgehaltenen Sätzen"
           }
         }
       }
@@ -773,6 +793,16 @@
         }
       }
     },
+    "Preparing sample %lld of %lld" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bereitet Beispiel %lld von %lld vor"
+          }
+        }
+      }
+    },
     "Privacy" : {
       "localizations" : {
         "de" : {
@@ -829,6 +859,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Entfernt Füllwörter, korrigiert die Zeichensetzung und setzt Absätze, ohne zu ändern, was du gesagt hast."
+          }
+        }
+      }
+    },
+    "Round %lld of %lld" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Runde %lld von %lld"
           }
         }
       }

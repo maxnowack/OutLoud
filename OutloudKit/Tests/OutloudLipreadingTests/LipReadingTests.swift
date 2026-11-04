@@ -152,6 +152,28 @@ struct JudgementTests {
     }
 }
 
+struct TrainingProgressTests {
+    @Test func countsTheRoundsAndTheBatchesInThem() {
+        #expect(LipTraining.Progress.preparing(done: 10, of: 40).fraction == 0.25)
+        let halfway = LipTraining.Progress.learning(round: 2, of: 4, batch: 2, batches: 4)
+        #expect(halfway.fraction == 0.375)
+        #expect(LipTraining.Progress.learning(round: 1, of: 6, batch: 0, batches: 0).fraction == 0)
+    }
+
+    @Test func learnsOnlyFromSamplesOfTheLanguageThatFitInABatch() {
+        func sample(_ language: String, frames: Int) -> TrainingSample {
+            TrainingSample(
+                id: UUID(), text: "", language: language, frames: frames, silent: false,
+                date: Date(timeIntervalSince1970: 0))
+        }
+        let samples = [
+            sample("de", frames: 100), sample("de", frames: LipTraining.maximumFrames),
+            sample("de", frames: LipTraining.maximumFrames + 1), sample("en", frames: 100),
+        ]
+        #expect(LipTraining.usable(samples, language: "de") == Array(samples.prefix(2)))
+    }
+}
+
 struct LipReadingModelTests {
     @Test func readsEveryLanguageFromTheDownloadedModel() throws {
         let names = Set(ModelCatalog.lipReading.files.map(\.path))

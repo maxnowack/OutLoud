@@ -74,7 +74,9 @@ struct LipReadingSettings: View {
                     Button("Delete Samples…", role: .destructive) { confirmingDelete = true }
                         .disabled(coach.samples == 0)
                 }
-                TrainingStatus(training: coach.shownTraining(app.settings.lipReadingLanguage))
+                TrainingStatus(
+                    training: coach.shownTraining(app.settings.lipReadingLanguage),
+                    progress: coach.progress)
             } footer: {
                 Text(
                     "While you dictate aloud, the camera watches too — also with lip reading off — and Outloud keeps a small picture of your mouth with the transcript. It learns from them on this Mac while nobody uses it and it is plugged in, and tells you once it reads you well enough. Silent practice teaches it how your lips move without sound."
@@ -110,12 +112,19 @@ private struct LearningProgress: View {
     var body: some View {
         LabeledContent("Accuracy") {
             if let accuracy = coach.accuracy {
-                if accuracy > 1 - LipReadingCoach.goodEnough {
-                    Text("\(percent(accuracy)) – good enough to use")
-                } else {
-                    Text(
-                        "\(percent(accuracy)) – good enough from \(percent(1 - LipReadingCoach.goodEnough))"
-                    )
+                VStack(alignment: .trailing, spacing: Tokens.Spacing.xs) {
+                    if accuracy > 1 - LipReadingCoach.goodEnough {
+                        Text("\(percent(accuracy)) – good enough to use")
+                    } else {
+                        Text(
+                            "\(percent(accuracy)) – good enough from \(percent(1 - LipReadingCoach.goodEnough))"
+                        )
+                    }
+                    // A share of a handful of sentences moves by many points with one word.
+                    if coach.judgedOn > 0 {
+                        Text("Measured on \(coach.judgedOn) held-back sentences")
+                            .foregroundStyle(.secondary)
+                    }
                 }
             } else {
                 Text("Not measured yet")
@@ -157,15 +166,24 @@ extension LipReadingCoach {
 
 private struct TrainingStatus: View {
     let training: LipReadingCoach.Training
+    let progress: LipTraining.Progress?
 
     var body: some View {
         switch training {
         case .idle:
             EmptyView()
         case .running:
-            HStack(spacing: Tokens.Spacing.s) {
-                ProgressView().controlSize(.small)
-                Text("Learning from your samples…")
+            if let progress {
+                ProgressView(value: progress.fraction) {
+                    Text("Learning from your samples…")
+                } currentValueLabel: {
+                    Text(step(progress))
+                }
+            } else {
+                HStack(spacing: Tokens.Spacing.s) {
+                    ProgressView().controlSize(.small)
+                    Text("Learning from your samples…")
+                }
             }
         case .finished(let adopted, let before, let after):
             if adopted {
@@ -181,6 +199,15 @@ private struct TrainingStatus: View {
             Text("More samples are needed to learn from.").foregroundStyle(.secondary)
         case .failed:
             Text("Learning failed.").foregroundStyle(.secondary)
+        }
+    }
+
+    private func step(_ progress: LipTraining.Progress) -> String {
+        switch progress {
+        case .preparing(let done, let of):
+            String(localized: "Preparing sample \(done + 1) of \(of)")
+        case .learning(let round, let of, _, _):
+            String(localized: "Round \(round) of \(of)")
         }
     }
 

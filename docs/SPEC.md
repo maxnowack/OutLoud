@@ -327,9 +327,13 @@ Rules:
   by "Learn Now". The first input stops a run started on its own, and
   nothing of it is kept. A tenth of the samples is held back; what was
   learned replaces the earlier adapter only when it reads the held-back
-  samples better, and the settings say by how much.
+  samples better, and the settings say by how much. Samples longer than
+  64 seconds are left out of learning: one such sample alone would take
+  more memory than learning may hold. While it learns, the settings show
+  how far it is, and the menu bar icon shows a brain.
 - The settings show the accuracy of the reader in use — the share of words
-  it reads right on the held-back samples —, when it last learned and from
+  it reads right on the held-back samples, and on how many of them —, when
+  it last learned and from
   how many samples, and when it learns next: after how many more samples,
   or once the Mac is idle and plugged in. The first time fewer than 30 % of
   the words are misread in a language,

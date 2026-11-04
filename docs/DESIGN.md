@@ -336,9 +336,10 @@ design canvas outside the repository on 2026-10-23.
 - **macOS menu bar icon** — a template symbol that follows the state:
   `waveform`, `record.circle` while recording, `ellipsis.circle` while a
   dictation is processed in sight, `exclamationmark.circle` after a
-  failure, and `clock` while dictations wait to be pasted and none of
+  failure, `clock` while dictations wait to be pasted and none of
   these applies — with "Dictations wait to be pasted" as its accessibility
-  value.
+  value —, and `brain` while the lip reader learns and none of the others
+  applies, with "Learning lip reading" as its accessibility value.
 - **macOS menu bar panel** — a popover under the menu bar icon, opened by
   a click: StatusIndicator, FailureNotice, the PasteQueue, the ResultPager
   over the ResultCard — the newest kept result each time the panel opens,
@@ -401,12 +402,14 @@ design canvas outside the repository on 2026-10-23.
   language last dictated aloud and says so in the footer, "Allow…" while
   the camera is not allowed, a footer saying when the camera runs; "Learn from my
   dictations", the samples kept with their size, "Accuracy" against the
-  70 % that is good enough, "Last learned" (when, from how many samples),
+  70 % that is good enough with how many held-back sentences it was
+  measured on in `secondary` below it, "Last learned" (when, from how many samples),
   "Next learning" (after how many more samples, or when the Mac is idle and
   plugged in), "Practise Silently…",
   "Learn Now", a destructive "Delete Samples…" behind a confirmation, and
-  the learning's state — a small ProgressView while it runs, the word
-  error before and after once it ended), History (RetentionPicker),
+  the learning's state — a determinate ProgressView while it runs, labelled
+  "Learning from your samples…" with "Preparing sample n of m" or "Round n
+  of 6" as its value, the word error before and after once it ended), History (RetentionPicker),
   Privacy (PrivacyNotice, Acknowledgements). The silent practice is a
   sheet: "Sentence n of 40" in `secondary`, the sentence in `title2`, what
   to do next, a red note when no face was seen, and Close, Skip and

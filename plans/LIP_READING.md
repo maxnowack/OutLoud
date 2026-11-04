@@ -85,6 +85,18 @@ them) took 72 s at a peak footprint of 6.25 GB, under the budget, which counts M
 only; the largest batch, not the number of samples, sets that peak. `outloud lips measure` reads
 with the app's reader (`LipReader.forReading`, 16 bits), one reader at a time.
 
+Splitting long dictations into short samples is not built (2026-11-04): it would take
+Parakeet's word timings through `Transcribing` and the camera's offset to the microphone, which
+neither records, and the measurement above gives it nothing to move — samples up to 8 s are
+misread as often as longer ones. Learning now leaves samples over 1,600 frames (64 s) out,
+so that its largest batch stays below the memory budget; it reports its progress
+(`LipTraining.Progress`), which the tab shows as a bar, and the menu bar icon is a brain while
+it runs; "Accuracy" says on how many held-back sentences it was measured. "Learn Now" in the
+Debug app (2026-11-04) learned German from 44 of the 45 samples, the 81-second one left out,
+judged on 5, 86 % misread, at a peak footprint of 4.5 GB. Open:
+voiced English samples, which tell a weak German decoder and silent speech apart from a
+fault in the crop.
+
 ## Problem
 
 Outloud needs sound. Where the user cannot speak aloud — an open-plan office, a library, a

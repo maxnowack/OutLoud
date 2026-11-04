@@ -96,29 +96,31 @@ final class StatusItem: NSObject {
     @objc private func openSettings() { showSettings() }
     @objc private func checkForUpdates() { updater.checkForUpdates() }
 
-    /// Shows the dictation state, and whether dictations wait to be pasted, in the icon, and
-    /// follows them.
+    /// Shows the dictation state, whether dictations wait to be pasted, and whether the lip
+    /// reader learns, in the icon, and follows them.
     private func followState() {
-        let (state, waiting) = withObservationTracking {
-            (app.dictation.state, !app.pendingPastes.isEmpty)
+        let (state, waiting, learning) = withObservationTracking {
+            (app.dictation.state, !app.pendingPastes.isEmpty, app.lipCoach.training == .running)
         } onChange: { [weak self] in
             Task { @MainActor in self?.followState() }
         }
         let image = NSImage(
-            systemSymbolName: Self.symbol(for: state, waiting: waiting),
+            systemSymbolName: Self.symbol(for: state, waiting: waiting, learning: learning),
             accessibilityDescription: nil)
         image?.isTemplate = true
         item.button?.image = image
         item.button?.setAccessibilityValue(
-            waiting ? String(localized: "Dictations wait to be pasted") : nil)
+            waiting
+                ? String(localized: "Dictations wait to be pasted")
+                : learning ? String(localized: "Learning lip reading") : nil)
     }
 
-    private static func symbol(for state: DictationState, waiting: Bool) -> String {
+    private static func symbol(for state: DictationState, waiting: Bool, learning: Bool) -> String {
         switch state {
         case .recording: "record.circle"
         case .transcribing, .cleaning: "ellipsis.circle"
         case .failed: "exclamationmark.circle"
-        default: waiting ? "clock" : "waveform"
+        default: waiting ? "clock" : learning ? "brain" : "waveform"
         }
     }
 }

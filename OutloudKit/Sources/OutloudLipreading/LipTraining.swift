@@ -103,6 +103,32 @@ public enum LipTraining {
         public let seconds: Double
     }
 
+    /// How far a training is: its samples' features first, then the rounds over them.
+    public enum Progress: Equatable, Sendable {
+        case preparing(done: Int, of: Int)
+        case learning(round: Int, of: Int, batch: Int, batches: Int)
+
+        /// The share done of the step it is in, 0 to 1.
+        public var fraction: Double {
+            switch self {
+            case .preparing(let done, let of): of == 0 ? 0 : Double(done) / Double(of)
+            case .learning(let round, let of, let batch, let batches):
+                of == 0 || batches == 0
+                    ? 0 : (Double(round - 1) + Double(batch) / Double(batches)) / Double(of)
+            }
+        }
+    }
+
+    /// The most frames a batch holds. A longer sample makes a batch of its own above it, and
+    /// the largest batch sets a training's peak memory: an 81-second sample took 6.25 GB of
+    /// the 6 GB `LipReader.memoryBudget` counts MLX's share of (`plans/LIP_READING.md`).
+    static let maximumFrames = 1600
+
+    /// The samples a training learns from: those of `language` that fit in a batch.
+    static func usable(_ samples: [TrainingSample], language: String) -> [TrainingSample] {
+        samples.filter { $0.language == language && $0.frames <= maximumFrames }
+    }
+
     public enum Mode: Sendable {
         /// Adapters on the attention; the user's fine-tuning.
         case adapters
@@ -126,14 +152,16 @@ public enum LipTraining {
     /// `.decoder` (into `output`). The learning rate is measured: on 15 minutes of one speaker,
     /// 5e-4 doubled the word error and 1e-4 lowered it by a fifth (`plans/LIP_READING.md`
     /// §"Phase 4"). `stops` is asked before each sample's features and each step; when it says
-    /// so, the run ends with `TrainingError.stopped`.
+    /// so, the run ends with `TrainingError.stopped`. `progress` is told before each sample's
+    /// features and each batch.
     public static func train(
         files: LipReadingFiles, language: String, mode: Mode = .adapters, epochs: Int = 6,
         learningRate: Float = 1e-4, output: URL? = nil,
-        log: (String) -> Void = { _ in }, stops: () -> Bool = { false }
+        log: (String) -> Void = { _ in }, progress: (Progress) -> Void = { _ in },
+        stops: () -> Bool = { false }
     ) throws -> Report {
         let start = ContinuousClock.now
-        let samples = files.trainingSamples().filter { $0.language == language }
+        let samples = usable(files.trainingSamples(), language: language)
         let held = samples.filter(isHeldOut)
         let training = samples.filter { !isHeldOut($0) }
         guard training.count >= 8, !held.isEmpty else {
@@ -143,9 +171,12 @@ public enum LipTraining {
             from: files.model, language: language,
             adapter: mode == .adapters ? files.adapter(language: language) : nil)
         let network = reader.network
-        func examples(_ samples: [TrainingSample]) throws -> [TrainingExample] {
-            try samples.map { sample in
+        var prepared = 0
+        func examples(_ some: [TrainingSample]) throws -> [TrainingExample] {
+            try some.map { sample in
                 if stops() { throw TrainingError.stopped }
+                progress(.preparing(done: prepared, of: samples.count))
+                prepared += 1
                 let frames = try files.frames(of: sample)
                 let features = LipReader.lane.withLock {
                     let features = reader.features(frames).squeezed(axis: 0)
@@ -185,8 +216,9 @@ public enum LipTraining {
             var total: Float = 0
             let batches = batches(
                 of: train.shuffled(), endOfSentence: reader.vocabulary.endOfSentence)
-            for batch in batches {
+            for (index, batch) in batches.enumerated() {
                 if stops() { throw TrainingError.stopped }
+                progress(.learning(round: epoch, of: epochs, batch: index, batches: batches.count))
                 try LipReader.checkMemory()
                 total += LipReader.lane.withLock {
                     let (losses, gradients) = step(network, batch)
@@ -257,7 +289,6 @@ public enum LipTraining {
     /// Batches of similar length, padded: features, frame mask, decoder input and target
     /// (−1 where padded).
     static func batches(of examples: [TrainingExample], endOfSentence: Int) -> [[MLXArray]] {
-        let maximumFrames = 1600
         var result: [[MLXArray]] = []
         var current: [TrainingExample] = []
         func flush() {

@@ -26,12 +26,16 @@ public final class LipReadingCoach {
     /// The language `training` is of: an idle Mac learns the language it has new samples in,
     /// which need not be the one shown.
     public private(set) var trainingLanguage: String?
+    /// How far the running training is; nil while none runs.
+    public private(set) var progress: LipTraining.Progress?
     /// The share of words the reader in use misreads on the held-back samples, after the last
     /// training; `nil` before the first.
     public private(set) var error: Double?
     /// When the last training ended that measured the reader, and on how many samples.
     public private(set) var learnedOn: Date?
     public private(set) var learnedFrom = 0
+    /// How many held-back samples `error` was measured on.
+    public private(set) var judgedOn = 0
     /// The samples kept since the last training.
     public private(set) var newSamples = 0
     /// The share of words read right: `error`'s other side, at least zero.
@@ -81,6 +85,7 @@ public final class LipReadingCoach {
         error = defaults.object(forKey: "lipReadingError.\(language)") as? Double
         learnedOn = defaults.object(forKey: "lipReadingLearnedOn.\(language)") as? Date
         learnedFrom = defaults.integer(forKey: "lipReadingLearnedFrom.\(language)")
+        judgedOn = defaults.integer(forKey: "lipReadingJudgedOn.\(language)")
         newSamples = newSamples(language)
     }
 
@@ -144,9 +149,11 @@ public final class LipReadingCoach {
             Result {
                 try LipTraining.train(
                     files: files, language: language,
+                    progress: { progress in Task { @MainActor in self.show(progress) } },
                     stops: { stopsOnInput && Self.idleSeconds < Self.idleAfter })
             }
         }.value
+        progress = nil
         switch result {
         case .success(let report):
             markTrained(language, samples: report.samples + report.heldOut)
@@ -158,6 +165,7 @@ public final class LipReadingCoach {
             defaults.set(Date(), forKey: "lipReadingLearnedOn.\(language)")
             defaults.set(
                 report.samples + report.heldOut, forKey: "lipReadingLearnedFrom.\(language)")
+            defaults.set(report.heldOut, forKey: "lipReadingJudgedOn.\(language)")
             if Self.announces(
                 error: now, announced: defaults.bool(forKey: "lipReadingAnnounced.\(language)"))
             {
@@ -176,6 +184,11 @@ public final class LipReadingCoach {
         await refresh()
     }
 
+    /// A report of the training's progress, which may arrive after the training ended.
+    private func show(_ progress: LipTraining.Progress) {
+        if training == .running { self.progress = progress }
+    }
+
     private func markTrained(_ language: String, samples: Int) {
         defaults.set(samples, forKey: "lipReadingTrainedAtSamples.\(language)")
     }
@@ -187,7 +200,7 @@ public final class LipReadingCoach {
         for language in LipReadingLanguage.all {
             for key in [
                 "lipReadingTrainedAtSamples", "lipReadingAnnounced", "lipReadingError",
-                "lipReadingLearnedOn", "lipReadingLearnedFrom",
+                "lipReadingLearnedOn", "lipReadingLearnedFrom", "lipReadingJudgedOn",
             ] {
                 defaults.removeObject(forKey: "\(key).\(language)")
             }
