@@ -132,6 +132,20 @@ final class AppModel {
                 identifier: "lipReadingReady.\(language)", content: content, trigger: nil))
     }
 
+    /// Labels the lip-reading samples kept before 0.6.1, whose text holds words said before the
+    /// camera was on, from their recordings in the history (`plans/LIP_READING.md`).
+    private func relabelLipSamples() async {
+        guard
+            let transcriber = try? await engines.transcriber(for: settings.transcriptionModel)
+        else { return }
+        let store = history.store
+        let entries = await store.all().filter(\.hasAudio)
+        await lipCoach.relabelSamplesOnce(transcriber: transcriber) { text in
+            guard let entry = entries.first(where: { $0.transcript == text }) else { return nil }
+            return try? AudioFile.samples(of: await store.audioURL(of: entry))
+        }
+    }
+
     /// Everything the app does once at launch.
     func start() async {
         Task { [lipCoach] in await lipCoach.trainsWhenIdle() }
@@ -155,6 +169,7 @@ final class AppModel {
             let preloadStart = ContinuousClock.now
         #endif
         await dictation.preloadModels()
+        await relabelLipSamples()
         #if DEBUG
             let preloaded = ContinuousClock.now - preloadStart
             // `-OutloudSampleAudio <file> -OutloudAutoDictate YES` dictates the file once at

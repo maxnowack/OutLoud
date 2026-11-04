@@ -412,8 +412,10 @@ design canvas outside the repository on 2026-10-23.
   of 6" as its value, the word error before and after once it ended), History (RetentionPicker),
   Privacy (PrivacyNotice, Acknowledgements). The silent practice is a
   sheet: "Sentence n of 40" in `secondary`, the sentence in `title2`, what
-  to do next, a red note when no face was seen, and Close, Skip and
-  Start or Done (the default button).
+  to do next — after Start, a small spinner with "The camera is starting…"
+  until the camera delivers frames, Done disabled meanwhile —, a red note
+  when no face was seen, and Close, Skip and Start or Done (the default
+  button).
 - **macOS history window** — HistoryList, HistoryEntryDetail.
 - **iOS setup** — ModelSetup.
 - **iOS dictate tab** — a dismissible card pointing to dictating from any

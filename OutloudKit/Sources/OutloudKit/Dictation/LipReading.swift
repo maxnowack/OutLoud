@@ -28,6 +28,22 @@ public struct MouthFrames: Sendable, Equatable {
     }
 
     public var seconds: Double { Double(frames) / Double(Self.framesPerSecond) }
+
+    /// The end of a recording's audio that these frames cover. The camera's first frame comes
+    /// over a second after the microphone's, and both stop together (`plans/LIP_READING.md`).
+    public func seenPart(of audio: [Float], sampleRate: Double = AudioRecorder.sampleRate)
+        -> [Float]
+    {
+        Self.seenPart(of: audio, frames: frames, sampleRate: sampleRate)
+    }
+
+    /// The end of `audio` that `frames` frames cover.
+    public static func seenPart(
+        of audio: [Float], frames: Int, sampleRate: Double = AudioRecorder.sampleRate
+    ) -> [Float] {
+        Array(
+            audio.suffix(Int((Double(frames) / Double(framesPerSecond) * sampleRate).rounded())))
+    }
 }
 
 /// The lip reading the macOS app adds; OutloudKit only decides when to ask it, so that the

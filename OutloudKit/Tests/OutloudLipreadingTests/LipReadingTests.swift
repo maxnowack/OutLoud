@@ -241,3 +241,41 @@ struct LipReadingCoachTests {
         #expect(!LipReadingCoach.announces(error: 0.20, announced: true))
     }
 }
+
+/// Tells how much audio it was given, in place of Parakeet.
+private struct CountingTranscriber: Transcribing {
+    func transcribe(_ samples: [Float]) async throws -> String { "heard \(samples.count)" }
+}
+
+struct RelabellingTests {
+    @Test func labelsVoicedSamplesWithWhatWasSaidWhileTheCameraWasOn() async throws {
+        let root = FileManager.default.temporaryDirectory.appending(path: "Relabelling-\(UUID())")
+        defer { try? FileManager.default.removeItem(at: root) }
+        let files = LipReadingFiles(root: root, model: root.appending(path: "Model"))
+        func keep(_ text: String, frames: Int, silent: Bool = false) throws -> TrainingSample {
+            try files.keep(
+                MouthFrames(pixels: [UInt8](repeating: 0, count: frames * 96 * 96), frames: frames),
+                text: text, language: "de", silent: silent, date: Date(timeIntervalSince1970: 0))
+        }
+        let late = try keep("camera came late", frames: 50)
+        let gone = try keep("recording gone", frames: 50)
+        let practice = try keep("camera came late", frames: 50, silent: true)
+        let glimpse = try keep("hardly seen", frames: 5)
+        // 3.5 s recordings; the history holds those of `late` and `glimpse`.
+        let recordings = ["camera came late", "hardly seen"]
+        let changed = await files.relabel(
+            files.trainingSamples(), transcriber: CountingTranscriber(),
+            recording: { recordings.contains($0) ? [Float](repeating: 0, count: 56_000) : nil })
+
+        #expect(changed == ["de"])
+        let texts = Dictionary(
+            uniqueKeysWithValues: files.trainingSamples().map { ($0.id, $0.text) })
+        #expect(texts[late.id] == "heard 32000")
+        #expect(texts[gone.id] == "recording gone")
+        #expect(texts[practice.id] == "camera came late")
+        #expect(texts[glimpse.id] == nil)
+        #expect(
+            try files.frames(of: try #require(files.trainingSamples().first { $0.id == late.id }))
+                .frames == 50)
+    }
+}

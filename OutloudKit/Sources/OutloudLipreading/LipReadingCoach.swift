@@ -184,6 +184,27 @@ public final class LipReadingCoach {
         await refresh()
     }
 
+    /// Once: labels the samples kept before 0.6.1 with what was said while the camera was on
+    /// (`LipReadingFiles.relabel`), and learns again from every sample of the languages it
+    /// changed, as from new ones. Not done until a run finished, so a launch without the
+    /// transcription model tries again at the next.
+    public func relabelSamplesOnce(
+        transcriber: any Transcribing, recording: @escaping @Sendable (String) async -> [Float]?
+    ) async {
+        let key = "lipReadingSamplesRelabelled"
+        guard !defaults.bool(forKey: key) else { return }
+        let files = files
+        let changed = await Task.detached(priority: .utility) {
+            await files.relabel(
+                files.trainingSamples(), transcriber: transcriber, recording: recording)
+        }.value
+        for language in changed {
+            defaults.removeObject(forKey: "lipReadingTrainedAtSamples.\(language)")
+        }
+        defaults.set(true, forKey: key)
+        await refresh()
+    }
+
     /// A report of the training's progress, which may arrive after the training ended.
     private func show(_ progress: LipTraining.Progress) {
         if training == .running { self.progress = progress }

@@ -304,8 +304,10 @@ Rules:
   transcription finds nothing in the sound, the lips' text is used.
   *Always, without sound*: the lips' text is used whenever the camera ran,
   and the sound is not transcribed; when it could not run, the sound is.
-- The camera runs only while the hotkey is held, and while the user
-  practises in the settings, between Start and Done. Outloud asks for the
+- The camera runs only while the hotkey is held, and while the practice
+  sheet is open (ADR 0035). The recording does
+  not wait for the camera: it starts, and shows, at once, and the camera
+  joins it once it is on. Outloud asks for the
   camera the first time lip reading needs it; without it, dictation goes
   on with sound alone, and the settings offer to allow it.
 - The language of lip reading, German or English, follows the language of
@@ -317,9 +319,14 @@ Rules:
   a dictation that needs the lips ends with "Nothing recognised".
 - "Learn from my dictations" (off until the user turns it on): the camera
   runs with every recording, also with lip reading *Off*, and a voiced
-  dictation keeps its mouth frames with its transcript as a training sample,
-  in German or English as the transcript reads; a transcript not surely in
-  either — a single "Okay." — keeps no sample. With the mode *Off*, the
+  dictation keeps its mouth frames as a training sample, labelled with what
+  was said while the camera was on — the camera comes on over a second
+  after the microphone, so the first words are not in its frames — in German
+  or English as the whole transcript reads; a transcript not surely in
+  either — a single "Okay." — keeps no sample, nor does a recording the
+  camera saw too little of to hold a word. Samples kept before 0.6.1, with
+  the whole transcript, are relabelled once from their recording while the
+  history still holds it, and learnt from again. With the mode *Off*, the
   transcript is pasted as without the camera.
 - Learning runs on the Mac, on its own in each language once 10 new samples
   of it came in, the Mac
@@ -340,7 +347,10 @@ Rules:
   Outloud says once, with a notification, that lip reading is good enough
   to use (the user's decision of 2026-11-03).
 - "Practise Silently…" shows everyday sentences to mouth without sound;
-  each one mouthed becomes a training sample.
+  each one mouthed becomes a training sample, of the frames between Start
+  and Done. The camera stays on while the sheet is open, so that a sentence
+  starts at once; after Start it says "The camera is starting…" until the
+  camera delivers frames, and only then asks to mouth the sentence.
 - The settings show how many samples are kept and their size. "Delete
   Samples…" deletes the samples and the adapters after a confirmation.
   Samples are kept until the user deletes them; the history's retention

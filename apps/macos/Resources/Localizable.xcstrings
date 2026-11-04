@@ -973,6 +973,16 @@
         }
       }
     },
+    "The camera is starting…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Kamera startet …"
+          }
+        }
+      }
+    },
     "The language follows what you last dictated aloud. To mouth words in the other one, choose it here first." : {
       "localizations" : {
         "de" : {

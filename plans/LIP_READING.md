@@ -97,6 +97,27 @@ judged on 5, 86 % misread, at a peak footprint of 4.5 GB. Open:
 voiced English samples, which tell a weak German decoder and silent speech apart from a
 fault in the crop.
 
+Addendum 2026-11-04, the start of every recording is missing from its video: the camera's
+`startRunning` waited on the main thread, so the recording's pill showed only once the camera
+was on; it now starts on a queue of its own (`Camera`). The FaceTime HD camera takes 1.25 to
+1.45 s from cold to its first frame, whatever the format (640 × 480, `.high`, the device's
+own), and 0.15 s only when it ran less than about 3 s before (a probe app, 2026-11-04). Two
+dictations in the Debug app lacked 1.4 s and 2.2 s of their 5.5 s and 14.3 s of audio in the
+video, so every sample kept so far is labelled with words its video does not show. Planned,
+in this change set: (1) the camera starts with the microphone instead of after it; (2) a
+sample kept from a dictation is labelled with the transcript of the audio its video covers —
+the recording's last `MouthFrames.seconds`, transcribed once more after the paste — instead
+of the whole transcript; (3) once, the voiced samples whose recording is still in the history
+(matched by its transcript) are relabelled the same way, and the others are left as they are;
+(4) a practice sentence is shown to be read only once the camera delivers frames, and the
+practice keeps the camera on while its sheet is open (ADR 0035). DoD: a
+dictation's sample holds no word spoken before the camera's first frame (a test with stand-ins
+for (2) and (3)); in the app, the pill shows at once, the relabelling ran once, and the
+practice says so while the camera starts.
+In the Debug app (2026-11-04) the pill showed at once; the relabelling changed 52 of the
+user's 55 German voiced samples, 2,073 words to 1,738 (a median of 6 a sample were said before
+the camera's first frame), and new dictations kept 9 of 11, 6 of 9 and 26 of 28 words.
+
 ## Problem
 
 Outloud needs sound. Where the user cannot speak aloud — an open-plan office, a library, a

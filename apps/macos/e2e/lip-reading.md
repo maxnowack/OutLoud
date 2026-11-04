@@ -36,9 +36,11 @@ document. Samples deleted before the run (Settings › Lip Reading › "Delete S
 5. Choose "Always, without sound" and mouth "I will call you back after lunch": a text is
    pasted; dictating aloud also pastes the lips' reading, not Parakeet's.
 6. Cover the camera and mouth a sentence: the overlay says nothing was recognised.
-7. "Practise Silently…": the sheet shows "Sentence 1 of 40" and an English sentence. The camera
-   light is off. Click Start: it comes on; mouth the sentence, click Done: it goes off, and the
-   sheet shows sentence 2. Click Start, then Close: the camera light goes off. Settings shows
+7. "Practise Silently…": the sheet shows "Sentence 1 of 40" and an English sentence, and the
+   camera light comes on. Click Start: "Mouth the sentence…" at once, Done enabled (right after
+   opening, "The camera is starting…" with a spinner and Done disabled, until the light is on);
+   mouth the sentence, click Done: the light stays on, and the sheet shows sentence 2. Click
+   Start, then Close: the camera light goes off. Settings shows
    one silent sample more.
 8. Choose language "German": the sentences of the practice are German; without the German model,
    the footer says it is not installed.
@@ -47,8 +49,11 @@ document. Samples deleted before the run (Settings › Lip Reading › "Delete S
    the menu bar icon is a brain, and a dictation shows the recording icon over it. Then either "Learned: words misread fell from … to …" or "Nothing learned this time: …".
    With fewer samples: "More samples are needed to learn from."
 10. "Delete Samples…", confirm "Delete All": the count is 0 and the size zero bytes.
-11. Choose "Off" and dictate aloud: the camera light comes on while the shortcut is held
-    (learning is on). Turn "Learn from my dictations" off and dictate again: it stays off.
+11. Choose "Off" and dictate aloud: the recording pill shows as soon as the shortcut is
+    pressed, not only once the camera is on, and the camera light comes on while the shortcut
+    is held (learning is on). Start speaking as soon as the shortcut is pressed: the sample kept
+    holds only what was said once the light was on. Turn "Learn from my dictations" off and
+    dictate again: it stays off.
 12. With at least 10 new samples since the last learning, the Mac on its power adapter: leave
     mouse and keyboard alone for 10 minutes, then open the settings without touching anything
     else first — "Learning from your samples…" shows, or its result. Start another such run and

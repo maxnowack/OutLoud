@@ -223,6 +223,8 @@ private struct SilentPractice: View {
     let close: () -> Void
     @State private var index = 0
     @State private var watching = false
+    /// Whether the camera delivers frames since Start; what is mouthed before is not seen.
+    @State private var cameraOn = false
     @State private var missedFace = false
 
     private var sentences: [String] {
@@ -236,26 +238,26 @@ private struct SilentPractice: View {
                 .font(.title2)
                 .multilineTextAlignment(.center)
                 .frame(minHeight: 80)
-            Text(
-                watching
-                    ? "Mouth the sentence without sound, looking at the camera. Then click Done."
-                    : "Click Start, then mouth the sentence without sound."
-            )
-            .foregroundStyle(.secondary)
+            if watching && !cameraOn {
+                HStack(spacing: Tokens.Spacing.s) {
+                    ProgressView().controlSize(.small)
+                    Text("The camera is starting…")
+                }
+                .foregroundStyle(.secondary)
+            } else {
+                Text(
+                    watching
+                        ? "Mouth the sentence without sound, looking at the camera. Then click Done."
+                        : "Click Start, then mouth the sentence without sound."
+                )
+                .foregroundStyle(.secondary)
+            }
             if missedFace {
                 Text("No face was seen. Sit in front of the camera and try again.")
                     .foregroundStyle(.red)
             }
             HStack {
-                Button("Close") {
-                    Task {
-                        if watching {
-                            watching = false
-                            await app.lipReading.cancelPractice()
-                        }
-                        close()
-                    }
-                }
+                Button("Close") { close() }
                 Spacer()
                 Button("Skip") { index = (index + 1) % sentences.count }
                     .disabled(watching)
@@ -270,17 +272,26 @@ private struct SilentPractice: View {
                         }
                     }
                     .keyboardShortcut(.defaultAction)
+                    .disabled(!cameraOn)
                 } else {
-                    Button("Start") { watching = app.lipReading.startPractice() }
-                        .keyboardShortcut(.defaultAction)
+                    Button("Start") {
+                        cameraOn = false
+                        watching = app.lipReading.startPractice()
+                        if watching {
+                            Task {
+                                await app.lipReading.cameraIsOn()
+                                cameraOn = true
+                            }
+                        }
+                    }
+                    .keyboardShortcut(.defaultAction)
                 }
             }
         }
         .padding(Tokens.Spacing.xl)
         .frame(width: 460)
-        // The camera runs only between Start and Done (ADR 0034), however the sheet goes away.
-        .onDisappear {
-            if watching { Task { await app.lipReading.cancelPractice() } }
-        }
+        // The camera runs while the sheet is open (ADR 0035), however the sheet goes away.
+        .onAppear { _ = app.lipReading.openPractice() }
+        .onDisappear { Task { await app.lipReading.closePractice() } }
     }
 }

@@ -14,6 +14,11 @@ private struct StandInCleaner: Cleaning {
     }
 }
 
+/// Tells how much audio it was given, in place of Parakeet.
+private struct CountingTranscriber: Transcribing {
+    func transcribe(_ samples: [Float]) async throws -> String { "heard \(samples.count)" }
+}
+
 /// Reads a fixed text from any lips and keeps what it is given.
 @MainActor
 private final class StandInLipReader: LipReading {
@@ -113,18 +118,49 @@ struct DictationControllerTests {
         let dictation = try controller(cleaner: nil, settings: settings)
         dictation.lipReading = lips
         let frames = MouthFrames(pixels: [UInt8](repeating: 0, count: 96 * 96), frames: 1)
+        let seen = [Float](repeating: 0, count: 640)
 
-        await dictation.heard("Okay.", lips: Task { frames })
+        await dictation.heard(
+            "Okay.", lips: Task { frames }, audio: seen,
+            transcriber: { CountingTranscriber() })
         #expect(settings.lipReadingLanguage == "en")
         #expect(lips.kept.isEmpty)
 
-        await dictation.heard("Bitte schick mir den Bericht bis Freitag.", lips: Task { frames })
+        await dictation.heard(
+            "Bitte schick mir den Bericht bis Freitag.", lips: Task { frames }, audio: seen,
+            transcriber: { CountingTranscriber() })
         #expect(settings.lipReadingLanguage == "de")
         #expect(lips.kept.map(\.language) == ["de"])
 
         settings.learnsFromDictations = false
-        await dictation.heard("Please send me the report by Friday.", lips: Task { frames })
+        await dictation.heard(
+            "Please send me the report by Friday.", lips: Task { frames }, audio: seen,
+            transcriber: { CountingTranscriber() })
         #expect(settings.lipReadingLanguage == "en")
+        #expect(lips.kept.count == 1)
+    }
+
+    @Test func labelsTheLipsWithWhatWasSaidWhileTheCameraWasOn() async throws {
+        let settings = OutloudSettings(defaults: try #require(UserDefaults(suiteName: "\(UUID())")))
+        settings.learnsFromDictations = true
+        let lips = StandInLipReader()
+        let dictation = try controller(cleaner: nil, settings: settings)
+        dictation.lipReading = lips
+        // 2 s of frames of a 3.5 s recording: the camera came on 1.5 s after the microphone.
+        let frames = MouthFrames(
+            pixels: [UInt8](repeating: 0, count: 50 * 96 * 96), frames: 50)
+        let audio = [Float](repeating: 0, count: 56_000)
+        await dictation.heard(
+            "Bitte schick mir den Bericht bis Freitag.", lips: Task { frames }, audio: audio,
+            transcriber: { CountingTranscriber() })
+        #expect(lips.kept.map(\.transcript) == ["heard 32000"])
+        #expect(lips.kept.map(\.language) == ["de"])
+
+        // Too little of it on camera to say a word: nothing is kept.
+        let glimpse = MouthFrames(pixels: [UInt8](repeating: 0, count: 5 * 96 * 96), frames: 5)
+        await dictation.heard(
+            "Bitte schick mir den Bericht bis Freitag.", lips: Task { glimpse }, audio: audio,
+            transcriber: { CountingTranscriber() })
         #expect(lips.kept.count == 1)
     }
 

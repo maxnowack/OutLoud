@@ -101,6 +101,48 @@ extension LipReadingFiles {
         }
     }
 
+    /// Labels the voiced samples kept with their whole recording's transcript — before 0.6.1 —
+    /// with what was said while the camera was on: the end of the recording its frames cover,
+    /// transcribed again. `recording` gives a sample's recording from the history, by its
+    /// transcript; a sample whose recording is gone keeps its text, and one whose frames cover
+    /// too little to hold a word is deleted. Returns the languages of the samples it changed.
+    public func relabel(
+        _ samples: [TrainingSample], transcriber: any Transcribing,
+        recording: @Sendable (String) async -> [Float]?
+    ) async -> Set<String> {
+        var changed: Set<String> = []
+        for sample in samples where !sample.silent {
+            guard let audio = await recording(sample.text) else { continue }
+            let seen = MouthFrames.seenPart(of: audio, frames: sample.frames)
+            guard seen.count < audio.count else { continue }
+            let text: String
+            if seen.count < DictationPipeline.minimumSamples {
+                text = ""
+            } else {
+                guard let heard = try? await transcriber.transcribe(seen) else { continue }
+                text = heard.trimmingCharacters(in: .whitespacesAndNewlines)
+            }
+            do {
+                if text.isEmpty {
+                    for suffix in ["json", "lips"] {
+                        try FileManager.default.removeItem(
+                            at: self.samples.appending(path: "\(sample.id).\(suffix)"))
+                    }
+                } else {
+                    let relabelled = TrainingSample(
+                        id: sample.id, text: text, language: sample.language,
+                        frames: sample.frames, silent: false, date: sample.date)
+                    try JSONEncoder().encode(relabelled).write(
+                        to: self.samples.appending(path: "\(sample.id).json"), options: .atomic)
+                }
+                changed.insert(sample.language)
+            } catch {
+                continue
+            }
+        }
+        return changed
+    }
+
     /// Deletes every sample and the adapters learned from them.
     public func deleteSamples() throws {
         for folder in [samples, adapters]

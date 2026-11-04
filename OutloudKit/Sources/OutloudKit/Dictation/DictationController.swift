@@ -136,9 +136,16 @@ public final class DictationController {
         do {
             let otherAudio: AudioRecorder.OtherAudio =
                 settings.pausesPlayback ? (mixable ? .quiet : .interrupt) : .mix
-            try await recorder.start(otherAudio: otherAudio)
-            state = .recording
+            // The camera first: it takes over a second from cold to its first frame, and its
+            // start does not wait for it (`plans/LIP_READING.md`).
             watching = Self.watchesLips(settings) && (lipReading?.startWatching() ?? false)
+            do {
+                try await recorder.start(otherAudio: otherAudio)
+            } catch {
+                _ = endWatching()
+                throw error
+            }
+            state = .recording
             levelReading = Task { [weak self] in
                 while !Task.isCancelled {
                     try? await Task.sleep(for: InputLevel.tick)
@@ -318,21 +325,43 @@ public final class DictationController {
             if publishes() { state = .failed(.transcriptionFailed(error.localizedDescription)) }
             return nil
         }
-        await heard(transcript, lips: lips)
-        return await finish(
+        let outcome = await finish(
             transcript: transcript, audio: samples, showsProgress: showsProgress,
             prepared: prepared, publishes: publishes)
+        // After the result is handed over: keeping a sample transcribes once more.
+        let engines = engines
+        Task {
+            await heard(
+                transcript, lips: lips, audio: samples,
+                transcriber: { try await engines.transcriber(for: model) })
+        }
+        return outcome
     }
 
     /// Takes the language of a transcript heard aloud for the lips, which a silent dictation has
-    /// no sound to tell, and keeps the recording's lips with it to learn from; a transcript in
-    /// no language for sure changes neither.
-    func heard(_ transcript: String, lips: Task<MouthFrames?, Never>?) async {
+    /// no sound to tell, and keeps the recording's lips to learn from, with the transcript of
+    /// the audio they cover: the camera comes on over a second after the microphone, and a
+    /// sample labelled with words its frames do not show teaches the reader wrong ones. A
+    /// transcript in no language for sure changes neither.
+    func heard(
+        _ transcript: String, lips: Task<MouthFrames?, Never>?, audio: [Float],
+        transcriber: () async throws -> any Transcribing
+    ) async {
         guard let language = LipReadingLanguage.of(transcript) else { return }
         settings.lipReadingLanguage = language
-        if settings.learnsFromDictations, let frames = await lips?.value {
-            await lipReading?.keep(frames, transcript: transcript, language: language)
+        guard settings.learnsFromDictations, let frames = await lips?.value else { return }
+        let seen = frames.seenPart(of: audio)
+        let text: String
+        if seen.count == audio.count {
+            text = transcript
+        } else {
+            guard seen.count >= DictationPipeline.minimumSamples,
+                let heard = try? await transcriber().transcribe(seen)
+            else { return }
+            text = heard
         }
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        await lipReading?.keep(frames, transcript: text, language: language)
     }
 
     /// Reads the lips of a recording without speech and goes on as with its transcript.

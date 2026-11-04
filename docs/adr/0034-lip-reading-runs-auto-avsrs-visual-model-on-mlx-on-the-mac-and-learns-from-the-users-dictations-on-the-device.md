@@ -1,6 +1,7 @@
 # 0034 – On macOS, lip reading runs Auto-AVSR's visual model on MLX Swift, watches the mouth only while the hotkey is held, and learns from the user's dictations on the device
 
-- Status: accepted
+- Status: accepted; the camera rule of the silent practice superseded by
+  [0035](0035-the-silent-practice-keeps-the-camera-on-while-its-sheet-is-open.md)
 - Date: 2026-11-03
 
 ## Context

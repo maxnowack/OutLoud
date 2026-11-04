@@ -25,13 +25,15 @@ public final class CameraLipReading: LipReading {
     public static func requestCameraAccess() async -> Bool { await Camera.requestAccess() }
     public static var cameraAllowed: Bool { Camera.isAllowed }
 
-    public func startWatching() -> Bool {
+    public func startWatching() -> Bool { start(cropping: true) }
+
+    private func start(cropping: Bool) -> Bool {
         guard Camera.isAllowed else {
             Task { _ = await Camera.requestAccess() }
             return false
         }
         do {
-            try camera.start()
+            try camera.start(cropping: cropping)
             return true
         } catch {
             Self.log.error("camera did not start: \(String(describing: error), privacy: .public)")
@@ -67,12 +69,24 @@ public final class CameraLipReading: LipReading {
         }
     }
 
-    /// Starts the camera for a silent practice sentence (`plans/LIP_READING.md` §"Phase 5").
-    public func startPractice() -> Bool { startWatching() }
+    /// Turns the camera on for the silent practice, which keeps it on until it is closed:
+    /// a start from cold takes over a second, too long between two sentences
+    /// (`plans/LIP_READING.md` §"Phase 5").
+    public func openPractice() -> Bool { start(cropping: false) }
+
+    /// Begins a practice sentence: the frames from the next on.
+    public func startPractice() -> Bool { start(cropping: true) }
+
+    /// Returns once the camera delivers frames: over a second after a start from cold, and
+    /// what is mouthed before is not seen.
+    public func cameraIsOn() async { await camera.firstFrame() }
+
+    /// Turns the camera off as the practice closes.
+    public func closePractice() async { _ = await camera.stop() }
 
     /// Ends a practice sentence and keeps it as a silent sample; `false` when no face was seen.
     public func finishPractice(sentence: String) async -> Bool {
-        guard let frames = await stopWatching() else { return false }
+        guard let frames = await camera.takeFrames() else { return false }
         let (files, language, date) = (files, settings.lipReadingLanguage, Date())
         let kept = await Task.detached(priority: .utility) {
             (try? files.keep(frames, text: sentence, language: language, silent: true, date: date))
@@ -81,9 +95,6 @@ public final class CameraLipReading: LipReading {
         if kept { onSampleKept?() }
         return kept
     }
-
-    /// Ends a practice sentence without keeping it.
-    public func cancelPractice() async { _ = await stopWatching() }
 
     /// The loaded reader of a language, with the user's adapter where one was learned.
     func reader(language: String) throws -> LipReader {

@@ -239,11 +239,15 @@ reads no character. `OptionCommandChord` decides from when keys are typed;
 
 With lip reading or "Learn from my dictations" on, the app uses the camera
 only while the hotkey is held
-and while the user practises in the settings between Start and Done
-(ADR 0034); the camera's picture never leaves the process: Vision finds
+and while the settings' practice sheet is open (ADR 0034, ADR 0035); the camera's picture never leaves the process: Vision finds
 the face on the device, and only the grey 96 × 96 mouth crop is kept. The
 recording's mouth frames are read, and kept as a training sample only with
-"Learn from my dictations" on. The model files and adapters are loaded from
+"Learn from my dictations" on. The camera starts on a queue of its own,
+before the microphone, and the recording does not wait for it; its frames
+cover the end of the recording from its first frame on, over a second
+after the microphone's, so a sample is labelled with the transcript of
+that end of the audio (`MouthFrames.seenPart`), transcribed again after
+the result is pasted. The model files and adapters are loaded from
 `Application Support`, which every process of the user can write to; the
 model is checked against its pins when it is installed, not before every
 load.
