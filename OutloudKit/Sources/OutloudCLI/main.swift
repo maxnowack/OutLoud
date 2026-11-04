@@ -16,6 +16,7 @@ let usage = """
            outloud lips sample <video-file> <language> <text>
            outloud lips harvest <pieces-folder> <language>
            outloud lips samples
+           outloud lips measure <language> [count]
            outloud lips train <language> [adapters|decoder] [epochs] [learning-rate]
     """
 
@@ -34,6 +35,19 @@ func seconds(since start: ContinuousClock.Instant) -> String {
     return String(
         format: "%.2f s",
         Double(elapsed.components.attoseconds) / 1e18 + Double(elapsed.components.seconds))
+}
+
+/// The most memory the process has held, as Activity Monitor counts it (its peak footprint).
+func peakFootprint() -> Int64 {
+    var info = task_vm_info_data_t()
+    var count = mach_msg_type_number_t(
+        MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<integer_t>.size)
+    let result = withUnsafeMutablePointer(to: &info) {
+        $0.withMemoryRebound(to: integer_t.self, capacity: Int(count)) {
+            task_info(mach_task_self_, task_flavor_t(TASK_VM_INFO), $0, &count)
+        }
+    }
+    return result == KERN_SUCCESS ? Int64(info.ledger_phys_footprint_peak) : 0
 }
 
 /// The lip reader's files: the app's with the model downloaded into the cache
@@ -139,7 +153,7 @@ case "lips" where arguments.count >= 5 && arguments[1] == "read":
         }
     for (from, to) in segments {
         start = ContinuousClock.now
-        let text = reader.read(frames.slice(from: from, to: to))
+        let text = try reader.read(frames.slice(from: from, to: to))
         print("\(from)–\(to) s, read in \(seconds(since: start)):\n  \(text)")
     }
 
@@ -197,14 +211,46 @@ case "lips" where arguments.count >= 2 && arguments[1] == "samples":
     }
     print("on disk: \(megabytes(files.samplesSize()))")
 
+case "lips" where arguments.count >= 3 && arguments[1] == "measure":
+    // Per sample, the words misread by the reader the app reads with, first without the
+    // adapter and then with it, one reader loaded at a time; the time each took and the
+    // process's peak memory; never the text. Lines go out as they are written, so that a
+    // redirected run shows how far it is.
+    setvbuf(stdout, nil, _IOLBF, 0)
+    let files = try lipFiles()
+    let language = arguments[2]
+    var samples = files.trainingSamples().filter { $0.language == language }
+    if arguments.count > 3, let count = Int(arguments[3]) { samples = Array(samples.prefix(count)) }
+    let readers = files.adapter(language: language) == nil ? [false] : [false, true]
+    print("reader\tsample\tseconds\tsilent\theld out\twords\terrors\ttime\tpeak memory")
+    for adapted in readers {
+        let reader = try LipReader.forReading(files: files, language: language, adapted: adapted)
+        for (index, sample) in samples.enumerated() {
+            let start = ContinuousClock.now
+            let frames = try files.frames(of: sample)
+            let reference = Vocabulary.normalise(sample.text).split(separator: " ").map(
+                String.init)
+            let read = try reader.read(frames, beamSize: 4).split(separator: " ").map(String.init)
+            print(
+                [
+                    adapted ? "adapter" : "base", "\(index + 1)/\(samples.count)",
+                    String(format: "%.1f", frames.seconds), "\(sample.silent)",
+                    "\(LipTraining.isHeldOut(sample))", "\(reference.count)",
+                    "\(WordErrors.count(reference, read))", seconds(since: start),
+                    megabytes(peakFootprint()),
+                ].joined(separator: "\t"))
+        }
+    }
+
 case "lips" where arguments.count >= 3 && arguments[1] == "train":
+    setvbuf(stdout, nil, _IOLBF, 0)
     let mode: LipTraining.Mode =
         arguments.count > 3 && arguments[3] == "decoder" ? .decoder : .adapters
     let report = try LipTraining.train(
         files: try lipFiles(), language: arguments[2], mode: mode,
         epochs: arguments.count > 4 ? Int(arguments[4]) ?? 6 : 6,
-        learningRate: arguments.count > 5 ? Float(arguments[5]) ?? 1e-4 : 1e-4
-    ) { print($0) }
+        learningRate: arguments.count > 5 ? Float(arguments[5]) ?? 1e-4 : 1e-4,
+        log: { print($0) })
     print(
         "trained on \(report.samples), judged on \(report.heldOut) in \(String(format: "%.0f", report.seconds)) s: "
             + String(

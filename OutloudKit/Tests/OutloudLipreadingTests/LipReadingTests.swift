@@ -40,14 +40,51 @@ struct BeamSearchTests {
             [0, 2, 3]: [-0.1, -9, -9, -9],
         ]
         let search = BeamSearch(beamSize: 2, endOfSentence: 0, maximumLength: 5)
-        let tokens = search.run { prefixes in prefixes.map { table[$0] ?? [0, -9, -9, -9] } }
+        let tokens = search.run { prefixes, _ in prefixes.map { table[$0] ?? [0, -9, -9, -9] } }
         #expect(tokens == [2, 3])
     }
 
     @Test func stopsAtTheMaximumLength() {
         let search = BeamSearch(beamSize: 1, endOfSentence: 0, maximumLength: 3)
-        let tokens = search.run { prefixes in prefixes.map { _ in [-9, -0.1] } }
+        let tokens = search.run { prefixes, _ in prefixes.map { _ in [-9, -0.1] } }
         #expect(tokens == [1, 1, 1])
+    }
+
+    @Test func tellsEachPrefixWhichPreviousPrefixItExtends() {
+        let search = BeamSearch(beamSize: 2, endOfSentence: 0, maximumLength: 3)
+        var previous: [[Int]] = []
+        var extended = true
+        _ = search.run { prefixes, parents in
+            if !previous.isEmpty {
+                for (prefix, parent) in zip(prefixes, parents) {
+                    extended = extended && Array(prefix.dropLast()) == previous[parent]
+                }
+            }
+            previous = prefixes
+            // Token 2 is likelier after 1, token 1 after 2: the order of the beam changes.
+            return prefixes.map { $0.last == 1 ? [-9, -2, -1] : [-9, -1, -2] }
+        }
+        #expect(extended)
+        #expect(previous.count == 2)
+    }
+
+    @Test func readsAtMostOneTokenPerTwoFrames() {
+        #expect(BeamSearch.maximumLength(frames: 712) == 356)
+        #expect(BeamSearch.maximumLength(frames: 1) == 1)
+    }
+
+    @Test func stopsWhenAStepThrows() {
+        struct Stop: Error {}
+        let search = BeamSearch(beamSize: 1, endOfSentence: 0, maximumLength: 100)
+        var steps = 0
+        #expect(throws: Stop.self) {
+            try search.run { prefixes, _ in
+                steps += 1
+                if steps == 3 { throw Stop() }
+                return prefixes.map { _ in [-9, -0.1] }
+            }
+        }
+        #expect(steps == 3)
     }
 }
 

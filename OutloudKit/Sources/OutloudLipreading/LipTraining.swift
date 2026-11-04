@@ -56,6 +56,16 @@ extension LipReadingFiles {
 }
 
 extension LipReader {
+    /// The reader the app reads with: 16-bit weights, half the memory of training's 32 bits,
+    /// with the user's adapter of `language` when `adapted` and one was learned.
+    public static func forReading(files: LipReadingFiles, language: String, adapted: Bool = true)
+        throws -> LipReader
+    {
+        try load(
+            from: files.model, language: language,
+            adapter: adapted ? files.adapter(language: language) : nil, precision: .float16)
+    }
+
     /// Loads the model with the user's adapter, when one is given.
     public static func load(
         from folder: URL, language: String, adapter: URL?, precision: DType = .float32
@@ -107,7 +117,7 @@ public enum LipTraining {
     }
 
     /// Every tenth sample (by its id) is held back to judge the result.
-    static func isHeldOut(_ sample: TrainingSample) -> Bool {
+    public static func isHeldOut(_ sample: TrainingSample) -> Bool {
         sample.id.uuid.0 % 10 == 0
     }
 
@@ -120,7 +130,7 @@ public enum LipTraining {
     public static func train(
         files: LipReadingFiles, language: String, mode: Mode = .adapters, epochs: Int = 6,
         learningRate: Float = 1e-4, output: URL? = nil,
-        progress: (String) -> Void = { _ in }, stops: () -> Bool = { false }
+        log: (String) -> Void = { _ in }, stops: () -> Bool = { false }
     ) throws -> Report {
         let start = ContinuousClock.now
         let samples = files.trainingSamples().filter { $0.language == language }
@@ -147,11 +157,11 @@ public enum LipTraining {
                     text: sample.text)
             }
         }
-        progress("computing features of \(samples.count) samples")
+        log("computing features of \(samples.count) samples")
         let train = try examples(training)
         let test = try examples(held)
-        let before = errorRate(reader, test)
-        progress("word error before: \(String(format: "%.1f", before * 100)) %")
+        let before = try errorRate(reader, test)
+        log("word error before: \(String(format: "%.1f", before * 100)) %")
 
         network.freeze()
         switch mode {
@@ -177,6 +187,7 @@ public enum LipTraining {
                 of: train.shuffled(), endOfSentence: reader.vocabulary.endOfSentence)
             for batch in batches {
                 if stops() { throw TrainingError.stopped }
+                try LipReader.checkMemory()
                 total += LipReader.lane.withLock {
                     let (losses, gradients) = step(network, batch)
                     optimizer.update(model: network, gradients: gradients)
@@ -184,8 +195,8 @@ public enum LipTraining {
                     return losses[0].item(Float.self)
                 }
             }
-            let error = errorRate(reader, test)
-            progress(
+            let error = try errorRate(reader, test)
+            log(
                 "epoch \(epoch): loss \(String(format: "%.3f", total / Float(batches.count))), "
                     + "word error \(String(format: "%.1f", error * 100)) %")
             if judgement.record(error) { best = network.trainableParameters() }
@@ -300,14 +311,15 @@ public enum LipTraining {
     }
 
     /// The word error rate of the reader on `examples`.
-    static func errorRate(_ reader: LipReader, _ examples: [TrainingExample]) -> Double {
+    static func errorRate(_ reader: LipReader, _ examples: [TrainingExample]) throws -> Double {
         var errors = 0
         var words = 0
         for example in examples {
-            let text = LipReader.lane.withLock {
+            let text = try LipReader.lane.withLock {
                 let memory = reader.network.encode(
                     features: example.features.expandedDimensions(axis: 0))
-                return reader.decode(memory: memory, frames: example.features.dim(0), beamSize: 4)
+                return try reader.decode(
+                    memory: memory, frames: example.features.dim(0), beamSize: 4)
             }
             let reference = Vocabulary.normalise(example.text).split(separator: " ").map(
                 String.init)

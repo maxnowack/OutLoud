@@ -2,21 +2,28 @@ import Foundation
 
 /// Attention-only beam search, as ESPnet's with a CTC weight of 0 and no length bonus: on the
 /// Phase 0 clip it read as well as with CTC prefix scoring (`plans/LIP_READING.md` §"Phase 0").
-/// `step` returns, for each prefix, the log-probabilities of the next token.
+/// `step` returns, for each prefix, the log-probabilities of the next token; it is also told,
+/// for each prefix, which of the previous step's prefixes it extends.
 struct BeamSearch {
     let beamSize: Int
     let endOfSentence: Int
     let maximumLength: Int
 
-    func run(step: ([[Int]]) -> [[Float]]) -> [Int] {
-        var running: [(tokens: [Int], score: Float)] = [([endOfSentence], 0)]
-        var ended: [(tokens: [Int], score: Float)] = []
+    /// The most tokens a recording of `frames` frames is read into: one per two frames, 12.5 a
+    /// second, more than anyone says. Without a bound below the frames, a reader that does not
+    /// know the lips repeats itself until the frames run out, and a step costs more the longer
+    /// the prefix.
+    static func maximumLength(frames: Int) -> Int { max(1, frames / 2) }
+
+    func run(step: (_ prefixes: [[Int]], _ parents: [Int]) throws -> [[Float]]) rethrows -> [Int] {
+        var running: [(tokens: [Int], score: Float, parent: Int)] = [([endOfSentence], 0, 0)]
+        var ended: [(tokens: [Int], score: Float, parent: Int)] = []
         for _ in 0..<maximumLength {
-            let scores = step(running.map(\.tokens))
-            var candidates: [(tokens: [Int], score: Float)] = []
-            for (hypothesis, next) in zip(running, scores) {
+            let scores = try step(running.map(\.tokens), running.map(\.parent))
+            var candidates: [(tokens: [Int], score: Float, parent: Int)] = []
+            for (index, (hypothesis, next)) in zip(running, scores).enumerated() {
                 for (token, logp) in Self.top(next, beamSize) {
-                    candidates.append((hypothesis.tokens + [token], hypothesis.score + logp))
+                    candidates.append((hypothesis.tokens + [token], hypothesis.score + logp, index))
                 }
             }
             candidates.sort { $0.score > $1.score }

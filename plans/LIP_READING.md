@@ -59,6 +59,32 @@ app (Phase 6); the silent WER before and after the practice
 (Phase 5). The English and German model are installed in the app's location on this Mac
 (2026-11-03, at the pinned hashes).
 
+Addendum 2026-11-04, memory and time of a reading: measuring the user's 52 samples one by
+one held 24 GB after 23 minutes and, run again, brought the 32 GB Mac down. The beam search
+ran up to one token per frame (712 on a 28-second dictation), each step recomputed the
+decoder's keys and values of the whole recording for every hypothesis, and MLX's buffer cache
+— by default as large as its memory limit — kept the buffers of every step's new shapes. The
+decoder now computes the recording's keys and values once (`TransformerDecoder.sources`), a
+reading stops at one token per two frames (`BeamSearch.maximumLength`), MLX keeps at most
+256 MB of freed buffers, and a reading or a training stops with `LipReader.TooMuchMemory`
+past 6 GB. The same code ran in 0.6.0's training and silent reading. After the change, one
+3.7-second silent English sample read with and without the adapter in 0.39 s, at a peak
+footprint of 2.8 GB with both readers loaded in 32 bits (Release CLI, under a watchdog at
+6 GB). All of the user's samples then read in 7.5 minutes (44 German, all voiced) and 13 s
+(40 English, all silent) at a peak footprint of 6.2 GB: under 1.5 s for each up to 8 s, but
+84 s for 53 s and 183 s for 81 s, where the decoder's self-attention still recomputes the
+whole prefix at every token. Word error, base → adapter: German 95 % → 95 % (93 → 91 % up to
+8 s, 95 → 96 % above; held out 92 → 89 %), English silent 98 → 53 % on the samples it was
+trained on and 129 → 90 % on the held-out ones. Length does not explain the German error.
+With each layer's self-attention keys and values kept per hypothesis
+(`TransformerDecoder.step`), a step costs one token's work: the 44 German samples read in 81 s
+instead of 450 s, 81 s of video in 15 s instead of 183 s, 53 s in 9 s instead of 84 s, with
+the same word errors on every sample, at the same peak footprint of 6.2 GB with both readers in
+32 bits. Training the German adapter on a copy of the 45 samples (an 81-second one among
+them) took 72 s at a peak footprint of 6.25 GB, under the budget, which counts MLX's memory
+only; the largest batch, not the number of samples, sets that peak. `outloud lips measure` reads
+with the app's reader (`LipReader.forReading`, 16 bits), one reader at a time.
+
 ## Problem
 
 Outloud needs sound. Where the user cannot speak aloud — an open-plan office, a library, a

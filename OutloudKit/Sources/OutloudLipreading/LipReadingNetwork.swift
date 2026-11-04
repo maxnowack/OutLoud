@@ -130,16 +130,31 @@ class Attention: Module {
             scores = MLX.where(mask, scores, MLXArray(-Float.greatestFiniteMagnitude))
         }
         let out = matmul(softmax(scores, axis: -1, precise: true), value)
-        return linearOut(out.transposed(0, 2, 1, 3).reshaped(value.dim(0), -1, modelDimension))
+        return linearOut(out.transposed(0, 2, 1, 3).reshaped(scores.dim(0), -1, modelDimension))
+    }
+
+    /// The keys and values of `memory`, by head: what a query attends to.
+    func keysValues(_ memory: MLXArray) -> KeysValues {
+        KeysValues(keys: heads(linearK(memory)), values: heads(linearV(memory)))
     }
 
     func callAsFunction(_ query: MLXArray, _ memory: MLXArray, mask: MLXArray?) -> MLXArray {
-        let q = heads(linearQ(query))
-        let k = heads(linearK(memory))
-        let v = heads(linearV(memory))
-        let scale = 1 / Float(modelDimension / headCount).squareRoot()
-        return attend(matmul(q, k.transposed(0, 1, 3, 2)) * scale, v, mask: mask)
+        callAsFunction(query, keysValues(memory), mask: mask)
     }
+
+    /// Attends to keys and values computed before; a batch of one is shared by every query.
+    func callAsFunction(_ query: MLXArray, _ source: KeysValues, mask: MLXArray?) -> MLXArray {
+        let q = heads(linearQ(query))
+        let scale = 1 / Float(modelDimension / headCount).squareRoot()
+        return attend(
+            matmul(q, source.keys.transposed(0, 1, 3, 2)) * scale, source.values, mask: mask)
+    }
+}
+
+/// An attention's keys and values [batch, heads, time, headDimension].
+struct KeysValues {
+    let keys: MLXArray
+    let values: MLXArray
 }
 
 /// Self-attention with relative positions (Transformer-XL style, as in ESPnet's conformer).
@@ -281,12 +296,29 @@ final class DecoderLayer: Module {
     }
 
     func callAsFunction(
-        _ x: MLXArray, causal: MLXArray, memory: MLXArray, memoryMask: MLXArray?
+        _ x: MLXArray, causal: MLXArray, source: KeysValues, memoryMask: MLXArray?
     ) -> MLXArray {
         let n1 = norm1(x)
         var x = x + selfAttention(n1, n1, mask: causal)
-        x = x + sourceAttention(norm2(x), memory, mask: memoryMask)
+        x = x + sourceAttention(norm2(x), source, mask: memoryMask)
         return x + feedForward(norm3(x))
+    }
+
+    /// One token further: `x` [batch, 1, dimension] is the newest position, `cache` the
+    /// self-attention's keys and values of the positions before it. Causal attention leaves
+    /// those unchanged by later tokens, so the result is the full pass's last position.
+    func step(_ x: MLXArray, cache: KeysValues?, source: KeysValues) -> (MLXArray, KeysValues) {
+        let n1 = norm1(x)
+        let new = selfAttention.keysValues(n1)
+        let all =
+            cache.map {
+                KeysValues(
+                    keys: concatenated([$0.keys, new.keys], axis: 2),
+                    values: concatenated([$0.values, new.values], axis: 2))
+            } ?? new
+        var x = x + selfAttention(n1, all, mask: nil)
+        x = x + sourceAttention(norm2(x), source, mask: nil)
+        return (x + feedForward(norm3(x)), all)
     }
 }
 
@@ -305,14 +337,43 @@ final class TransformerDecoder: Module {
 
     /// Logits for every position of `tokens` [batch, length] given `memory`.
     func callAsFunction(_ tokens: MLXArray, memory: MLXArray, memoryMask: MLXArray?) -> MLXArray {
+        callAsFunction(tokens, sources: sources(memory), memoryMask: memoryMask)
+    }
+
+    /// Each layer's keys and values of `memory`. A beam search computes them once per
+    /// recording, not once per token and hypothesis: they are most of a step's work.
+    func sources(_ memory: MLXArray) -> [KeysValues] {
+        decoders.map { $0.sourceAttention.keysValues(memory) }
+    }
+
+    func callAsFunction(_ tokens: MLXArray, sources: [KeysValues], memoryMask: MLXArray?)
+        -> MLXArray
+    {
         let length = tokens.dim(1)
-        let positions = sinusoids(MLXArray(0..<Int32(length))).asType(memory.dtype)
+        let positions = sinusoids(MLXArray(0..<Int32(length))).asType(sources[0].keys.dtype)
         var x = embed(tokens) * Float(modelDimension).squareRoot() + positions
         let causal = tril(MLXArray.ones([length, length], type: Bool.self))
-        for layer in decoders {
-            x = layer(x, causal: causal, memory: memory, memoryMask: memoryMask)
+        for (layer, source) in zip(decoders, sources) {
+            x = layer(x, causal: causal, source: source, memoryMask: memoryMask)
         }
         return outputLayer(afterNorm(x))
+    }
+
+    /// The logits [batch, vocabulary] after `tokens` [batch, 1] at `position`, with each
+    /// layer's self-attention cache of the positions before; returns the caches grown by it.
+    /// A beam search's step costs one token's work this way, not the whole prefix's.
+    func step(
+        _ tokens: MLXArray, position: Int, caches: [KeysValues]?, sources: [KeysValues]
+    ) -> (MLXArray, [KeysValues]) {
+        let positions = sinusoids(MLXArray([Int32(position)])).asType(sources[0].keys.dtype)
+        var x = embed(tokens) * Float(modelDimension).squareRoot() + positions
+        var grown: [KeysValues] = []
+        for (index, (layer, source)) in zip(decoders, sources).enumerated() {
+            let (next, cache) = layer.step(x, cache: caches?[index], source: source)
+            x = next
+            grown.append(cache)
+        }
+        return (outputLayer(afterNorm(x))[0..., -1, 0...], grown)
     }
 }
 

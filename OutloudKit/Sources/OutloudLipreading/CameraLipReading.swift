@@ -46,7 +46,8 @@ public final class CameraLipReading: LipReading {
     public func read(_ frames: MouthFrames) async throws -> String {
         let reader = try reader(language: settings.lipReadingLanguage)
         let start = ContinuousClock.now
-        let text = await Task.detached(priority: .userInitiated) { reader.read(frames) }.value
+        let text = try await Task.detached(priority: .userInitiated) { try reader.read(frames) }
+            .value
         Self.log.info(
             "read \(frames.frames) frames in \(ContinuousClock.now - start, privacy: .public)")
         return LipText.readable(text, language: reader.language)
@@ -88,9 +89,7 @@ public final class CameraLipReading: LipReading {
     func reader(language: String) throws -> LipReader {
         if let reader = readers[language] { return reader }
         guard files.hasModel(language: language) else { throw ReadError.noModel(language) }
-        let reader = try LipReader.load(
-            from: files.model, language: language, adapter: files.adapter(language: language),
-            precision: .float16)
+        let reader = try LipReader.forReading(files: files, language: language)
         readers[language] = reader
         return reader
     }
