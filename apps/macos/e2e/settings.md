@@ -10,7 +10,9 @@ Setup completed.
 ## Steps
 
 1. Right-click the menu bar icon: a menu shows "Settings…", "Check for Updates…" and "Quit
-   Outloud". Choose "Settings…": the settings window opens. A click on the icon opens the panel
+   Outloud". Choose "Settings…": the settings window opens in front and takes typing. Click into
+   another app's window, so that the settings are behind it, and choose "Settings…" again: the
+   settings window comes to the front and takes typing. A click on the icon opens the panel
    instead, with "History…" as its only button.
 2. With Accessibility access allowed, the shortcut is "⌥ ⌘". In another app, hold ⌥ ⌘ and speak,
    release: the result is pasted. Hold ⌥ ⌘ and press D at once: no dictation (the overlay may
