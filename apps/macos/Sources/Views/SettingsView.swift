@@ -1,7 +1,9 @@
+import AppKit
 import OutloudKit
 import OutloudLipreading
 import OutloudUI
 import SwiftUI
+import UniformTypeIdentifiers
 
 /// The settings window (`docs/DESIGN.md` §"Screens": macOS settings window).
 struct SettingsView: View {
@@ -150,6 +152,10 @@ private struct GeneralSettings: View {
                     "Without it, or when no text field is focused, the result stays on the clipboard for pasting with ⌘V."
                 )
             }
+
+            if app.autoPasteEnabled {
+                SendWithReturnSettings(settings: app.settings)
+            }
         }
         .formStyle(.grouped)
         .trackingCleanupAvailability($cleanup)
@@ -158,6 +164,54 @@ private struct GeneralSettings: View {
             app.refreshAccessibility()
             app.loginItem.refresh()
         }
+    }
+}
+
+/// The apps where a pasted dictation is sent with Return (ADR 0036).
+private struct SendWithReturnSettings: View {
+    @Bindable var settings: OutloudSettings
+    @State private var choosingApp = false
+
+    var body: some View {
+        Section {
+            if settings.submitAfterPasteApps.isEmpty {
+                Text("No apps").foregroundStyle(.secondary)
+            }
+            ForEach(settings.submitAfterPasteApps, id: \.self) { bundleID in
+                HStack {
+                    let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)
+                    if let url {
+                        Image(nsImage: NSWorkspace.shared.icon(forFile: url.path))
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                            .accessibilityHidden(true)
+                    }
+                    Text(url.map { FileManager.default.displayName(atPath: $0.path) } ?? bundleID)
+                    Spacer()
+                    Button("Remove") {
+                        settings.submitAfterPasteApps.removeAll { $0 == bundleID }
+                    }
+                }
+            }
+            Button("Add App…") { choosingApp = true }
+        } header: {
+            Text("Send with Return")
+        } footer: {
+            Text(
+                "In these apps, Outloud presses Return after pasting a dictation, so a message is sent at once."
+            )
+        }
+        .fileImporter(
+            isPresented: $choosingApp, allowedContentTypes: [.application],
+            allowsMultipleSelection: false
+        ) { result in
+            guard let url = try? result.get().first,
+                let bundleID = Bundle(url: url)?.bundleIdentifier,
+                !settings.submitAfterPasteApps.contains(bundleID)
+            else { return }
+            settings.submitAfterPasteApps.append(bundleID)
+        }
+        .fileDialogDefaultDirectory(URL(filePath: "/Applications"))
     }
 }
 

@@ -305,9 +305,30 @@ final class AppModel {
         // the user records.
         show(
             wasInSight
-                ? AutoPaster.deliver(outcome.result, autoPaste: autoPasteEnabled)
+                ? paste(outcome.result, autoPaste: autoPasteEnabled)
                 : AutoPaster.copy(outcome.result, autoPaste: autoPasteEnabled))
     }
+
+    /// Pastes `text` into the field in front and, in an app the user listed, sends it with Return
+    /// once the app has handled the ⌘V — unless a recording started meanwhile (ADR 0036).
+    private func paste(_ text: String, autoPaste: Bool) -> AutoPaster.Delivery {
+        let target = AutoPaster.focusedTarget()
+        let delivery = AutoPaster.deliver(text, autoPaste: autoPaste)
+        guard delivery == .pasted, let target,
+            settings.submitsAfterPaste(
+                in: NSRunningApplication(processIdentifier: target.pid)?.bundleIdentifier)
+        else { return delivery }
+        Task { [weak self] in
+            try? await Task.sleep(for: Self.returnDelay)
+            guard let self, self.recordingStarted == nil else { return }
+            AutoPaster.postReturn(into: target)
+        }
+        return delivery
+    }
+
+    /// How long the Return waits for the target to have handled the ⌘V: it reads the clipboard
+    /// asynchronously (ADR 0036).
+    private static let returnDelay = Duration.milliseconds(200)
 
     /// Shows how a result was handed over — not over the pill of a recording that started
     /// meanwhile, nor of a dictation processed in sight.
@@ -345,7 +366,7 @@ final class AppModel {
         }
         for action in returnPaste.check(focused: focused) {
             switch action {
-            case .paste(let text): show(AutoPaster.deliver(text, autoPaste: true))
+            case .paste(let text): show(paste(text, autoPaste: true))
             case .copy(let text): show(AutoPaster.copy(text, autoPaste: true))
             case .leftField(let ticket, let field):
                 if let sight = inSight, sight.ticket == ticket {

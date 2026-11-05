@@ -70,8 +70,9 @@ describe this area — read them before making changes here.
   while the hotkey is held; the camera's one exception is the silent
   practice in the settings, between the user's Start and Done (ADR 0034).
   Keep only the mouth crop of the camera's picture. Post keystrokes
-  only to paste a result after the hotkey was released, into an element
-  that takes text and is not a password field (ADR 0004). Alter the
+  only to paste a result — and to send it, ADR 0036 — after the hotkey
+  was released, into an element that takes text and is not a password
+  field (ADR 0004). Alter the
   user's own keystrokes only by taking ⌥ and ⌘ off the keys typed while
   the ⌥ ⌘ chord is held past its first second, with the tap that does it
   disabled at every other time (ADR 0029). The app holds the microphone
@@ -81,8 +82,12 @@ describe this area — read them before making changes here.
   it was recorded in — or, for one started in a field that already had
   one, the next other field focused —, while its app is in front and that
   field — element and identity — has the focus; never activate an app to
-  paste, and post no key but ⌘V (ADR 0026, ADR 0027). A paste on a looser
-  match lands the user's words in another conversation.
+  paste, and post no key but ⌘V (ADR 0026, ADR 0027). The one other key
+  is a single Return after a ⌘V into an app the user listed, posted only
+  while that same field — element and identity — still has the focus, its
+  app is in front and no recording has started (ADR 0036). A paste on a
+  looser match lands the user's words in another conversation; a Return on
+  one sends them there.
 - **(MUST NOT)** Activate any app without the user's interaction — not on
   a timer, a focus check or a finished dictation. The one activation of
   another app hands it back to the app that was in front when the user

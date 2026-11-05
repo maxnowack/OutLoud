@@ -18,6 +18,7 @@ public final class OutloudSettings {
         transcriptionModelID =
             defaults.string(forKey: Key.transcriptionModel) ?? ModelCatalog.parakeetV3.id
         hasCompletedSetup = defaults.bool(forKey: Key.hasCompletedSetup)
+        submitAfterPasteApps = defaults.stringArray(forKey: Key.submitsAfterPaste) ?? []
         pausesPlayback =
             defaults.object(forKey: Key.pausesPlayback) == nil
             ? true : defaults.bool(forKey: Key.pausesPlayback)
@@ -66,6 +67,17 @@ public final class OutloudSettings {
         didSet { defaults.set(lipReadingLanguage, forKey: Key.lipReadingLanguage) }
     }
 
+    /// The bundle identifiers of the apps where a pasted dictation is sent with Return, on
+    /// macOS (ADR 0036); empty unless the user listed some.
+    public var submitAfterPasteApps: [String] {
+        didSet { defaults.set(submitAfterPasteApps, forKey: Key.submitsAfterPaste) }
+    }
+
+    /// Whether a dictation pasted into the app `bundleID` is followed by Return (ADR 0036).
+    public func submitsAfterPaste(in bundleID: String?) -> Bool {
+        bundleID.map(submitAfterPasteApps.contains) ?? false
+    }
+
     /// Whether the user has confirmed the models at first launch.
     public var hasCompletedSetup: Bool {
         didSet { defaults.set(hasCompletedSetup, forKey: Key.hasCompletedSetup) }
@@ -84,5 +96,6 @@ public final class OutloudSettings {
         static let lipReading = "lipReading"
         static let learnsFromDictations = "learnsFromDictations"
         static let lipReadingLanguage = "lipReadingLanguage"
+        static let submitsAfterPaste = "submitsAfterPaste"
     }
 }

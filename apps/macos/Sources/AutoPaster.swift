@@ -170,6 +170,21 @@ enum AutoPaster {
         up?.post(tap: .cghidEventTap)
     }
 
+    /// Posts one Return into `target` — only while it, element and identity, has the focus and
+    /// its app is in front, so that a Return never sends text in another field (ADR 0036).
+    static func postReturn(into target: Target) {
+        guard focusedTarget(in: target.pid) == target else { return }
+        let source = CGEventSource(stateID: .combinedSessionState)
+        let keyReturn = CGKeyCode(36)  // kVK_Return
+        let down = CGEvent(keyboardEventSource: source, virtualKey: keyReturn, keyDown: true)
+        let up = CGEvent(keyboardEventSource: source, virtualKey: keyReturn, keyDown: false)
+        // A modifier the user holds would turn it into another shortcut, such as ⇧ Return.
+        down?.flags = []
+        up?.flags = []
+        down?.post(tap: .cghidEventTap)
+        up?.post(tap: .cghidEventTap)
+    }
+
     /// Whether the focused element takes typed text. Protected (password) fields do not count.
     static func focusedElementAcceptsText() -> Bool {
         focusedElement().map(acceptsText) ?? false

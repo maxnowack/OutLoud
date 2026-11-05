@@ -217,12 +217,19 @@ Rules:
   for which an earlier one is still processed or waits goes into the next
   other text field the user focuses; when it is done before the user
   focused one, it is copied. Dictations of different fields wait side by
-  side. No Enter is pressed, and Outloud never brings an app to the front
-  to paste;
+  side. No Enter is pressed — except in the apps listed under "Send with
+  Return" below —, and Outloud never brings an app to the front to paste;
   every result stays in the history. Without Accessibility access or a
   text field at the start, or with auto-paste off, the result is delivered
   at its end as above, and copied when a new recording sent it out of
   sight.
+- **Send with Return** (ADR 0036): in the settings the user lists apps —
+  none by default. A dictation pasted into a text field of a listed app,
+  at once or on the return to its field, is followed by one Return, so a
+  chat message is sent. The Return is pressed only while the same field
+  still has the focus, its app is in front and no new recording has
+  started; otherwise the text stays in the field unsent. A result that is
+  only copied is never sent.
 - **What waits**: while dictations wait to be pasted, the menu bar panel
   lists them, oldest first — where each goes ("Into <app>", "Into the next
   text field") and its text, or "Processing…" while it is processed —, and

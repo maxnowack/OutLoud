@@ -393,7 +393,10 @@ design canvas outside the repository on 2026-10-23.
   CleanupAvailabilityNote; the shortcut, with a `warning` note and "Allow…"
   while ⌥ ⌘ waits for Accessibility access; "Pause playback while
   dictating", with "Recording system audio" and "Allow…" while that
-  permission is declined; auto-paste), Models (ModelRow of the
+  permission is declined; auto-paste; while auto-paste is on, "Send with
+  Return": the listed apps, each with its icon, its name and a "Remove"
+  button, "Add App…", which opens the file dialog on the applications
+  folder, and "No apps" when the list is empty), Models (ModelRow of the
   transcription model), Lip Reading (a first section headed "Experimental"
   with a flask in `warning`, the ModelRow of the lip-reading model —
   "Lip reading" in its caption — and a footer saying it still misreads

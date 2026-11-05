@@ -1102,6 +1102,56 @@
           }
         }
       }
+    },
+    "Send with Return" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mit Enter senden"
+          }
+        }
+      }
+    },
+    "No apps" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Apps"
+          }
+        }
+      }
+    },
+    "Remove" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entfernen"
+          }
+        }
+      }
+    },
+    "Add App…" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App hinzufügen …"
+          }
+        }
+      }
+    },
+    "In these apps, Outloud presses Return after pasting a dictation, so a message is sent at once." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In diesen Apps drückt Outloud nach dem Einfügen eines Diktats Enter, damit eine Nachricht sofort gesendet wird."
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

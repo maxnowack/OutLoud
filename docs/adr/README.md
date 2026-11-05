@@ -50,7 +50,7 @@ able to tell what was decided without opening the file.
 - [0001 – The project does not maintain a technical dossier](0001-technical-dossier.md)
 - [0002 – Outloud is a native Swift and SwiftUI app for iOS and macOS, with one shared Swift package and one module per platform](0002-native-swift-and-swiftui-with-one-shared-package.md)
 - [0003 – On iOS, a shortcut starts the input and the result reaches the target app through the clipboard; the first version ships no custom keyboard](0003-ios-hands-over-through-the-clipboard-without-a-keyboard.md)
-- [0004 – On macOS, Outloud is a menu bar app with a held push-to-talk hotkey that pastes into the active field when permitted and otherwise leaves the result on the clipboard](0004-macos-menu-bar-push-to-talk-with-auto-paste.md) *(extended by 0026, 0027)*
+- [0004 – On macOS, Outloud is a menu bar app with a held push-to-talk hotkey that pastes into the active field when permitted and otherwise leaves the result on the clipboard](0004-macos-menu-bar-push-to-talk-with-auto-paste.md) *(extended by 0026, 0027, 0036)*
 - [0005 – Outloud transcribes and cleans up on the device, on iOS and macOS, with open models the user chooses and downloads at first launch](0005-on-device-models-chosen-at-first-launch.md) *(catalogue narrowed by 0006, shared storage settled by 0009, cleanup model dropped by 0019)*
 - [0006 – The first version transcribes with Parakeet v3 and cleans up with a Qwen model of about 0.8B parameters](0006-parakeet-v3-and-a-small-qwen-model.md) *(cleanup model superseded by 0019)*
 - [0007 – Outloud for macOS is built for the App Sandbox to go into the Mac App Store; its models stay in its own container where no shared location is open to it](0007-mac-app-store-and-models-in-the-sandbox.md) *(superseded by 0009)*
@@ -82,3 +82,4 @@ able to tell what was decided without opening the file.
 - [0033 – The App Store listing, screenshots and creative assets are uploaded by scripts through the App Store Connect API, the creative assets through its unpublished Asset Library](0033-the-store-listing-is-uploaded-through-the-app-store-connect-api-creative-assets-through-its-unpublished-asset-library.md)
 - [0034 – On macOS, lip reading runs Auto-AVSR's visual model on MLX Swift, watches the mouth only while the hotkey is held, and learns from the user's dictations on the device](0034-lip-reading-runs-auto-avsrs-visual-model-on-mlx-on-the-mac-and-learns-from-the-users-dictations-on-the-device.md)
 - [0035 – The silent practice keeps the camera on while its sheet is open](0035-the-silent-practice-keeps-the-camera-on-while-its-sheet-is-open.md)
+- [0036 – On macOS, a dictation pasted into an app the user listed is followed by one Return](0036-return-after-the-paste-in-the-apps-the-user-chose.md)

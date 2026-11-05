@@ -13,6 +13,7 @@ Executed as `apps/macos/AGENTS.md` §"End-to-end test plans" says.
 | Auto-paste and clipboard fallback | `dictation.md` | |
 | Paste on return (leaving the field while a dictation is processed) | `paste-on-return.md` | Needs Messages, Claude and TextEdit |
 | Settings › General | `settings.md` | |
+| Settings › General › Send with Return, the Return after a paste | `return-after-paste.md` | Needs Claude and TextEdit |
 | Open at login | `first-launch.md`, `settings.md` | Log out and in once |
 | Settings › Models | `models.md` | |
 | Settings › History, Privacy | `settings.md` | |
