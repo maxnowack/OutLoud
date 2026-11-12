@@ -1,5 +1,6 @@
 import AppKit
 import ApplicationServices
+import OutloudKit
 
 /// Hands a result to the app the user is typing in (ADR 0004).
 ///
@@ -100,6 +101,18 @@ enum AutoPaster {
         let element = focused as! AXUIElement
         guard acceptsText(element) else { return nil }
         return Target(element: element, pid: pid, identity: identity(of: element))
+    }
+
+    /// The text of `target` — only while it, element and identity, has the focus and its app is in
+    /// front, never of a password field, and `nil` for one longer than
+    /// `CorrectionLearning.maximumFieldLength`. Read to learn the user's correction of a paste
+    /// (ADR 0040); the text is held in memory only and never logged.
+    static func text(of target: Target) -> String? {
+        guard focusedTarget(in: target.pid) == target,
+            let text = attribute(kAXValueAttribute, of: target.element),
+            text.count <= CorrectionLearning.maximumFieldLength
+        else { return nil }
+        return text
     }
 
     /// The window's title, the element's identifiers and, inside web content, the page's title

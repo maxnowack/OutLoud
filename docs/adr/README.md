@@ -83,3 +83,5 @@ able to tell what was decided without opening the file.
 - [0034 – On macOS, lip reading runs Auto-AVSR's visual model on MLX Swift, watches the mouth only while the hotkey is held, and learns from the user's dictations on the device](0034-lip-reading-runs-auto-avsrs-visual-model-on-mlx-on-the-mac-and-learns-from-the-users-dictations-on-the-device.md)
 - [0035 – The silent practice keeps the camera on while its sheet is open](0035-the-silent-practice-keeps-the-camera-on-while-its-sheet-is-open.md)
 - [0036 – On macOS, a dictation pasted into an app the user listed is followed by one Return](0036-return-after-the-paste-in-the-apps-the-user-chose.md)
+- [0039 – Corrections are a word list on the device, applied literally before and after the cleanup](0039-corrections-are-a-word-list-on-the-device-applied-before-and-after-the-cleanup.md)
+- [0040 – The Mac learns a correction by reading the field it just pasted into](0040-the-mac-learns-a-correction-by-reading-the-field-it-just-pasted-into.md)

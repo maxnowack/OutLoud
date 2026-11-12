@@ -31,6 +31,16 @@
         }
       }
     },
+    "%@ → %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ → %@"
+          }
+        }
+      }
+    },
     "%@, %@" : {
       "localizations" : {
         "de" : {
@@ -158,6 +168,26 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "Add" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hinzufügen"
+          }
+        }
+      }
+    },
+    "Add a correction" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Korrektur hinzufügen"
           }
         }
       }
@@ -305,6 +335,66 @@
         }
       }
     },
+    "Corrected %lld times" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Corrected once"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Corrected %lld times"
+                }
+              }
+            }
+          }
+        },
+        "de" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Einmal korrigiert"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld-mal korrigiert"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Correction added" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Korrektur hinzugefügt"
+          }
+        }
+      }
+    },
+    "Corrections" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Korrekturen"
+          }
+        }
+      }
+    },
     "Delete" : {
       "localizations" : {
         "de" : {
@@ -426,6 +516,16 @@
         }
       }
     },
+    "Heard as" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gehört als"
+          }
+        }
+      }
+    },
     "Into %@" : {
       "localizations" : {
         "de" : {
@@ -462,6 +562,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Behaltene Ergebnisse"
+          }
+        }
+      }
+    },
+    "Learned · %@" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gelernt · %@"
           }
         }
       }
@@ -527,6 +637,16 @@
         }
       }
     },
+    "No corrections yet" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch keine Korrekturen"
+          }
+        }
+      }
+    },
     "No results kept" : {
       "localizations" : {
         "de" : {
@@ -543,6 +663,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "nicht geladen"
+          }
+        }
+      }
+    },
+    "Not used yet" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Noch nicht verwendet"
           }
         }
       }
@@ -627,6 +757,26 @@
         }
       }
     },
+    "out loud" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "out loud"
+          }
+        }
+      }
+    },
+    "Outloud" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outloud"
+          }
+        }
+      }
+    },
     "Outloud keeps no results and no recordings." : {
       "localizations" : {
         "de" : {
@@ -684,6 +834,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Outloud muss das Modell erneut laden, bevor du es wieder verwendest."
+          }
+        }
+      }
+    },
+    "Outloud writes what it heard as you write it, in every result. Leave “Heard as” empty to keep only a spelling." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Outloud schreibt, was es so gehört hat, in jedem Ergebnis so, wie du es schreibst. Lass „Gehört als“ leer, um nur eine Schreibweise festzulegen."
           }
         }
       }
@@ -764,6 +924,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Aufnahme …"
+          }
+        }
+      }
+    },
+    "Remove" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entfernen"
           }
         }
       }
@@ -889,6 +1059,26 @@
         }
       }
     },
+    "The corrections could not be read. Outloud leaves them as they are." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Korrekturen konnten nicht gelesen werden. Outloud lässt sie unverändert."
+          }
+        }
+      }
+    },
+    "The corrections could not be saved." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Korrekturen konnten nicht gespeichert werden."
+          }
+        }
+      }
+    },
     "The larger model also applies spoken corrections such as “scratch that”, but takes about four times as long." : {
       "extractionState" : "stale",
       "localizations" : {
@@ -896,6 +1086,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Das größere Modell setzt auch gesprochene Korrekturen wie „streich das“ um, braucht aber etwa viermal so lange."
+          }
+        }
+      }
+    },
+    "The list is full. Delete a correction first." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Liste ist voll. Lösche zuerst eine Korrektur."
           }
         }
       }
@@ -1001,6 +1201,16 @@
         }
       }
     },
+    "This is already corrected." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das wird schon korrigiert."
+          }
+        }
+      }
+    },
     "Thorough" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1095,6 +1305,16 @@
         }
       }
     },
+    "Use up to four words, without < or >." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Höchstens vier Wörter, ohne < oder >."
+          }
+        }
+      }
+    },
     "Uses Apple Intelligence on this device. No download." : {
       "localizations" : {
         "de" : {
@@ -1135,12 +1355,32 @@
         }
       }
     },
+    "When you change a word or two of a pasted dictation within 15 seconds, Outloud learns it." : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Änderst du innerhalb von 15 Sekunden ein oder zwei Wörter eines eingefügten Diktats, lernt Outloud das."
+          }
+        }
+      }
+    },
     "With audio" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Mit Aufnahme"
+          }
+        }
+      }
+    },
+    "Write as" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Schreiben als"
           }
         }
       }

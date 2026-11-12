@@ -78,6 +78,8 @@ public final class DictationController {
     @ObservationIgnored public var lipReading: (any LipReading)?
     /// Whether the camera runs with the current recording.
     @ObservationIgnored private var watching = false
+    /// The user's corrections, applied to every result (`docs/SPEC.md` §"Corrections").
+    @ObservationIgnored public var corrections: CorrectionStore?
 
     public init(
         settings: OutloudSettings, library: ModelLibrary, engines: Engines, history: HistoryStore,
@@ -465,7 +467,9 @@ public final class DictationController {
         transcript: String, audio: [Float]?, showsProgress: Bool, prepared: (any Cleaning)? = nil,
         publishes: @escaping @MainActor () -> Bool = { true }
     ) async -> DictationOutcome {
-        var outcome = DictationOutcome(transcript: transcript)
+        let corrections = corrections?.corrections ?? []
+        let corrected = Correction.apply(corrections, to: transcript)
+        var outcome = DictationOutcome(transcript: corrected.text, usedCorrections: corrected.used)
         if settings.cleanupEnabled, let cleaner = prepared ?? cleaner() {
             let uncleaned = outcome
             outcome = await run(
@@ -477,10 +481,12 @@ public final class DictationController {
                 learns: { $0.cleaned != nil },
                 work: {
                     (try? await DictationPipeline(
-                        transcriber: Passthrough(text: transcript), cleaner: cleaner
+                        transcriber: Passthrough(text: transcript), cleaner: cleaner,
+                        corrections: corrections
                     ).run(text: transcript)) ?? uncleaned
                 })
         }
+        self.corrections?.recordUses(outcome.usedCorrections)
         do {
             let entry = try await history.add(
                 transcript: outcome.transcript, cleaned: outcome.cleaned, audio: audio, at: now(),

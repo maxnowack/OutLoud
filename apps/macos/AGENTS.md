@@ -75,7 +75,10 @@ describe this area — read them before making changes here.
   field (ADR 0004). Alter the
   user's own keystrokes only by taking ⌥ and ⌘ off the keys typed while
   the ⌥ ⌘ chord is held past its first second, with the tap that does it
-  disabled at every other time (ADR 0029). The app holds the microphone
+  disabled at every other time (ADR 0029). Read the text of another app's
+  field only to learn a correction: the field Outloud just pasted into, for
+  15 s, while it — element and identity — has the focus, never a password
+  field, held in memory and never logged (ADR 0040). The app holds the microphone
   and Accessibility access outside a sandbox; any other use of them acts
   in the user's name without their action.
 - **(MUST)** Paste a dictation that follows its field only into the field

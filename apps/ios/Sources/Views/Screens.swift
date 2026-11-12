@@ -90,6 +90,15 @@ struct SettingsScreen: View {
                 }
 
                 Section {
+                    NavigationLink("Corrections") {
+                        Form { CorrectionList(store: app.corrections) }
+                            .navigationTitle("Corrections")
+                    }
+                } footer: {
+                    Text("Words Outloud writes the way you write them.")
+                }
+
+                Section {
                     RetentionPicker(period: Bindable(app.settings).retentionPeriod)
                     Button("Delete All Results", role: .destructive) { confirmingDelete = true }
                         .disabled(app.history.entries.isEmpty)

@@ -265,6 +265,25 @@ so that the optional cleanup in ModelSetup looks like the required model's
 mark, with its label beside it: `accent` filled check when on, an empty
 `textSecondary` square when off. Accessibility: read as its label with the value "On"/"Off".
 
+### CorrectionList
+
+The user's corrections (`docs/SPEC.md` §"Corrections"), as two sections of
+a grouped form. "Add a correction": the text fields "Heard as" (prompt "out
+loud") and "Write as" (prompt "Outloud"), Return moving from the first to
+the second and adding from the second; an "Add" push button, disabled while
+"Write as" is empty; under the fields, in `caption` and `warning` with an
+exclamation mark, why the last entry was not added; a footer saying what a
+correction does. "Corrections": one row per entry, newest first — "heard →
+meant", or the term alone, and below it in `caption` and `textSecondary`
+"Not used yet" or "Corrected n times", after "Learned ·" for a learned one;
+on the Mac a "Remove" push button per row, on the iPhone swipe to delete;
+both have "Remove" in the context menu. Empty state: "No corrections yet"
+in `textSecondary`. A list that could not be read says so in `warning`
+instead. On the Mac a footer says that a word or two changed in a pasted
+dictation within 15 seconds is learned. Accessibility: each row is read as
+one element, its text then its detail; adding announces "Correction
+added"; iOS fields take no autocapitalisation or autocorrection.
+
 ### HistoryList
 
 The kept results, newest first: date in `caption`, the first line of the
@@ -341,7 +360,9 @@ design canvas outside the repository on 2026-10-23.
   value —, and `brain` while the lip reader learns and none of the others
   applies, with "Learning lip reading" as its accessibility value.
 - **macOS menu bar panel** — a popover under the menu bar icon, opened by
-  a click: StatusIndicator, FailureNotice, the PasteQueue, the ResultPager
+  a click: StatusIndicator, FailureNotice, the PasteQueue, while the last learned correction can be taken back a line
+  in `caption` with a text-cursor icon, "Learned: “heard” → “meant”", and a
+  small "Undo" push button, the ResultPager
   over the ResultCard — the newest kept result each time the panel opens,
   or the last result without the pager while the history keeps nothing —
   and one push button, "History…". Opening it makes Outloud the active app,
@@ -376,7 +397,10 @@ design canvas outside the repository on 2026-10-23.
   When the user leaves the field of a dictation still processed, the
   capsule shows for three seconds, with a clock icon in `accent`, "Pastes
   into <app> when you are back in the text field." and goes; it shows
-  "Pasted" when the result lands on the return (ADR 0027). A dictation
+  "Pasted" when the result lands on the return (ADR 0027). When Outloud
+  learned a correction from the user's edit, it shows for four seconds,
+  with a text-cursor icon in `accent`, "Learned: “heard” → “meant”. Undo it
+  in the menu bar." (ADR 0040). A dictation
   processed out of sight shows nothing over a recording or over the
   dictation in sight.
   Centred
@@ -397,7 +421,7 @@ design canvas outside the repository on 2026-10-23.
   Return": the listed apps, each with its icon, its name and a "Remove"
   button, "Add App…", which opens the file dialog on the applications
   folder, and "No apps" when the list is empty), Models (ModelRow of the
-  transcription model), Lip Reading (a first section headed "Experimental"
+  transcription model), Corrections (CorrectionList), Lip Reading (a first section headed "Experimental"
   with a flask in `warning`, the ModelRow of the lip-reading model —
   "Lip reading" in its caption — and a footer saying it still misreads
   many words; the mode picker — Off, When there is
@@ -434,5 +458,6 @@ design canvas outside the repository on 2026-10-23.
 - **iOS history tab** — HistoryList, HistoryEntryDetail.
 - **iOS settings tab** — cleanup toggle with its CleanupAvailabilityNote,
   "Pause playback while dictating" with what iOS allows from the shortcut,
-  ModelRow of the transcription model, RetentionPicker, the
+  ModelRow of the transcription model, "Corrections" leading to the
+  CorrectionList, RetentionPicker, the
   ways to start Outloud, PrivacyNotice, Acknowledgements.

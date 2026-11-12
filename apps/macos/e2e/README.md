@@ -16,6 +16,7 @@ Executed as `apps/macos/AGENTS.md` §"End-to-end test plans" says.
 | Settings › General › Send with Return, the Return after a paste | `return-after-paste.md` | Needs Claude and TextEdit |
 | Open at login | `first-launch.md`, `settings.md` | Log out and in once |
 | Settings › Models | `models.md` | |
+| Settings › Corrections, corrected dictations, a correction learned from an edit | `corrections.md` | Needs TextEdit and a password field in Safari |
 | Settings › History, Privacy | `settings.md` | |
 | Settings › Lip Reading, the silent practice, dictation read from the lips | `lip-reading.md` | Needs a camera and the installed lip-reading model |
 | History window | `history.md` | |

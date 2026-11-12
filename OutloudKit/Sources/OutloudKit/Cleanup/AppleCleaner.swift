@@ -58,9 +58,13 @@ public struct AppleCleaner: Cleaning {
     }
 
     public func clean(_ transcript: String) async throws -> String {
+        try await clean(transcript, spellings: [])
+    }
+
+    public func clean(_ transcript: String, spellings: [String]) async throws -> String {
         guard transcript.count <= Self.maximumCharacters else { throw CleanerError.tooLong }
         let session = prepared.take() ?? LanguageModelSession(transcript: Self.examples)
-        let prompt = CleanupPrompt.userMessage(for: transcript)
+        let prompt = CleanupPrompt.userMessage(for: transcript, spellings: spellings)
         let options = GenerationOptions(samplingMode: .greedy)
         return try await Self.withDeadline(timeout) {
             do {

@@ -47,6 +47,9 @@ are marked `ASSUMPTION` and listed with the open questions in
   of a voiced dictation, or a practice sentence mouthed without sound.
 - **Adapter** — what lip reading learned from the user's training samples,
   a few megabytes beside the shared model.
+- **Correction** — a word Outloud writes the way the user means it: a pair
+  of what the transcription heard and what is meant, or a term, a spelling
+  the user keeps.
 
 ## Scope of the first version
 
@@ -439,6 +442,51 @@ above, while the user was away (`plans/FIRST_VERSION.md` §"Decisions for
 the user").
 
 Verified by: `apps/macos/e2e/dictation.md`, `apps/ios/e2e/system-dictation.md`.
+
+### Corrections
+
+- The user keeps a list of corrections on each device, in the settings of
+  both apps, under "Corrections": a pair ("Heard as" → "Write as") or a
+  term ("Write as" alone). The list is not synced between devices.
+- Every result is written with the corrections, whatever produced its
+  transcript — transcription, system dictation on iOS, or lip reading —,
+  with cleanup on or off, and without Apple Intelligence. A correction
+  replaces whole words, without regard to case or spacing; a term also
+  fixes the case of its own spelling ("iphone" → "iPhone"). The cleanup
+  reads the terms as spellings to keep, and the corrections apply once more
+  to what it returns, so that it cannot undo one.
+- The history keeps the corrected transcript.
+- A side holds up to four words and 50 characters, on one line, without
+  `<` or `>`; the list holds up to 500 corrections. The settings say why an
+  entry was not added: it does not fit, it is already corrected, or the list
+  is full.
+- Each correction shows how often it corrected a result, and whether it was
+  learned; the user deletes one with "Remove" on the Mac, with a swipe on
+  the iPhone.
+- On the Mac, when the user changes a word or two of a pasted result in its
+  field within 15 seconds and then stops typing for 2 seconds, Outloud
+  learns that pair (ADR 0040). It applies at once; the recording pill says
+  "Learned: “heard” → “meant”", and the menu bar panel offers "Undo" until
+  the next dictation. Nothing is learned from a password field, from words
+  added or removed, from a change of only case or punctuation, from a change
+  of more than two words, from an edit outside the pasted result, or from a
+  pair that would undo an existing correction.
+- No correction, and no text read from a field, is logged or leaves the
+  device.
+
+Acceptance criteria:
+
+- With the pair "out loud" → "Outloud", a dictated "ich teste out loud"
+  comes back as "ich teste Outloud", with cleanup on and off; its use count
+  then reads "Corrected once".
+- On the Mac, changing "Outlout" to "Outloud" in a pasted result in
+  TextEdit adds the learned pair "Outlout" → "Outloud" and shows it in the
+  pill; "Undo" in the menu bar panel removes it. In a password field
+  nothing is learned.
+
+Acceptance criteria written on 2026-11-10 from `plans/CORRECTIONS.md`.
+
+Verified by: `apps/macos/e2e/corrections.md`, `apps/ios/e2e/corrections.md`.
 
 ### Models
 

@@ -9,6 +9,15 @@ public protocol Transcribing: Sendable {
 /// Cleans up a transcript (`docs/SPEC.md` §"Cleanup").
 public protocol Cleaning: Sendable {
     func clean(_ transcript: String) async throws -> String
+    /// Cleans up with the spellings the user keeps (`CleanupPrompt` rule 9).
+    func clean(_ transcript: String, spellings: [String]) async throws -> String
+}
+
+extension Cleaning {
+    /// A cleaner that reads no spellings cleans up without them.
+    public func clean(_ transcript: String, spellings: [String]) async throws -> String {
+        try await clean(transcript)
+    }
 }
 
 /// What one dictation produced.
@@ -22,13 +31,19 @@ public struct DictationOutcome: Equatable, Sendable {
         case failed
     }
 
-    /// The transcript as it came from transcription or system dictation.
+    /// The transcript as it came from transcription or system dictation, with the user's
+    /// corrections applied (`docs/SPEC.md` §"Corrections").
     public let transcript: String
     public let cleanup: Cleanup
+    /// The corrections that changed the transcript or the cleaned version.
+    public let usedCorrections: Set<Correction.ID>
 
-    public init(transcript: String, cleanup: Cleanup = .off) {
+    public init(
+        transcript: String, cleanup: Cleanup = .off, usedCorrections: Set<Correction.ID> = []
+    ) {
         self.transcript = transcript
         self.cleanup = cleanup
+        self.usedCorrections = usedCorrections
     }
 
     /// The cleaned version, when the cleanup succeeded.
@@ -45,18 +60,25 @@ public enum DictationError: Error, Equatable, Sendable {
     case nothingRecognised
 }
 
-/// Transcription, then cleanup when it is on.
+/// Transcription, then the user's corrections, then cleanup when it is on — and the corrections
+/// once more, so that the cleanup cannot undo one.
 public struct DictationPipeline: Sendable {
     /// Recordings shorter than this are not transcribed.
     public static let minimumSamples = Int(AudioRecorder.sampleRate * 0.3)
 
     private let transcriber: any Transcribing
     private let cleaner: (any Cleaning)?
+    private let corrections: [Correction]
 
-    /// - Parameter cleaner: `nil` when cleanup is off.
-    public init(transcriber: any Transcribing, cleaner: (any Cleaning)?) {
+    /// - Parameters:
+    ///   - cleaner: `nil` when cleanup is off.
+    ///   - corrections: The user's corrections (`CorrectionStore`).
+    public init(
+        transcriber: any Transcribing, cleaner: (any Cleaning)?, corrections: [Correction] = []
+    ) {
         self.transcriber = transcriber
         self.cleaner = cleaner
+        self.corrections = corrections
     }
 
     public func run(samples: [Float]) async throws -> DictationOutcome {
@@ -67,34 +89,43 @@ public struct DictationPipeline: Sendable {
         return await cleanUp(transcript)
     }
 
-    /// The path of text that system dictation supplied: cleanup only.
+    /// The path of text that system dictation supplied, or the lips: corrections and cleanup.
     public func run(text: String) async throws -> DictationOutcome {
         let transcript = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !transcript.isEmpty else { throw DictationError.nothingRecognised }
         return await cleanUp(transcript)
     }
 
-    private func cleanUp(_ transcript: String) async -> DictationOutcome {
-        guard let cleaner else { return DictationOutcome(transcript: transcript) }
+    private func cleanUp(_ raw: String) async -> DictationOutcome {
+        let (transcript, used) = Correction.apply(corrections, to: raw)
+        guard let cleaner else {
+            return DictationOutcome(transcript: transcript, usedCorrections: used)
+        }
         let start = ContinuousClock.now
         do {
             let prepared = HesitationFilter.apply(to: transcript)
-            let answer = try await cleaner.clean(prepared)
+            let spellings = corrections.filter { $0.heard == nil }
+                .sorted { $0.uses > $1.uses }.map(\.meant)
+            let answer = try await cleaner.clean(prepared, spellings: spellings)
             let cleaned = CleanupPrompt.sanitize(answer)
             guard Self.isUsable(cleaned, for: prepared) else {
                 // Lengths and timings only: the texts are personal data.
                 Self.log.notice(
                     "cleanup unusable after \(ContinuousClock.now - start, privacy: .public): \(cleaned.count) characters for \(prepared.count)"
                 )
-                return DictationOutcome(transcript: transcript, cleanup: .failed)
+                return DictationOutcome(
+                    transcript: transcript, cleanup: .failed, usedCorrections: used)
             }
             Self.log.info("cleanup done in \(ContinuousClock.now - start, privacy: .public)")
-            return DictationOutcome(transcript: transcript, cleanup: .cleaned(cleaned))
+            let corrected = Correction.apply(corrections, to: cleaned)
+            return DictationOutcome(
+                transcript: transcript, cleanup: .cleaned(corrected.text),
+                usedCorrections: used.union(corrected.used))
         } catch {
             Self.log.error(
                 "cleanup failed after \(ContinuousClock.now - start, privacy: .public): \(String(describing: error), privacy: .public)"
             )
-            return DictationOutcome(transcript: transcript, cleanup: .failed)
+            return DictationOutcome(transcript: transcript, cleanup: .failed, usedCorrections: used)
         }
     }
 
@@ -130,7 +161,7 @@ public struct DictationPipeline: Sendable {
     private static let fillerWords = Set(
         (CleanupPrompt.englishFillers + CleanupPrompt.germanFillers + ["also"])
             .flatMap(comparableWords))
-    private static let corrections =
+    private static let correctionPhrases =
         (CleanupPrompt.englishCorrections
         + CleanupPrompt.germanCorrections).map(comparableWords)
 
@@ -139,10 +170,10 @@ public struct DictationPipeline: Sendable {
     /// the texts' longest common subsequence, so a word kept elsewhere does not count as kept.
     private static func dropsPassage(of transcript: String, from cleaned: String) -> Bool {
         let said = comparableWords(in: transcript)
-        let longestCorrection = corrections.map(\.count).max() ?? 0
+        let longestCorrection = correctionPhrases.map(\.count).max() ?? 0
         return gaps(in: said, against: comparableWords(in: cleaned)).contains { gap in
             let around = said[gap.lowerBound..<min(gap.upperBound + longestCorrection, said.count)]
-            let corrected = corrections.contains { phrase in
+            let corrected = correctionPhrases.contains { phrase in
                 around.indices.contains { around[$0...].starts(with: phrase) }
             }
             return !corrected && said[gap].filter { !fillerWords.contains($0) }.count >= 4

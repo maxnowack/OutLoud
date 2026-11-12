@@ -15,6 +15,9 @@ struct SettingsView: View {
                 .tabItem { Label("General", systemImage: "gearshape") }
             ModelSettings(app: app)
                 .tabItem { Label("Models", systemImage: "cpu") }
+            Form { CorrectionList(store: app.corrections) }
+                .formStyle(.grouped)
+                .tabItem { Label("Corrections", systemImage: "character.cursor.ibeam") }
             LipReadingSettings(app: app)
                 .tabItem { Label("Lip Reading", systemImage: "mouth") }
             HistorySettings(app: app)

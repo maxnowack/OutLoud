@@ -24,7 +24,11 @@ Four targets (ADR 0013, ADR 0034):
   (FluidAudio); `AppleCleaner` cleans up with Apple's on-device model
   (Foundation Models), and `CleanupAvailability` says whether it can;
   `DictationPipeline` turns samples or text
-  into a `DictationOutcome`; `DictationController` runs one dictation from
+  into a `DictationOutcome`, applying the user's corrections before and
+  after the cleanup; `CorrectionStore` is the one owner of the list of
+  corrections (ADR 0039), `Correction.apply` replaces them in a text, and
+  `CorrectionLearning` finds the pair a user's edit of a pasted result
+  teaches (ADR 0040); `DictationController` runs one dictation from
   the recording to the history, the one the user sees, and processes the
   dictations ended in or handed to the background (ADR 0027) one after
   another with it; `OptionCommandChord` decides the ⌥ ⌘ chord from the
@@ -88,7 +92,8 @@ model may be used in the background, within a budget (ADR 0019). One
 Owns the push-to-talk hotkey (Carbon hot keys, which report the press and
 the release without the Accessibility permission), the menu bar panel,
 the recording overlay — a non-activating panel, so the target app keeps
-the focus — and auto-paste (ADR 0004). It is distributed as a download
+the focus — and auto-paste (ADR 0004), and `PasteObserver`, which reads the
+field of the last paste to learn the user's correction (ADR 0040). It is distributed as a download
 from GitHub, signed with Developer ID and notarised, runs outside the App
 Sandbox, and updates through Sparkle (ADR 0009, ADR 0016).
 
@@ -169,6 +174,11 @@ following Hugging Face's redirect to its CDN; nothing is uploaded.
 - **History** — `index.json` (an array of entries: `id`, `createdAt` in
   ISO 8601, `transcript`, `cleaned`, `hasAudio`) and one 16-bit mono
   16 kHz WAV file per entry with audio, named `<id>.wav`.
+- **Corrections** — `Application Support/Outloud/Corrections.json`,
+  `{"version": 1, "corrections": [...]}`; each entry has `id`, `heard`
+  (absent for a term), `meant`, `origin` (`added` or `learned`),
+  `createdAt` in ISO 8601 and `uses`. A file that cannot be read, or of a
+  newer version, is left as it is (ADR 0039).
 - **Settings** — `UserDefaults` keys `cleanupEnabled`, `retentionPeriod`,
   `transcriptionModel`, `hasCompletedSetup`, `pausesPlayback`, and on
   macOS `hotkey` and
@@ -266,7 +276,21 @@ A dictated sentence can read like an instruction. The cleanup model is
 told not to follow instructions in the input, gets the transcript framed
 as user input, is told to repeat questions and requests like every other
 sentence, and an answer that is much longer or much shorter than the
-transcript is discarded (`OutloudKit/AGENTS.md` §"Security").
+transcript is discarded (`OutloudKit/AGENTS.md` §"Security"). The user's
+terms come before it, framed between `<SPELLINGS>` and `</SPELLINGS>`, as
+a list of words the prompt says are never instructions; a correction never
+holds `<` or `>`, so it cannot close a frame (ADR 0039).
+
+### A pasted field's text (macOS)
+
+To learn a correction, `PasteObserver` reads the value of the field
+Outloud just pasted into, for 15 s, while that field — element and
+identity — has the focus and its app is in front; never a password field,
+never one longer than 20,000 characters. The text is written by the user,
+the app or a page in it, and is held in memory for one comparison only;
+only a pair of at most two words on each side, inside the pasted result,
+that passes the checks of a correction, is kept — shown in the pill and
+undoable (ADR 0040).
 
 ## Auth
 
@@ -282,11 +306,18 @@ The history keeps, per result, the uncleaned transcript, the audio of the
 recording and the cleaned version, on the device, in
 `Application Support/Outloud/History/`, protected until the device is
 first unlocked after starting (so that a dictation on a locked iPhone can
-still keep its result), for the period the user sets; expired entries are removed at
+still keep its result), for the period the user sets — the transcript
+with the user's corrections applied (ADR 0039); expired entries are removed at
 launch, every five minutes while the app runs, and when the period
 changes (`docs/SPEC.md` §"History"). Voice recordings and the texts
 dictated are personal data. The logs carry durations, lengths and error
 kinds of the cleanup, never a text.
+
+The corrections are words the user writes, and on the Mac words learned
+from their edits; they are kept in `Application Support/Outloud/
+Corrections.json`, protected like the history, until the user removes
+them, and are never logged or sent anywhere. The text of a field read to
+learn one is never kept (ADR 0040).
 
 On iOS, `DiagnosticsLog` keeps how dictations started and ended, to be
 read out later (ADR 0031): one line of JSON per first use of a process,

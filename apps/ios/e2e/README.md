@@ -12,3 +12,4 @@ Executed as `apps/ios/AGENTS.md` §"End-to-end test plans" says.
 | Ways to start Outloud sheet | `ways-to-start.md` | |
 | History tab | `history.md` | |
 | Settings tab | `settings.md` | |
+| Settings tab › Corrections, corrected dictations | `corrections.md` | |

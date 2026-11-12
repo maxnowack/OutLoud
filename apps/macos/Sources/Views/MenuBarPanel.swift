@@ -52,6 +52,20 @@ struct MenuBarPanel: View {
                 items: app.pendingPastes.map { .init(id: $0.ticket, app: $0.app, text: $0.text) }
             ) { app.removePending($0.id) }
 
+            if let learned = app.lastLearned {
+                // What Outloud learned from the user's last edit, to take back (ADR 0040).
+                HStack {
+                    Label(
+                        "Learned: “\(learned.heard ?? learned.meant)” → “\(learned.meant)”",
+                        systemImage: "character.cursor.ibeam"
+                    )
+                    .font(Tokens.caption)
+                    Spacer()
+                    Button("Undo") { app.undoLearned() }
+                        .controlSize(.small)
+                }
+            }
+
             let entries = app.history.entries
             if let index = shownIndex, index < entries.count {
                 VStack(spacing: Tokens.Spacing.s) {

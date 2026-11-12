@@ -13,6 +13,9 @@ final class AppModel {
     let library: ModelLibrary
     let history: HistoryModel
     let dictation: DictationController
+    /// The user's corrections, applied to every result and learned from the user's edits
+    /// (`docs/SPEC.md` §"Corrections").
+    let corrections: CorrectionStore
     let loginItem = LoginItem()
     /// Reading the lips and learning from the dictations (`plans/LIP_READING.md`).
     let lipReading: CameraLipReading
@@ -28,6 +31,8 @@ final class AppModel {
     /// access (ADR 0020), or `nil` when another app holds it.
     private(set) var activeHotkey: HotkeyPreset? = .default
     private(set) var accessibilityTrusted = AutoPaster.isTrusted
+    /// The correction learned from the user's last edit, until they undo it or dictate again.
+    private(set) var lastLearned: Correction?
 
     var hotkey: HotkeyPreset {
         didSet {
@@ -61,6 +66,8 @@ final class AppModel {
     @ObservationIgnored let overlay = RecordingOverlay()
     @ObservationIgnored private let pauser = PlaybackPauser()
     @ObservationIgnored private var trustPolling: Task<Void, Never>?
+    /// Watches the field of the last paste for the user's correction (ADR 0040).
+    @ObservationIgnored private let pasteObserver = PasteObserver()
     /// A recording to process instead of the microphone, for testing (debug builds only).
     @ObservationIgnored private let sampleAudio: URL?
 
@@ -81,6 +88,10 @@ final class AppModel {
         history = HistoryModel(store: historyStore, settings: settings)
         dictation = DictationController(
             settings: settings, library: library, engines: engines, history: historyStore)
+        corrections = CorrectionStore(
+            file: (try? CorrectionStore.defaultFile())
+                ?? support.appending(path: "Outloud/Corrections.json"))
+        dictation.corrections = corrections
         let lipFiles = LipReadingFiles(
             root: support.appending(path: "Outloud/LipReading"),
             model: store.cache.snapshotFolder(of: ModelCatalog.lipReading))
@@ -212,6 +223,9 @@ final class AppModel {
         presses += 1
         let press = presses
         recordingStarted = .now
+        // What the user types next is no correction of the last paste.
+        pasteObserver.stop()
+        lastLearned = nil
         target = AutoPaster.focusedTarget()
         if sampleAudio != nil {
             overlay.show()
@@ -314,7 +328,11 @@ final class AppModel {
     private func paste(_ text: String, autoPaste: Bool) -> AutoPaster.Delivery {
         let target = AutoPaster.focusedTarget()
         let delivery = AutoPaster.deliver(text, autoPaste: autoPaste)
-        guard delivery == .pasted, let target,
+        guard delivery == .pasted, let target else { return delivery }
+        pasteObserver.watch(text, in: target) { [weak self] heard, meant in
+            self?.learned(heard: heard, meant: meant)
+        }
+        guard
             settings.submitsAfterPaste(
                 in: NSRunningApplication(processIdentifier: target.pid)?.bundleIdentifier)
         else { return delivery }
@@ -324,6 +342,23 @@ final class AppModel {
             AutoPaster.postReturn(into: target)
         }
         return delivery
+    }
+
+    /// Keeps a correction the user made by hand in a pasted result, and says so — not over the
+    /// pill of a recording or of a dictation in sight.
+    private func learned(heard: String, meant: String) {
+        guard let correction = corrections.learn(heard: heard, meant: meant, at: Date()) else {
+            return
+        }
+        lastLearned = correction
+        if recordingStarted == nil, inSight == nil { overlay.showLearned(correction) }
+    }
+
+    /// Takes the last learned correction back.
+    func undoLearned() {
+        guard let learned = lastLearned else { return }
+        try? corrections.delete(learned.id)
+        lastLearned = nil
     }
 
     /// How long the Return waits for the target to have handled the ⌘V: it reads the clipboard

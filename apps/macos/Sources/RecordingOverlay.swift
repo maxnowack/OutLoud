@@ -39,6 +39,7 @@ final class RecordingOverlay {
 
     func show() {
         model.delivery = nil
+        model.learned = nil
         present()
     }
 
@@ -49,9 +50,19 @@ final class RecordingOverlay {
     }
 
     func showDelivery(_ delivery: AutoPaster.Delivery) {
+        model.learned = nil
         model.delivery = delivery
         present()
         hide(after: .seconds(delivery == .pasted ? 1 : 3))
+    }
+
+    /// Says which correction Outloud learned from the user's edit (ADR 0040); the menu bar panel
+    /// offers to undo it.
+    func showLearned(_ correction: Correction) {
+        model.delivery = nil
+        model.learned = correction
+        present()
+        hide(after: .seconds(4))
     }
 
     /// Fades the pill out, then takes the panel away.
@@ -92,6 +103,7 @@ final class OverlayModel {
     var dictation: DictationController?
     var pauser: PlaybackPauser?
     var delivery: AutoPaster.Delivery?
+    var learned: Correction?
     var isVisible = false
 }
 
@@ -99,6 +111,7 @@ final class OverlayModel {
 private enum PillContent: Equatable {
     case status(DictationState)
     case delivery(AutoPaster.Delivery)
+    case learned(Correction)
 }
 
 private struct OverlayView: View {
@@ -136,6 +149,7 @@ private struct OverlayView: View {
 
     /// The content the model asks for.
     private var target: PillContent? {
+        if let learned = model.learned { return .learned(learned) }
         if let delivery = model.delivery { return .delivery(delivery) }
         return model.dictation.map { .status($0.state) }
     }
@@ -273,6 +287,14 @@ private struct OverlayView: View {
                         .font(Tokens.caption)
                         .lineLimit(2)
                 }
+            case .learned(let correction):
+                Image(systemName: "character.cursor.ibeam")
+                    .foregroundStyle(Tokens.accent)
+                Text(Self.message(for: correction))
+                    .font(Tokens.detail)
+                    .lineLimit(2)
+                    .frame(maxWidth: Tokens.overlayTextWidth)
+                    .fixedSize(horizontal: false, vertical: true)
             case nil:
                 EmptyView()
             }
@@ -295,6 +317,13 @@ private struct OverlayView: View {
         case .waiting: "clock.fill"
         case .copied: "doc.on.clipboard"
         }
+    }
+
+    static func message(for correction: Correction) -> String {
+        String(
+            localized:
+                "Learned: “\(correction.heard ?? correction.meant)” → “\(correction.meant)”. Undo it in the menu bar."
+        )
     }
 
     static func message(for delivery: AutoPaster.Delivery) -> String {

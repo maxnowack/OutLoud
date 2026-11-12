@@ -16,6 +16,8 @@ final class AppModel {
     let library: ModelLibrary
     let history: HistoryModel
     let dictation: DictationController
+    /// The user's corrections, applied to every result (`docs/SPEC.md` §"Corrections").
+    let corrections: CorrectionStore
     @ObservationIgnored let engines: Engines
     /// How dictations start and end on this device, to be read out later (ADR 0031).
     @ObservationIgnored let diagnostics: DiagnosticsLog
@@ -49,6 +51,10 @@ final class AppModel {
         history = HistoryModel(store: historyStore, settings: settings)
         dictation = DictationController(
             settings: settings, library: library, engines: engines, history: historyStore)
+        corrections = CorrectionStore(
+            file: (try? CorrectionStore.defaultFile())
+                ?? support.appending(path: "Outloud/Corrections.json"))
+        dictation.corrections = corrections
         diagnostics = DiagnosticsLog(
             file: (try? DiagnosticsLog.defaultFile())
                 ?? support.appending(path: "Outloud/diagnostics.jsonl"))
